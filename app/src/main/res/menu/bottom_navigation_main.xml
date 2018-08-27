@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_user"
+        android:enabled="true"
+        android:icon="@drawable/baseline_face_black_18dp"
+        android:title="@string/text_user"
+        app:showAsAction="always|withText" />
+
+    <item
+        android:id="@+id/action_favorites"
+        android:enabled="true"
+        android:icon="@drawable/baseline_favorite_black_18dp"
+        android:title="@string/text_favorites"
+        app:showAsAction="always|withText" />
+
+    <item
+        android:id="@+id/action_navi"
+        android:enabled="true"
+        android:icon="@drawable/baseline_explore_black_18dp"
+        android:title="@string/text_navigation"
+        app:showAsAction="always|withText" />
+
+    <item
+        android:id="@+id/action_settings"
+        android:enabled="true"
+        android:icon="@drawable/baseline_settings_black_18dp"
+        android:title="@string/text_settings"
+        app:showAsAction="always|withText" />
+
+</menu>
