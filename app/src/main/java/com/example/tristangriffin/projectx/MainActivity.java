@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
                                 textSettings.setVisibility(View.GONE);
                                 textUser.setVisibility(View.GONE);
                                 textSearch.setVisibility(View.VISIBLE);
+                                break;
 
                             case R.id.action_settings:
                                 textFavorites.setVisibility(View.GONE);
