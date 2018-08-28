@@ -1,12 +1,15 @@
 <resources>
     <string name="app_name">ProjectX</string>
 
-    <!-- Sign-In Form Resources -->
+    <!-- Sign-In/Sign-Up Form Resources -->
     <string name="text_email">E-Mail</string>
     <string name="text_password">Password</string>
     <string name="text_signin">Sign In</string>
     <string name="text_forgot">Forgot Your Password?</string>
     <string name="text_signup">Sign Up</string>
+    <string name="text_signupInfo">Please fill out the form below</string>
+    <string name="text_signupNow">Don\'t already have an account? Sign Up!</string>
+
 
     <!-- Navigation Resources -->
     <string name="bottom_navigation">Bottom Navigation</string>

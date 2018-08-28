@@ -23,6 +23,11 @@ public class MainActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
+        /*
+        if (mAuth.getCurrentUser() != null){
+            mAuth.signOut();
+        }
+        */
         if (mAuth.getCurrentUser() == null) {
             Intent intent = new Intent(this, SignInActivity.class);
             startActivity(intent);
@@ -50,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
                                 textNavi.setVisibility(View.GONE);
                                 textSettings.setVisibility(View.GONE);
                                 textUser.setVisibility(View.VISIBLE);
+                                textUser.setText(mAuth.getCurrentUser().getEmail());
                                 textSearch.setVisibility(View.GONE);
                                 break;
 
