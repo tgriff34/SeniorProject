@@ -13,7 +13,7 @@ import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView textFavorites, textNavi, textUser, textSettings;
+    private TextView textFavorites, textNavi, textUser, textSettings, textSearch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
         textNavi = (TextView) findViewById(R.id.text_navigation);
         textUser = (TextView) findViewById(R.id.text_user);
         textSettings = (TextView) findViewById(R.id.text_settings);
+        textSearch = (TextView) findViewById(R.id.text_search);
 
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
 
@@ -32,11 +33,20 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         switch (item.getItemId()) {
+                            case R.id.action_user:
+                                textFavorites.setVisibility(View.GONE);
+                                textNavi.setVisibility(View.GONE);
+                                textSettings.setVisibility(View.GONE);
+                                textUser.setVisibility(View.VISIBLE);
+                                textSearch.setVisibility(View.GONE);
+                                break;
+
                             case R.id.action_favorites:
                                 textFavorites.setVisibility(View.VISIBLE);
                                 textNavi.setVisibility(View.GONE);
                                 textSettings.setVisibility(View.GONE);
                                 textUser.setVisibility(View.GONE);
+                                textSearch.setVisibility(View.GONE);
                                 break;
 
                             case R.id.action_navi:
@@ -44,20 +54,22 @@ public class MainActivity extends AppCompatActivity {
                                 textNavi.setVisibility(View.VISIBLE);
                                 textSettings.setVisibility(View.GONE);
                                 textUser.setVisibility(View.GONE);
+                                textSearch.setVisibility(View.GONE);
                                 break;
 
-                            case R.id.action_user:
+                            case R.id.action_search:
                                 textFavorites.setVisibility(View.GONE);
                                 textNavi.setVisibility(View.GONE);
                                 textSettings.setVisibility(View.GONE);
-                                textUser.setVisibility(View.VISIBLE);
-                                break;
+                                textUser.setVisibility(View.GONE);
+                                textSearch.setVisibility(View.VISIBLE);
 
                             case R.id.action_settings:
                                 textFavorites.setVisibility(View.GONE);
                                 textNavi.setVisibility(View.GONE);
                                 textSettings.setVisibility(View.VISIBLE);
                                 textUser.setVisibility(View.GONE);
+                                textSearch.setVisibility(View.GONE);
                                 break;
                         }
                         return false;

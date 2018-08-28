@@ -24,6 +24,13 @@
         app:showAsAction="always|withText" />
 
     <item
+        android:id="@+id/action_search"
+        android:enabled="true"
+        android:icon="@drawable/baseline_search_black_18dp"
+        android:title="@string/text_search"
+        app:showAsAction="always|withText" />
+
+    <item
         android:id="@+id/action_settings"
         android:enabled="true"
         android:icon="@drawable/baseline_settings_black_18dp"
