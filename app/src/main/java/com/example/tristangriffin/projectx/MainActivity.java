@@ -1,15 +1,12 @@
 package com.example.tristangriffin.projectx;
 
 import android.support.annotation.NonNull;
-import android.support.design.internal.BottomNavigationItemView;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -34,6 +31,10 @@ public class MainActivity extends AppCompatActivity {
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.action_user:
+                                UserFragment userFragment = new UserFragment();
+                                getSupportFragmentManager().beginTransaction().add(R.id.fragment_container,
+                                        userFragment).commit();
+
                                 textFavorites.setVisibility(View.GONE);
                                 textNavi.setVisibility(View.GONE);
                                 textSettings.setVisibility(View.GONE);
