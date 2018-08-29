@@ -13,7 +13,6 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView textFavorites, textNavi, textUser, textSettings, textSearch;
     private FirebaseAuth mAuth;
 
     private static final String USER_FRAGMENT = "UserFrag";
@@ -38,12 +37,6 @@ public class MainActivity extends AppCompatActivity {
                     .add(R.id.fragment_container, userFragment, USER_FRAGMENT).commit();
         }
 
-        textFavorites = (TextView) findViewById(R.id.text_favorites);
-        textNavi = (TextView) findViewById(R.id.text_navigation);
-        textUser = (TextView) findViewById(R.id.text_user);
-        textSettings = (TextView) findViewById(R.id.text_settings);
-        textSearch = (TextView) findViewById(R.id.text_search);
-
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(
@@ -61,37 +54,42 @@ public class MainActivity extends AppCompatActivity {
                                     getSupportFragmentManager().beginTransaction().addToBackStack(null)
                                             .replace(R.id.fragment_container, newUserFragment, USER_FRAGMENT).commit();
                                 }
-
-                                textFavorites.setVisibility(View.GONE);
-                                textNavi.setVisibility(View.GONE);
-                                textSettings.setVisibility(View.GONE);
-                                textUser.setVisibility(View.VISIBLE);
-                                textUser.setText(mAuth.getCurrentUser().getEmail());
-                                textSearch.setVisibility(View.GONE);
                                 break;
 
                             case R.id.action_favorites:
-                                textFavorites.setVisibility(View.VISIBLE);
-                                textNavi.setVisibility(View.GONE);
-                                textSettings.setVisibility(View.GONE);
-                                textUser.setVisibility(View.GONE);
-                                textSearch.setVisibility(View.GONE);
+                                FavoritesFragment favoritesFragment = (FavoritesFragment) getSupportFragmentManager()
+                                        .findFragmentByTag(FAVORITES_FRAGMENT);
+                                if (favoritesFragment != null && favoritesFragment.isVisible()){
+
+                                } else {
+                                    FavoritesFragment newFavoritesFragment = new FavoritesFragment();
+                                    getSupportFragmentManager().beginTransaction().addToBackStack(null)
+                                            .replace(R.id.fragment_container, newFavoritesFragment, FAVORITES_FRAGMENT).commit();
+                                }
                                 break;
 
                             case R.id.action_navi:
-                                textFavorites.setVisibility(View.GONE);
-                                textNavi.setVisibility(View.VISIBLE);
-                                textSettings.setVisibility(View.GONE);
-                                textUser.setVisibility(View.GONE);
-                                textSearch.setVisibility(View.GONE);
+                                NavigationFragment navigationFragment = (NavigationFragment) getSupportFragmentManager()
+                                        .findFragmentByTag(NAVIGATION_FRAGMENT);
+                                if (navigationFragment != null && navigationFragment.isVisible()) {
+
+                                } else {
+                                    NavigationFragment newNavigationFragment = new NavigationFragment();
+                                    getSupportFragmentManager().beginTransaction().addToBackStack(null)
+                                            .replace(R.id.fragment_container, newNavigationFragment, NAVIGATION_FRAGMENT).commit();
+                                }
                                 break;
 
                             case R.id.action_search:
-                                textFavorites.setVisibility(View.GONE);
-                                textNavi.setVisibility(View.GONE);
-                                textSettings.setVisibility(View.GONE);
-                                textUser.setVisibility(View.GONE);
-                                textSearch.setVisibility(View.VISIBLE);
+                                SearchFragment searchFragment = (SearchFragment) getSupportFragmentManager()
+                                        .findFragmentByTag(SEARCH_FRAGMENT);
+                                if (searchFragment != null && searchFragment.isVisible()) {
+
+                                } else {
+                                    SearchFragment newSearchFragment = new SearchFragment();
+                                    getSupportFragmentManager().beginTransaction().addToBackStack(null)
+                                            .replace(R.id.fragment_container, newSearchFragment, SEARCH_FRAGMENT).commit();
+                                }
                                 break;
 
                             case R.id.action_settings:
@@ -104,12 +102,6 @@ public class MainActivity extends AppCompatActivity {
                                     getSupportFragmentManager().beginTransaction().addToBackStack(null)
                                             .replace(R.id.fragment_container, newSettingsFragment, SETTINGS_FRAGMENT).commit();
                                 }
-
-                                textFavorites.setVisibility(View.GONE);
-                                textNavi.setVisibility(View.GONE);
-                                textSettings.setVisibility(View.VISIBLE);
-                                textUser.setVisibility(View.GONE);
-                                textSearch.setVisibility(View.GONE);
                                 break;
                         }
                         return false;

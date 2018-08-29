@@ -6,42 +6,6 @@
     android:layout_height="match_parent"
     android:layout_width="match_parent">
 
-    <TextView
-        android:id="@+id/text_favorites"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:text="@string/text_favorites"/>
-
-    <TextView
-        android:id="@+id/text_user"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone"
-        android:text="@string/text_user"/>
-    <TextView
-        android:id="@+id/text_search"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone"
-        android:text="@string/text_search"/>
-    <TextView
-        android:id="@+id/text_settings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone"
-        android:text="@string/text_settings"/>
-    <TextView
-        android:id="@+id/text_navigation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone"
-        android:text="@string/text_navigation"/>
-
     <FrameLayout
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
