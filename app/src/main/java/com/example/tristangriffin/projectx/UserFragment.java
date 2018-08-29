@@ -9,9 +9,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import java.util.ArrayList;
@@ -41,6 +44,16 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         view.findViewById(R.id.button_addPhoto).setOnClickListener(this);
 
         gridView = (GridView) view.findViewById(R.id.grid_view);
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if (images != null && !images.isEmpty()) {
+                    Toast.makeText(getContext(), images.get(i).toString(), Toast.LENGTH_SHORT).show();
+                    gridView.setItemChecked(i, true);
+                }
+            }
+        });
 
         return view;
     }
