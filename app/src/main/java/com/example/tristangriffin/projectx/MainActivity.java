@@ -29,11 +29,6 @@ public class MainActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        /*
-        if (mAuth.getCurrentUser() != null){
-            mAuth.signOut();
-        }
-        */
         if (mAuth.getCurrentUser() == null) {
             Intent intent = new Intent(this, SignInActivity.class);
             startActivity(intent);
@@ -41,80 +36,85 @@ public class MainActivity extends AppCompatActivity {
             UserFragment userFragment = new UserFragment();
             getSupportFragmentManager().beginTransaction().addToBackStack(null)
                     .add(R.id.fragment_container, userFragment, USER_FRAGMENT).commit();
-
-            textFavorites = (TextView) findViewById(R.id.text_favorites);
-            textNavi = (TextView) findViewById(R.id.text_navigation);
-            textUser = (TextView) findViewById(R.id.text_user);
-            textSettings = (TextView) findViewById(R.id.text_settings);
-            textSearch = (TextView) findViewById(R.id.text_search);
-
-            BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
-
-            bottomNavigationView.setOnNavigationItemSelectedListener(
-                    new BottomNavigationView.OnNavigationItemSelectedListener() {
-                        @Override
-                        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                            switch (item.getItemId()) {
-                                case R.id.action_user:
-                                    UserFragment userFragment = (UserFragment) getSupportFragmentManager()
-                                            .findFragmentByTag(USER_FRAGMENT);
-                                    if (userFragment != null && userFragment.isVisible()) {
-
-                                    } else {
-                                        UserFragment newUserFragment = new UserFragment();
-                                        getSupportFragmentManager().beginTransaction().addToBackStack(null)
-                                                .replace(R.id.fragment_container, newUserFragment, USER_FRAGMENT).commit();
-                                    }
-
-                                    textFavorites.setVisibility(View.GONE);
-                                    textNavi.setVisibility(View.GONE);
-                                    textSettings.setVisibility(View.GONE);
-                                    textUser.setVisibility(View.VISIBLE);
-                                    textUser.setText(mAuth.getCurrentUser().getEmail());
-                                    textSearch.setVisibility(View.GONE);
-                                    break;
-
-                                case R.id.action_favorites:
-                                    textFavorites.setVisibility(View.VISIBLE);
-                                    textNavi.setVisibility(View.GONE);
-                                    textSettings.setVisibility(View.GONE);
-                                    textUser.setVisibility(View.GONE);
-                                    textSearch.setVisibility(View.GONE);
-                                    break;
-
-                                case R.id.action_navi:
-                                    textFavorites.setVisibility(View.GONE);
-                                    textNavi.setVisibility(View.VISIBLE);
-                                    textSettings.setVisibility(View.GONE);
-                                    textUser.setVisibility(View.GONE);
-                                    textSearch.setVisibility(View.GONE);
-                                    break;
-
-                                case R.id.action_search:
-                                    textFavorites.setVisibility(View.GONE);
-                                    textNavi.setVisibility(View.GONE);
-                                    textSettings.setVisibility(View.GONE);
-                                    textUser.setVisibility(View.GONE);
-                                    textSearch.setVisibility(View.VISIBLE);
-                                    break;
-
-                                case R.id.action_settings:
-                                    SettingsFragment settingsFragment = new SettingsFragment();
-                                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                                            settingsFragment).commit();
-
-
-                                    textFavorites.setVisibility(View.GONE);
-                                    textNavi.setVisibility(View.GONE);
-                                    textSettings.setVisibility(View.VISIBLE);
-                                    textUser.setVisibility(View.GONE);
-                                    textSearch.setVisibility(View.GONE);
-                                    break;
-                            }
-                            return false;
-                        }
-                    }
-            );
         }
+
+        textFavorites = (TextView) findViewById(R.id.text_favorites);
+        textNavi = (TextView) findViewById(R.id.text_navigation);
+        textUser = (TextView) findViewById(R.id.text_user);
+        textSettings = (TextView) findViewById(R.id.text_settings);
+        textSearch = (TextView) findViewById(R.id.text_search);
+
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.action_user:
+                                UserFragment userFragment = (UserFragment) getSupportFragmentManager()
+                                        .findFragmentByTag(USER_FRAGMENT);
+                                if (userFragment != null && userFragment.isVisible()) {
+
+                                } else {
+                                    UserFragment newUserFragment = new UserFragment();
+                                    getSupportFragmentManager().beginTransaction().addToBackStack(null)
+                                            .replace(R.id.fragment_container, newUserFragment, USER_FRAGMENT).commit();
+                                }
+
+                                textFavorites.setVisibility(View.GONE);
+                                textNavi.setVisibility(View.GONE);
+                                textSettings.setVisibility(View.GONE);
+                                textUser.setVisibility(View.VISIBLE);
+                                textUser.setText(mAuth.getCurrentUser().getEmail());
+                                textSearch.setVisibility(View.GONE);
+                                break;
+
+                            case R.id.action_favorites:
+                                textFavorites.setVisibility(View.VISIBLE);
+                                textNavi.setVisibility(View.GONE);
+                                textSettings.setVisibility(View.GONE);
+                                textUser.setVisibility(View.GONE);
+                                textSearch.setVisibility(View.GONE);
+                                break;
+
+                            case R.id.action_navi:
+                                textFavorites.setVisibility(View.GONE);
+                                textNavi.setVisibility(View.VISIBLE);
+                                textSettings.setVisibility(View.GONE);
+                                textUser.setVisibility(View.GONE);
+                                textSearch.setVisibility(View.GONE);
+                                break;
+
+                            case R.id.action_search:
+                                textFavorites.setVisibility(View.GONE);
+                                textNavi.setVisibility(View.GONE);
+                                textSettings.setVisibility(View.GONE);
+                                textUser.setVisibility(View.GONE);
+                                textSearch.setVisibility(View.VISIBLE);
+                                break;
+
+                            case R.id.action_settings:
+                                SettingsFragment settingsFragment = (SettingsFragment) getSupportFragmentManager()
+                                        .findFragmentByTag(SETTINGS_FRAGMENT);
+                                if (settingsFragment != null && settingsFragment.isVisible()) {
+
+                                } else {
+                                    SettingsFragment newSettingsFragment = new SettingsFragment();
+                                    getSupportFragmentManager().beginTransaction().addToBackStack(null)
+                                            .replace(R.id.fragment_container, newSettingsFragment, SETTINGS_FRAGMENT).commit();
+                                }
+
+                                textFavorites.setVisibility(View.GONE);
+                                textNavi.setVisibility(View.GONE);
+                                textSettings.setVisibility(View.VISIBLE);
+                                textUser.setVisibility(View.GONE);
+                                textSearch.setVisibility(View.GONE);
+                                break;
+                        }
+                        return false;
+                    }
+                }
+        );
     }
 }
