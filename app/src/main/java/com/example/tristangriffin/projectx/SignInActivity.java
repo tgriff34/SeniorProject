@@ -1,6 +1,7 @@
 package com.example.tristangriffin.projectx;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -22,6 +23,9 @@ public class SignInActivity extends AppCompatActivity {
     private EditText mEmail;
     private EditText mPassword;
 
+    private static final int REQUEST_SIGNUP = 0;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,9 +38,8 @@ public class SignInActivity extends AppCompatActivity {
         findViewById(R.id.view_signUp).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SignUpActivity signUpActivity = new SignUpActivity();
-                getSupportFragmentManager().beginTransaction().add(R.id.sign_fragment_container, signUpActivity)
-                        .commit();
+                Intent intent = new Intent(SignInActivity.this , SignUpActivity.class);
+                startActivityForResult(intent, REQUEST_SIGNUP);
             }
         });
         findViewById(R.id.button_signin).setOnClickListener(new View.OnClickListener() {
