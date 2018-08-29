@@ -19,6 +19,9 @@
     <string name="text_user">User</string>
     <string name="text_search">Search</string>
 
+    <!-- User Tab Resources -->
+    <string name="user_text_info">Click the + to add photos</string>
+
     <!-- Settings ListView Resources -->
     <string-array name="settings_array">
         <item>Sign Out</item>
