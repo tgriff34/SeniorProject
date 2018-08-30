@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.design.button.MaterialButton;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,8 +13,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -23,8 +27,9 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
     private ArrayList<String> images = new ArrayList<>();
     private GridView gridView;
-    private int width;
-
+    private TextView _textPhotoAdd;
+    private FloatingActionButton _photoAdd;
+    private MaterialButton _photoConfirm;
 
     public UserFragment() {
         // Required empty public constructor
@@ -44,6 +49,13 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         view.findViewById(R.id.button_addPhoto).setOnClickListener(this);
 
         gridView = (GridView) view.findViewById(R.id.grid_view);
+        _photoConfirm = view.findViewById(R.id.button_confirmPhoto);
+        _photoAdd = view.findViewById(R.id.button_addPhoto);
+        _textPhotoAdd = view.findViewById(R.id.text_addPhoto);
+
+        if (images != null && !images.isEmpty()) {
+            _textPhotoAdd.setVisibility(View.GONE);
+        }
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -61,6 +73,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         gridView.setAdapter(new ImageAdapter(getActivity()));
+        _photoAdd.setVisibility(View.GONE);
+        _photoConfirm.setVisibility(View.VISIBLE);
     }
 
     private class ImageAdapter extends BaseAdapter {
