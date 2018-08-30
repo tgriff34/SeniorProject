@@ -29,13 +29,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Ask permission to access Photos Gallery
         if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-
             }
-
             requestPermissions(new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE}, 123);
-
             return;
         }
 
@@ -46,8 +44,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         } else {
             UserFragment userFragment = new UserFragment();
-            getSupportFragmentManager().beginTransaction().addToBackStack(null)
-                    .add(R.id.fragment_container, userFragment, USER_FRAGMENT).commit();
+            setFragment(userFragment, USER_FRAGMENT);
         }
 
         final BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
@@ -58,68 +55,37 @@ public class MainActivity extends AppCompatActivity {
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.action_user:
-                                UserFragment userFragment = (UserFragment) getSupportFragmentManager()
-                                        .findFragmentByTag(USER_FRAGMENT);
-                                if (userFragment != null && userFragment.isVisible()) {
-
-                                } else {
-                                    UserFragment newUserFragment = new UserFragment();
-                                    getSupportFragmentManager().beginTransaction().addToBackStack(null)
-                                            .replace(R.id.fragment_container, newUserFragment, USER_FRAGMENT).commit();
-                                }
+                                UserFragment userFragment = new UserFragment();
+                                setFragment(userFragment, USER_FRAGMENT);
                                 break;
 
                             case R.id.action_favorites:
-                                FavoritesFragment favoritesFragment = (FavoritesFragment) getSupportFragmentManager()
-                                        .findFragmentByTag(FAVORITES_FRAGMENT);
-                                if (favoritesFragment != null && favoritesFragment.isVisible()){
-
-                                } else {
-                                    FavoritesFragment newFavoritesFragment = new FavoritesFragment();
-                                    getSupportFragmentManager().beginTransaction().addToBackStack(null)
-                                            .replace(R.id.fragment_container, newFavoritesFragment, FAVORITES_FRAGMENT).commit();
-                                }
+                                FavoritesFragment favoritesFragment = new FavoritesFragment();
+                                setFragment(favoritesFragment, FAVORITES_FRAGMENT);
                                 break;
 
                             case R.id.action_navi:
-                                NavigationFragment navigationFragment = (NavigationFragment) getSupportFragmentManager()
-                                        .findFragmentByTag(NAVIGATION_FRAGMENT);
-                                if (navigationFragment != null && navigationFragment.isVisible()) {
-
-                                } else {
-                                    NavigationFragment newNavigationFragment = new NavigationFragment();
-                                    getSupportFragmentManager().beginTransaction().addToBackStack(null)
-                                            .replace(R.id.fragment_container, newNavigationFragment, NAVIGATION_FRAGMENT).commit();
-                                }
+                                NavigationFragment navigationFragment = new NavigationFragment();
+                                setFragment(navigationFragment, NAVIGATION_FRAGMENT);
                                 break;
 
                             case R.id.action_search:
-                                SearchFragment searchFragment = (SearchFragment) getSupportFragmentManager()
-                                        .findFragmentByTag(SEARCH_FRAGMENT);
-                                if (searchFragment != null && searchFragment.isVisible()) {
-
-                                } else {
-                                    SearchFragment newSearchFragment = new SearchFragment();
-                                    getSupportFragmentManager().beginTransaction().addToBackStack(null)
-                                            .replace(R.id.fragment_container, newSearchFragment, SEARCH_FRAGMENT).commit();
-                                }
+                                SearchFragment searchFragment = new SearchFragment();
+                                setFragment(searchFragment, SEARCH_FRAGMENT);
                                 break;
 
                             case R.id.action_settings:
-                                SettingsFragment settingsFragment = (SettingsFragment) getSupportFragmentManager()
-                                        .findFragmentByTag(SETTINGS_FRAGMENT);
-                                if (settingsFragment != null && settingsFragment.isVisible()) {
-
-                                } else {
-                                    SettingsFragment newSettingsFragment = new SettingsFragment();
-                                    getSupportFragmentManager().beginTransaction().addToBackStack(null)
-                                            .replace(R.id.fragment_container, newSettingsFragment, SETTINGS_FRAGMENT).commit();
-                                }
+                                SettingsFragment settingsFragment = new SettingsFragment();
+                                setFragment(settingsFragment, SETTINGS_FRAGMENT);
                                 break;
                         }
                         return false;
                     }
                 }
         );
+    }
+    private void setFragment(Fragment fragment, String FRAGMENT_TAG) {
+        getSupportFragmentManager().beginTransaction().addToBackStack(null)
+                .replace(R.id.fragment_container, fragment, FRAGMENT_TAG).commit();
     }
 }
