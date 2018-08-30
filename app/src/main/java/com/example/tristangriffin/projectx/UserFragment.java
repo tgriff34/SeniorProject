@@ -2,6 +2,7 @@ package com.example.tristangriffin.projectx;
 
 import android.app.Activity;
 import android.database.Cursor;
+import android.media.Image;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.button.MaterialButton;
@@ -60,9 +61,9 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                ImageAdapter adapter = (ImageAdapter) gridView.getAdapter();
                 if (images != null && !images.isEmpty()) {
-                    Toast.makeText(getContext(), images.get(i).toString(), Toast.LENGTH_SHORT).show();
-                    gridView.setItemChecked(i, true);
+                    adapter.notifyDataSetChanged();
                 }
             }
         });
@@ -73,8 +74,13 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         gridView.setAdapter(new ImageAdapter(getActivity()));
-        _photoAdd.setVisibility(View.GONE);
-        _photoConfirm.setVisibility(View.VISIBLE);
+        if (gridView.getChildCount() == 0) {
+            _textPhotoAdd.setText("You have no images in your gallery");
+        } else {
+            _textPhotoAdd.setVisibility(View.GONE);
+            _photoAdd.setVisibility(View.GONE);
+            _photoConfirm.setVisibility(View.VISIBLE);
+        }
     }
 
     private class ImageAdapter extends BaseAdapter {
@@ -102,13 +108,20 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
-            ImageView imageView;
+            CheckableImageView imageView;
+
             if (view == null) {
-                imageView = new ImageView(context);
+                imageView = new CheckableImageView(context);
                 imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
                 imageView.setLayoutParams(new GridView.LayoutParams(500 , 500));
             } else {
-                imageView = (ImageView) view;
+                imageView = (CheckableImageView) view;
+            }
+
+            if (gridView.isItemChecked(i)) {
+                imageView.setChecked(true);
+            } else {
+                imageView.setChecked(false);
             }
 
             Glide.with(context).load(images.get(i)).apply(RequestOptions.centerCropTransform()).into(imageView);
