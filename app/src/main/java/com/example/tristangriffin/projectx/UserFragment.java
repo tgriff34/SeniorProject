@@ -74,8 +74,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         gridView.setAdapter(new ImageAdapter(getActivity()));
-        if (gridView.getChildCount() == 0) {
-            _textPhotoAdd.setText("You have no images in your gallery");
+        if (gridView.getAdapter().isEmpty()) {
+
         } else {
             _textPhotoAdd.setVisibility(View.GONE);
             _photoAdd.setVisibility(View.GONE);
