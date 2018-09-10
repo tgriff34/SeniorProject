@@ -9,6 +9,7 @@ import android.support.design.button.MaterialButton;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 public class UserFragment extends Fragment implements View.OnClickListener {
 
     private ArrayList<String> images = new ArrayList<>();
+    private ArrayList<String> checkedImages = new ArrayList<>();
     private GridView gridView;
     private TextView _textPhotoAdd;
     private FloatingActionButton _photoAdd;
@@ -47,7 +49,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_user, container, false);
-        view.findViewById(R.id.button_addPhoto).setOnClickListener(this);
 
         gridView = (GridView) view.findViewById(R.id.grid_view);
         _photoConfirm = view.findViewById(R.id.button_confirmPhoto);
@@ -57,6 +58,9 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         if (images != null && !images.isEmpty()) {
             _textPhotoAdd.setVisibility(View.GONE);
         }
+
+        _photoConfirm.setOnClickListener(this);
+        _photoAdd.setOnClickListener(this);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -73,13 +77,21 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        gridView.setAdapter(new ImageAdapter(getActivity()));
-        if (gridView.getAdapter().isEmpty()) {
+        switch(view.getId()) {
+            case R.id.button_addPhoto:
+                gridView.setAdapter(new ImageAdapter(getActivity()));
+                if (gridView.getAdapter().isEmpty()) {
 
-        } else {
-            _textPhotoAdd.setVisibility(View.GONE);
-            _photoAdd.setVisibility(View.GONE);
-            _photoConfirm.setVisibility(View.VISIBLE);
+                } else {
+                    _textPhotoAdd.setVisibility(View.GONE);
+                    _photoAdd.setVisibility(View.GONE);
+                    _photoConfirm.setVisibility(View.VISIBLE);
+                }
+                break;
+
+            case R.id.button_confirmPhoto:
+                getCheckedImages();
+                break;
         }
     }
 
@@ -143,5 +155,16 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         Log.d("demo", allImages.toString());
 
         return allImages;
+    }
+    
+    private ArrayList<String> getCheckedImages() {
+        SparseBooleanArray a = gridView.getCheckedItemPositions();
+        for (int i = 0; i < a.size(); i++) {
+            if (a.valueAt(i)) {
+                int index = a.keyAt(i);
+                checkedImages.add(images.get(index));
+            }
+        }
+        return checkedImages;
     }
 }

@@ -6,11 +6,15 @@ import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -33,17 +37,21 @@ public class MainActivity extends AppCompatActivity {
         if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
             }
-            requestPermissions(new String[]{ Manifest.permission.READ_EXTERNAL_STORAGE}, 123);
+            requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 123);
             return;
         }
 
         mAuth = FirebaseAuth.getInstance();
+        final UserFragment userFragment = new UserFragment();
+        final FavoritesFragment favoritesFragment = new FavoritesFragment();
+        final NavigationFragment navigationFragment = new NavigationFragment();
+        final SearchFragment searchFragment = new SearchFragment();
+        final SettingsFragment settingsFragment = new SettingsFragment();
 
         if (mAuth.getCurrentUser() == null) {
             Intent intent = new Intent(this, SignInActivity.class);
             startActivity(intent);
         } else {
-            UserFragment userFragment = new UserFragment();
             setFragment(userFragment, USER_FRAGMENT);
         }
 
@@ -55,27 +63,22 @@ public class MainActivity extends AppCompatActivity {
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         switch (item.getItemId()) {
                             case R.id.action_user:
-                                UserFragment userFragment = new UserFragment();
                                 setFragment(userFragment, USER_FRAGMENT);
                                 break;
 
                             case R.id.action_favorites:
-                                FavoritesFragment favoritesFragment = new FavoritesFragment();
                                 setFragment(favoritesFragment, FAVORITES_FRAGMENT);
                                 break;
 
                             case R.id.action_navi:
-                                NavigationFragment navigationFragment = new NavigationFragment();
                                 setFragment(navigationFragment, NAVIGATION_FRAGMENT);
                                 break;
 
                             case R.id.action_search:
-                                SearchFragment searchFragment = new SearchFragment();
                                 setFragment(searchFragment, SEARCH_FRAGMENT);
                                 break;
 
                             case R.id.action_settings:
-                                SettingsFragment settingsFragment = new SettingsFragment();
                                 setFragment(settingsFragment, SETTINGS_FRAGMENT);
                                 break;
                         }
@@ -84,8 +87,10 @@ public class MainActivity extends AppCompatActivity {
                 }
         );
     }
+
     private void setFragment(Fragment fragment, String FRAGMENT_TAG) {
-        getSupportFragmentManager().beginTransaction().addToBackStack(null)
-                .replace(R.id.fragment_container, fragment, FRAGMENT_TAG).commit();
+        getSupportFragmentManager().beginTransaction().addToBackStack(FRAGMENT_TAG)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).replace(R.id.fragment_container, fragment, FRAGMENT_TAG)
+                .commit();
     }
 }
