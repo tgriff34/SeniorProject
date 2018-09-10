@@ -3,8 +3,10 @@ package com.example.tristangriffin.projectx;
 import android.app.Activity;
 import android.database.Cursor;
 import android.media.Image;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.design.button.MaterialButton;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -23,6 +25,15 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import java.io.File;
 import java.util.ArrayList;
 
 public class UserFragment extends Fragment implements View.OnClickListener {
@@ -33,6 +44,9 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private TextView _textPhotoAdd;
     private FloatingActionButton _photoAdd;
     private MaterialButton _photoConfirm;
+
+    private FirebaseStorage storage = FirebaseStorage.getInstance();
+    private StorageReference storageReference = storage.getReference();
 
     public UserFragment() {
         // Required empty public constructor
@@ -91,6 +105,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
             case R.id.button_confirmPhoto:
                 getCheckedImages();
+                uploadImages();
                 break;
         }
     }
@@ -166,5 +181,25 @@ public class UserFragment extends Fragment implements View.OnClickListener {
             }
         }
         return checkedImages;
+    }
+
+    private void uploadImages() {
+        for (String image: checkedImages) {
+            Uri file = Uri.fromFile(new File(image));
+            StorageReference fileRef = storageReference.child("images/public/" + file.getLastPathSegment());
+            UploadTask uploadTask = fileRef.putFile(file);
+
+            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    Log.d("Firebase", "uploadSuccess: true");
+                }
+            }). addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e("Firebase", "uploadSuccess: false", e);
+                }
+            });
+        }
     }
 }
