@@ -29,6 +29,9 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+//import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -45,8 +48,13 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private FloatingActionButton _photoAdd;
     private MaterialButton _photoConfirm;
 
+    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseStorage storage = FirebaseStorage.getInstance();
     private StorageReference storageReference = storage.getReference();
+    //private FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    private static final String DEFAULT_PHOTO_VIEW = "default";
+    private static final String LOCAL_PHOTO_VIEW = "local";
 
     public UserFragment() {
         // Required empty public constructor
@@ -93,12 +101,12 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch(view.getId()) {
             case R.id.button_addPhoto:
-                gridView.setAdapter(new ImageAdapter(getActivity()));
+                gridView.setAdapter(new ImageAdapter(getActivity(), LOCAL_PHOTO_VIEW));
                 if (gridView.getAdapter().isEmpty()) {
 
                 } else {
                     _textPhotoAdd.setVisibility(View.GONE);
-                    _photoAdd.setVisibility(View.GONE);
+                    _photoAdd.hide();
                     _photoConfirm.setVisibility(View.VISIBLE);
                 }
                 break;
@@ -113,9 +121,9 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private class ImageAdapter extends BaseAdapter {
         private Activity context;
 
-        public ImageAdapter(Activity mContext) {
+        public ImageAdapter(Activity mContext, String TAG) {
             context = mContext;
-            images = getImages(context);
+            images = getImages(context, TAG);
         }
 
         @Override
@@ -157,17 +165,27 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private ArrayList<String> getImages(Activity activity) {
-        ArrayList<String> allImages = new ArrayList<>();
-        String[] columns = { MediaStore.MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME };
-        Cursor cursor = activity.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                columns, null, null, null);
+    private ArrayList<String> getImages(Activity activity, String TAG) {
 
-        while (cursor.moveToNext()){
-            allImages.add(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA)));
+        ArrayList<String> allImages = new ArrayList<>();
+
+        //When you want to add photos from local hdd
+        if (TAG == LOCAL_PHOTO_VIEW) {
+            String[] columns = {MediaStore.MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
+            Cursor cursor = activity.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    columns, null, null, null);
+
+            while (cursor.moveToNext()) {
+                allImages.add(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA)));
+            }
+
+            Log.d("demo", allImages.toString());
         }
 
-        Log.d("demo", allImages.toString());
+        //When you want to view current photos on cloud (default view)
+        if (TAG == DEFAULT_PHOTO_VIEW) {
+
+        }
 
         return allImages;
     }
@@ -178,15 +196,23 @@ public class UserFragment extends Fragment implements View.OnClickListener {
             if (a.valueAt(i)) {
                 int index = a.keyAt(i);
                 checkedImages.add(images.get(index));
+
             }
         }
         return checkedImages;
     }
 
+
+    //Uploads files to Firebase Storage
     private void uploadImages() {
+        //Get current user
+        mAuth.getCurrentUser();
+
+        //Go through checked images
         for (String image: checkedImages) {
             Uri file = Uri.fromFile(new File(image));
-            StorageReference fileRef = storageReference.child("images/public/" + file.getLastPathSegment());
+            //Create Storage reference to user public images
+            StorageReference fileRef = storageReference.child("images/public/" + mAuth.getUid() + "/" + file.getLastPathSegment());
             UploadTask uploadTask = fileRef.putFile(file);
 
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {

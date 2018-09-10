@@ -9,15 +9,22 @@ import android.view.View;
 import android.widget.EditText;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SignUpActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
+    private FirebaseFirestore db;
     private EditText mEmail;
     private EditText mPassword;
 
@@ -27,6 +34,7 @@ public class SignUpActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
 
         mAuth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
         mEmail = findViewById(R.id.edit_createemail);
         mPassword = findViewById(R.id.edit_createpassword);
 
@@ -50,6 +58,7 @@ public class SignUpActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Log.d("Firebase", "createUserWithEmailAndPassword:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            createNewUserCollection(user);
                             setResult(RESULT_OK, null);
                             finish();
                         } else {
@@ -57,6 +66,20 @@ public class SignUpActivity extends AppCompatActivity {
                             Log.e("Firebase", "createUserWithEmailAndPassword:failure");
                             Log.e("Firebase", "Failed Registration", e);
                         }
+                    }
+                });
+    }
+
+    private void createNewUserCollection(FirebaseUser mUser) {
+        Map<String, Object> newUser = new HashMap<>();
+        newUser.put("id", mUser.getUid());
+        newUser.put("email", mUser.getEmail());
+        db.collection("users")
+                .add(newUser)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        Log.d("Firebase", "addUserToCollectionUsers:success");
                     }
                 });
     }

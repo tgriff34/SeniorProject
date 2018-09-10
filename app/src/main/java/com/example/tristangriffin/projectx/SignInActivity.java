@@ -51,6 +51,7 @@ public class SignInActivity extends AppCompatActivity {
     }
 
     private void signIn(String email, String password) {
+        Log.d("demo", email + " " + password);
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
