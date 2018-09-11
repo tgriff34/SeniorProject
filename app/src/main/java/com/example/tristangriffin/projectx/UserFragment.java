@@ -22,20 +22,17 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class UserFragment extends Fragment implements View.OnClickListener {
 
@@ -77,6 +74,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
         if (images != null && !images.isEmpty()) {
             _textPhotoAdd.setVisibility(View.GONE);
+        } else {
+            getImages(getActivity(), DEFAULT_PHOTO_VIEW);
         }
 
         _photoConfirm.setOnClickListener(this);
@@ -99,7 +98,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.button_addPhoto:
-                gridView.setAdapter(new ImageAdapter(getActivity(), LOCAL_PHOTO_VIEW));
+                getImages(getActivity(), LOCAL_PHOTO_VIEW);
                 if (gridView.getAdapter().isEmpty()) {
 
                 } else {
@@ -118,10 +117,11 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
     private class ImageAdapter extends BaseAdapter {
         private Activity context;
+        private String tag;
 
         public ImageAdapter(Activity mContext, String TAG) {
             context = mContext;
-            images = getImages(context, TAG);
+            this.tag = TAG;
         }
 
         @Override
@@ -163,9 +163,10 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private ArrayList<String> getImages(Activity activity, String TAG) {
+    private void getImages(Activity activity, String TAG) {
 
-        ArrayList<String> allImages = new ArrayList<>();
+        final ArrayList<String> allImages = new ArrayList<>();
+        final String mTAG = TAG;
 
         //When you want to add photos from local hdd
         if (TAG == LOCAL_PHOTO_VIEW) {
@@ -177,15 +178,30 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 allImages.add(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA)));
             }
 
-            Log.d("demo", allImages.toString());
+            Log.d("demo", "Local images: " + allImages.toString());
+
+            updateUI(allImages, mTAG);
         }
 
         //When you want to view current photos on cloud (default view)
         if (TAG == DEFAULT_PHOTO_VIEW) {
-
+            db.collection("users")
+                    .document(mAuth.getCurrentUser().getUid())
+                    .collection("images")
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot document : task.getResult()) {
+                                    allImages.add(document.getString("ref"));
+                                }
+                                Log.d("demo", "Cloud images: " + allImages.toString());
+                                updateUI(allImages, mTAG);
+                            }
+                        }
+                    });
         }
-
-        return allImages;
     }
 
     private ArrayList<String> getCheckedImages() {
@@ -202,60 +218,15 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
     //Uploads files to Firebase Storage
     private void uploadImages() {
-        //Get current user
-        FirebaseUser user = mAuth.getCurrentUser();
-
         //Go through checked images
         for (String image : checkedImages) {
             Uri file = Uri.fromFile(new File(image));
-
             new UploadFilesTask().execute(file);
-
-
-
-            //Create Storage reference to user public images
-            //StorageReference fileRef = storageReference.child("images/public/" + user.getUid() + "/" + file.getLastPathSegment());
-
-            /*
-            UploadTask uploadTask = fileRef.putFile(file);
-
-            //Upload file to storage
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Log.d("Firebase", "uploadSuccess: true");
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.e("Firebase", "uploadSuccess: false", e);
-                }
-            });
-
-            fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                @Override
-                public void onSuccess(Uri uri) {
-                    Map<String, Object> dbImageReference = new HashMap<>();
-                    dbImageReference.put("ref", uri);
-                }
-            });
-
-            db.collection("users")
-                    .document(user.getUid())
-                    .collection("images")
-                    .add(dbImageReference)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            Log.d("Firebase", "dbRef:success");
-                        }
-                    }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.e("Firebase", "dbRef:failure");
-                }
-            });
-            */
         }
+    }
+
+    private void updateUI(ArrayList<String> imageArray, String TAG) {
+        images = imageArray;
+        gridView.setAdapter(new ImageAdapter(getActivity(),TAG));
     }
 }
