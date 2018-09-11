@@ -2,7 +2,6 @@ package com.example.tristangriffin.projectx;
 
 import android.app.Activity;
 import android.database.Cursor;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -17,27 +16,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-//import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UserFragment extends Fragment implements View.OnClickListener {
 
@@ -51,7 +49,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseStorage storage = FirebaseStorage.getInstance();
     private StorageReference storageReference = storage.getReference();
-    //private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private static final String DEFAULT_PHOTO_VIEW = "default";
     private static final String LOCAL_PHOTO_VIEW = "local";
@@ -99,7 +97,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        switch(view.getId()) {
+        switch (view.getId()) {
             case R.id.button_addPhoto:
                 gridView.setAdapter(new ImageAdapter(getActivity(), LOCAL_PHOTO_VIEW));
                 if (gridView.getAdapter().isEmpty()) {
@@ -148,7 +146,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
             if (view == null) {
                 imageView = new CheckableImageView(context);
                 imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                imageView.setLayoutParams(new GridView.LayoutParams(500 , 500));
+                imageView.setLayoutParams(new GridView.LayoutParams(500, 500));
             } else {
                 imageView = (CheckableImageView) view;
             }
@@ -189,14 +187,13 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
         return allImages;
     }
-    
+
     private ArrayList<String> getCheckedImages() {
         SparseBooleanArray a = gridView.getCheckedItemPositions();
         for (int i = 0; i < a.size(); i++) {
             if (a.valueAt(i)) {
                 int index = a.keyAt(i);
                 checkedImages.add(images.get(index));
-
             }
         }
         return checkedImages;
@@ -206,26 +203,59 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     //Uploads files to Firebase Storage
     private void uploadImages() {
         //Get current user
-        mAuth.getCurrentUser();
+        FirebaseUser user = mAuth.getCurrentUser();
 
         //Go through checked images
-        for (String image: checkedImages) {
+        for (String image : checkedImages) {
             Uri file = Uri.fromFile(new File(image));
+
+            new UploadFilesTask().execute(file);
+
+
+
             //Create Storage reference to user public images
-            StorageReference fileRef = storageReference.child("images/public/" + mAuth.getUid() + "/" + file.getLastPathSegment());
+            //StorageReference fileRef = storageReference.child("images/public/" + user.getUid() + "/" + file.getLastPathSegment());
+
+            /*
             UploadTask uploadTask = fileRef.putFile(file);
 
+            //Upload file to storage
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                     Log.d("Firebase", "uploadSuccess: true");
                 }
-            }). addOnFailureListener(new OnFailureListener() {
+            }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     Log.e("Firebase", "uploadSuccess: false", e);
                 }
             });
+
+            fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    Map<String, Object> dbImageReference = new HashMap<>();
+                    dbImageReference.put("ref", uri);
+                }
+            });
+
+            db.collection("users")
+                    .document(user.getUid())
+                    .collection("images")
+                    .add(dbImageReference)
+                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        @Override
+                        public void onSuccess(DocumentReference documentReference) {
+                            Log.d("Firebase", "dbRef:success");
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e("Firebase", "dbRef:failure");
+                }
+            });
+            */
         }
     }
 }

@@ -75,11 +75,12 @@ public class SignUpActivity extends AppCompatActivity {
         newUser.put("id", mUser.getUid());
         newUser.put("email", mUser.getEmail());
         db.collection("users")
-                .add(newUser)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                .document(mUser.getUid())
+                .set(newUser)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d("Firebase", "addUserToCollectionUsers:success");
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Firebase", "addCollectionOnUserCreation:success");
                     }
                 });
     }
