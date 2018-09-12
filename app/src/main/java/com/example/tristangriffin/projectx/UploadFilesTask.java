@@ -28,6 +28,7 @@ public class UploadFilesTask extends AsyncTask<Uri, Void, Void>{
     @Override
     protected Void doInBackground(Uri... uris) {
         final StorageReference fileRef = storageReference.child("images/public/" + user.getUid() + "/" + uris[0].getLastPathSegment());
+        final String TAG = uris[0].getLastPathSegment();
         Log.d("Firebase", fileRef.toString());
         UploadTask uploadTask = fileRef.putFile(uris[0]);
 
@@ -36,7 +37,7 @@ public class UploadFilesTask extends AsyncTask<Uri, Void, Void>{
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Log.d("Firebase", "uploadSuccess: true");
-                addToDatabase(fileRef);
+                addToDatabase(fileRef, TAG);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -47,7 +48,7 @@ public class UploadFilesTask extends AsyncTask<Uri, Void, Void>{
         return null;
     }
 
-    private void addToDatabase(StorageReference ref) {
+    private void addToDatabase(StorageReference ref, final String TAG) {
         ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
@@ -56,16 +57,17 @@ public class UploadFilesTask extends AsyncTask<Uri, Void, Void>{
                 db.collection("users")
                         .document(user.getUid())
                         .collection("images")
-                        .add(dbImageReference)
-                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                        .document(TAG)
+                        .set(dbImageReference)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
-                            public void onSuccess(DocumentReference documentReference) {
+                            public void onSuccess(Void aVoid) {
                                 Log.d("Firebase", "dbRef:success");
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Log.e("Firebase", "dbRef:failure");
+                        Log.e("Firebase", "debRef:failure");
                     }
                 });
             }

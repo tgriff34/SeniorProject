@@ -89,8 +89,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setFragment(Fragment fragment, String FRAGMENT_TAG) {
-        getSupportFragmentManager().beginTransaction().addToBackStack(FRAGMENT_TAG)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE).replace(R.id.fragment_container, fragment, FRAGMENT_TAG)
+        getSupportFragmentManager().beginTransaction()
+                .addToBackStack(FRAGMENT_TAG)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .replace(R.id.fragment_container, fragment, FRAGMENT_TAG)
                 .commit();
     }
 }

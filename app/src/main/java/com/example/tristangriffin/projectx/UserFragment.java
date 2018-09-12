@@ -29,7 +29,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -45,7 +44,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
     private FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseStorage storage = FirebaseStorage.getInstance();
-    private StorageReference storageReference = storage.getReference();
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     private static final String DEFAULT_PHOTO_VIEW = "default";
@@ -56,15 +54,15 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putStringArrayList("list", images);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        //Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_user, container, false);
 
         gridView = (GridView) view.findViewById(R.id.grid_view);
@@ -72,12 +70,21 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         _photoAdd = view.findViewById(R.id.button_addPhoto);
         _textPhotoAdd = view.findViewById(R.id.text_addPhoto);
 
-        if (images != null && !images.isEmpty()) {
-            _textPhotoAdd.setVisibility(View.GONE);
+        //Retrieve old display list when fragment changed
+        if (savedInstanceState != null) {
+            images = savedInstanceState.getStringArrayList("list");
         } else {
             getImages(getActivity(), DEFAULT_PHOTO_VIEW);
         }
 
+        //If there are no images, display message
+        if (images == null) {
+            _textPhotoAdd.setVisibility(View.VISIBLE);
+        } else {
+            _textPhotoAdd.setVisibility(View.GONE);
+        }
+
+        //Button presses
         _photoConfirm.setOnClickListener(this);
         _photoAdd.setOnClickListener(this);
 
@@ -117,11 +124,9 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
     private class ImageAdapter extends BaseAdapter {
         private Activity context;
-        private String tag;
 
-        public ImageAdapter(Activity mContext, String TAG) {
+        public ImageAdapter(Activity mContext) {
             context = mContext;
-            this.tag = TAG;
         }
 
         @Override
@@ -166,7 +171,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private void getImages(Activity activity, String TAG) {
 
         final ArrayList<String> allImages = new ArrayList<>();
-        final String mTAG = TAG;
 
         //When you want to add photos from local hdd
         if (TAG == LOCAL_PHOTO_VIEW) {
@@ -180,7 +184,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
             Log.d("demo", "Local images: " + allImages.toString());
 
-            updateUI(allImages, mTAG);
+            updateUI(allImages);
         }
 
         //When you want to view current photos on cloud (default view)
@@ -197,13 +201,14 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                                     allImages.add(document.getString("ref"));
                                 }
                                 Log.d("demo", "Cloud images: " + allImages.toString());
-                                updateUI(allImages, mTAG);
+                                updateUI(allImages);
                             }
                         }
                     });
         }
     }
 
+    //Retrieve checked images from gridview
     private ArrayList<String> getCheckedImages() {
         SparseBooleanArray a = gridView.getCheckedItemPositions();
         for (int i = 0; i < a.size(); i++) {
@@ -225,8 +230,9 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void updateUI(ArrayList<String> imageArray, String TAG) {
+    //Update UI async
+    private void updateUI(ArrayList<String> imageArray) {
         images = imageArray;
-        gridView.setAdapter(new ImageAdapter(getActivity(),TAG));
+        gridView.setAdapter(new ImageAdapter(getActivity()));
     }
 }
