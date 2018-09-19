@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -42,9 +43,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private FloatingActionButton _photoAdd;
     private MaterialButton _photoConfirm;
 
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private FirebaseStorage storage = FirebaseStorage.getInstance();
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
     private static final String DEFAULT_PHOTO_VIEW = "default";
     private static final String LOCAL_PHOTO_VIEW = "local";
@@ -117,7 +116,12 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
             case R.id.button_confirmPhoto:
                 getCheckedImages();
-                uploadImages();
+                if (checkedImages != null) {
+                    uploadImages();
+                }
+                _photoAdd.show();
+                _photoConfirm.setVisibility(View.GONE);
+                getImages(getActivity(), DEFAULT_PHOTO_VIEW);
                 break;
         }
     }
@@ -189,22 +193,12 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
         //When you want to view current photos on cloud (default view)
         if (TAG == DEFAULT_PHOTO_VIEW) {
-            db.collection("users")
-                    .document(mAuth.getCurrentUser().getUid())
-                    .collection("images")
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    allImages.add(document.getString("ref"));
-                                }
-                                Log.d("demo", "Cloud images: " + allImages.toString());
-                                updateUI(allImages);
-                            }
-                        }
-                    });
+            firebaseCommands.getPhotos(new OnGetDataListener() {
+                @Override
+                public void onSuccess(ArrayList<String> images) {
+                    updateUI(images);
+                }
+            });
         }
     }
 
@@ -226,7 +220,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         //Go through checked images
         for (String image : checkedImages) {
             Uri file = Uri.fromFile(new File(image));
-            new UploadFilesTask().execute(file);
+            firebaseCommands.uploadPhotos(file);
         }
     }
 

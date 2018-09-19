@@ -20,7 +20,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
 
-    private FirebaseAuth mAuth;
+    private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
     private static final String USER_FRAGMENT = "UserFrag";
     private static final String FAVORITES_FRAGMENT = "FavFrag";
@@ -41,14 +41,13 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        mAuth = FirebaseAuth.getInstance();
         final UserFragment userFragment = new UserFragment();
         final FavoritesFragment favoritesFragment = new FavoritesFragment();
         final NavigationFragment navigationFragment = new NavigationFragment();
         final SearchFragment searchFragment = new SearchFragment();
         final SettingsFragment settingsFragment = new SettingsFragment();
 
-        if (mAuth.getCurrentUser() == null) {
+        if (firebaseCommands.user == null) {
             Intent intent = new Intent(this, SignInActivity.class);
             startActivity(intent);
         } else {
