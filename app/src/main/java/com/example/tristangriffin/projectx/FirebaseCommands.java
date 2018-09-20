@@ -97,7 +97,7 @@ public class FirebaseCommands {
                 });
     }
 
-    public void uploadPhotos(Uri uri) {
+    public void uploadPhotos(Uri uri, final String longitude, final String latitude) {
         final StorageReference fileRef = storageReference.child("images/public" + user.getUid() + "/" + uri.getLastPathSegment());
         final String TAG = uri.getLastPathSegment();
 
@@ -107,7 +107,7 @@ public class FirebaseCommands {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Log.d("Firebase", "uploadSuccess:true");
-                addToDatabase(fileRef, TAG);
+                addToDatabase(fileRef, TAG, longitude, latitude);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -117,12 +117,14 @@ public class FirebaseCommands {
         });
     }
 
-    private void addToDatabase(StorageReference ref, final String TAG) {
+    private void addToDatabase(StorageReference ref, final String TAG, final String longitude, final String latitude) {
         ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 Map<String, Object> dbImageReference = new HashMap<>();
                 dbImageReference.put("ref", uri.toString());
+                dbImageReference.put("longitude", longitude);
+                dbImageReference.put("latitude", latitude);
                 db.collection("users")
                         .document(user.getUid())
                         .collection("images")

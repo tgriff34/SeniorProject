@@ -224,8 +224,17 @@ public class UserFragment extends Fragment implements View.OnClickListener {
             Uri file = Uri.fromFile(new File(image));
             //Add Exif Here
             String stringFile = file.getPath();
+            String latitude = null, longitude = null;
+            try {
+                ExifInterface exifInterface = new ExifInterface(stringFile);
+                GeoLocationConverter location = new GeoLocationConverter(exifInterface);
+                latitude = String.valueOf(location.getLatitude());
+                longitude = String.valueOf(location.getLongitude());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             //End of Exif
-            firebaseCommands.uploadPhotos(file);
+            firebaseCommands.uploadPhotos(file, longitude, latitude);
         }
     }
 
