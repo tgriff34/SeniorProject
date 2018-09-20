@@ -48,7 +48,7 @@ public class FirebaseCommands {
 
     }
 
-    public void createUser(String email, String password, Activity activity) {
+    public void createUser(String email, String password, Activity activity, final OnSignUpListener listener) {
         firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -56,7 +56,7 @@ public class FirebaseCommands {
                         if (task.isSuccessful()) {
                             Log.d("Firebase", "createUserWithEmailAndPassword:success");
                             user = firebaseAuth.getCurrentUser();
-                            createNewUserCollection(user);
+                            createNewUserCollection(user, listener);
                         } else {
                             FirebaseAuthException e = (FirebaseAuthException) task.getException();
                             Log.e("Firebase", "createUserWithEmailAndPassword:failure");
@@ -82,7 +82,7 @@ public class FirebaseCommands {
                 });
     }
 
-    private void createNewUserCollection(FirebaseUser user) {
+    private void createNewUserCollection(FirebaseUser user, final OnSignUpListener listener) {
         Map<String, Object> newUser = new HashMap<>();
         newUser.put("id", user.getUid());
         newUser.put("email", user.getEmail());
@@ -93,6 +93,7 @@ public class FirebaseCommands {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d("Firebase", "addCollectionOnUserCreation:success");
+                        listener.onSignUp();
                     }
                 });
     }

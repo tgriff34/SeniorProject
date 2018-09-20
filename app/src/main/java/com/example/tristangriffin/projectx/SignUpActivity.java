@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import com.google.firebase.auth.FirebaseUser;
+
 public class SignUpActivity extends AppCompatActivity {
 
     private EditText mEmail;
@@ -35,10 +37,13 @@ public class SignUpActivity extends AppCompatActivity {
             return;
         }
 
-        firebaseCommands.createUser(email, password, this);
-        setResult(RESULT_OK, null);
-        finish();
-
+        firebaseCommands.createUser(email, password, this, new OnSignUpListener() {
+            @Override
+            public void onSignUp() {
+                setResult(RESULT_OK, null);
+                finish();
+            }
+        });
     }
 
     public boolean validate() {
