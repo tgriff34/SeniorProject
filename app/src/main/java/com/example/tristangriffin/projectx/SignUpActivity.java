@@ -35,7 +35,7 @@ public class SignUpActivity extends AppCompatActivity {
             return;
         }
 
-        firebaseCommands.createUser(email, password);
+        firebaseCommands.createUser(email, password, this);
         setResult(RESULT_OK, null);
         finish();
 

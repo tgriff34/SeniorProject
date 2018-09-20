@@ -1,5 +1,7 @@
 package com.example.tristangriffin.projectx;
 
+import android.app.Activity;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -19,6 +21,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,14 +48,14 @@ public class FirebaseCommands {
 
     }
 
-    public void createUser(String email, String password) {
+    public void createUser(String email, String password, Activity activity) {
         firebaseAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener((Executor) this, new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Log.d("Firebase", "createUserWithEmailAndPassword:success");
-                            FirebaseUser user = firebaseAuth.getCurrentUser();
+                            user = firebaseAuth.getCurrentUser();
                             createNewUserCollection(user);
                         } else {
                             FirebaseAuthException e = (FirebaseAuthException) task.getException();
@@ -63,12 +66,14 @@ public class FirebaseCommands {
                 });
     }
 
-    public void signIn(String email, String password) {
+    public void signIn(String email, String password, Activity activity, final OnSignInListener listener) {
         firebaseAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener((Executor) this, new OnCompleteListener<AuthResult>() {
+                .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            user = firebaseAuth.getCurrentUser();
+                            listener.onSignIn(user);
                             Log.d("demo", "signedInUserWithEmailAndPassword:success");
                         } else {
                             Log.d("demo", "signedInUserWithEmailAndPassword:failure");

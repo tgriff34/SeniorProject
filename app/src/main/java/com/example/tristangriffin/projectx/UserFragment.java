@@ -2,6 +2,7 @@ package com.example.tristangriffin.projectx;
 
 import android.app.Activity;
 import android.database.Cursor;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -32,6 +33,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class UserFragment extends Fragment implements View.OnClickListener {
@@ -220,6 +222,9 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         //Go through checked images
         for (String image : checkedImages) {
             Uri file = Uri.fromFile(new File(image));
+            //Add Exif Here
+            String stringFile = file.getPath();
+            //End of Exif
             firebaseCommands.uploadPhotos(file);
         }
     }

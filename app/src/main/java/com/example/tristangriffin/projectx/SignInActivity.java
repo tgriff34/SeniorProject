@@ -49,15 +49,15 @@ public class SignInActivity extends AppCompatActivity {
         findViewById(R.id.button_signin).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                progressBar.setMessage("Logging In...");
-                progressBar.setIndeterminate(false);
-                progressBar.setCancelable(false);
-                progressBar.show();
-                firebaseCommands.signIn(mEmail.getText().toString(), mPassword.getText().toString());
-                progressBar.dismiss();
-                Intent intent = new Intent(SignInActivity.this, MainActivity.class);
-                startActivity(intent);
-                finish();
+                firebaseCommands.signIn(mEmail.getText().toString(), mPassword.getText().toString(),
+                        SignInActivity.this, new OnSignInListener() {
+                    @Override
+                    public void onSignIn(FirebaseUser user) {
+                        Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                });
             }
         });
     }
