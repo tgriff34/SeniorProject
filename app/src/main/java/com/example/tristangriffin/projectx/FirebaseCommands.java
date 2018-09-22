@@ -38,9 +38,7 @@ public class FirebaseCommands {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     public FirebaseUser user = firebaseAuth.getCurrentUser();
 
-    //private ArrayList<String> allImages;
     private LinkedHashMap<String, String> allImages;
-    OnGetDataListener ml;
 
     public static FirebaseCommands getInstance() {
         return ourInstance;
@@ -174,7 +172,6 @@ public class FirebaseCommands {
     }
 
     public void getPhotos(final OnGetDataListener listener) {
-        //allImages = new ArrayList<>();
         allImages = new LinkedHashMap<>();
         db.collection("users")
                 .document(firebaseAuth.getCurrentUser().getUid())
@@ -185,7 +182,6 @@ public class FirebaseCommands {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                //allImages.add(document.getString("ref"));
                                 allImages.put(document.getId() ,document.getString("ref"));
                             }
                             Log.d("demo", "Cloud images: " + allImages.toString());

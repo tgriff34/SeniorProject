@@ -10,7 +10,6 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,6 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -31,9 +29,7 @@ import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -42,7 +38,6 @@ public class UserFragment extends Fragment {
 
     private ArrayList<String> images = new ArrayList<>();
     private LinkedHashMap<String, String> cloudImages = new LinkedHashMap<>();
-    private ArrayList<String> checkedImages = new ArrayList<>();
     private GridView gridView;
     private String latitude = null, longitude = null, timeCreated = null, dateCreated = null;
     private Uri file;
@@ -56,7 +51,6 @@ public class UserFragment extends Fragment {
 
     public boolean ADDING_IMAGES_FLAG = false;
     public boolean DELETING_IMAGES_FLAG = false;
-    private boolean GET_LOCATION_FLAG = false;
 
     public UserFragment() {
         // Required empty public constructor
@@ -74,7 +68,7 @@ public class UserFragment extends Fragment {
         //Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_user, container, false);
 
-        gridView = (GridView) view.findViewById(R.id.grid_view);
+        gridView = view.findViewById(R.id.grid_view);
 
         //Retrieve old display list when fragment changed
         if (savedInstanceState != null) {
@@ -125,19 +119,22 @@ public class UserFragment extends Fragment {
         private Activity context;
         private String TAG;
 
-        public ImageAdapter(Activity mContext, String mTAG) {
+        private ImageAdapter(Activity mContext, String mTAG) {
             context = mContext;
             TAG = mTAG;
         }
 
         @Override
         public int getCount() {
-            if (TAG == LOCAL_PHOTO_VIEW) {
-                return images.size();
-            } else if (TAG == DEFAULT_PHOTO_VIEW) {
-                return cloudImages.size();
-            } else {
-                return -1;
+            switch (TAG) {
+                case LOCAL_PHOTO_VIEW:
+                    return images.size();
+
+                case DEFAULT_PHOTO_VIEW:
+                    return cloudImages.size();
+
+                default:
+                    return -1;
             }
         }
 
@@ -169,9 +166,9 @@ public class UserFragment extends Fragment {
                 imageView.setChecked(false);
             }
 
-            if (TAG == LOCAL_PHOTO_VIEW) {
+            if (TAG.equals(LOCAL_PHOTO_VIEW)) {
                 Glide.with(context).load(images.get(i)).apply(RequestOptions.centerCropTransform()).into(imageView);
-            } else if (TAG == DEFAULT_PHOTO_VIEW) {
+            } else if (TAG.equals(DEFAULT_PHOTO_VIEW)) {
                 Glide.with(context).load(new ArrayList<>(cloudImages.values()).get(i)).apply(RequestOptions.centerCropTransform()).into(imageView);
             }
 
@@ -182,7 +179,7 @@ public class UserFragment extends Fragment {
     public void getImages(Activity activity, String TAG) {
         final ArrayList<String> allImages = new ArrayList<>();
         //When you want to add photos from local hdd
-        if (TAG == LOCAL_PHOTO_VIEW) {
+        if (TAG.equals(LOCAL_PHOTO_VIEW)) {
             String[] columns = {MediaStore.MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
             Cursor cursor = activity.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                     columns, null, null, null);
@@ -190,16 +187,14 @@ public class UserFragment extends Fragment {
             while (cursor.moveToNext()) {
                 allImages.add(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA)));
             }
-
+            cursor.close();
             Log.d("demo", "Local images: " + allImages.toString());
-
             ADDING_IMAGES_FLAG = true;
-
             updateUI(allImages);
         }
 
         //When you want to view current photos on cloud (default view)
-        if (TAG == DEFAULT_PHOTO_VIEW) {
+        if (TAG.equals(DEFAULT_PHOTO_VIEW)) {
             firebaseCommands.getPhotos(new OnGetDataListener() {
                 @Override
                 public void onSuccess(LinkedHashMap<String, String> images) {
@@ -210,25 +205,11 @@ public class UserFragment extends Fragment {
         }
     }
 
-    //Retrieve checked images from gridview
-    //TODO: Use for deletion maybe...
-    private ArrayList<String> getCheckedImages() {
-        SparseBooleanArray a = gridView.getCheckedItemPositions();
-        for (int i = 0; i < a.size(); i++) {
-            if (a.valueAt(i)) {
-                int index = a.keyAt(i);
-                checkedImages.add(images.get(index));
-            }
-        }
-        return checkedImages;
-    }
-
-
     //Uploads files to Firebase Storage
     private void uploadImage(String image) {
         file = Uri.fromFile(new File(image));
 
-        GET_LOCATION_FLAG = false;
+        boolean GET_LOCATION_FLAG = false;
 
         //Add Exif Here
         String stringFile = file.getPath();
