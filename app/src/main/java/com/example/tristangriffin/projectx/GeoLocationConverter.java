@@ -26,7 +26,6 @@ public class GeoLocationConverter {
                 longitude = 0 - convertToDegree(LONGITUDE);
             }
         }
-
     }
 
     private float convertToDegree(String stringToConvert) {
@@ -39,7 +38,7 @@ public class GeoLocationConverter {
         Double _degreeResult = _degreeZero / _degreeOne;
 
         String[] minutes = split[1].split("/", 2);
-        Double _minuteZero= Double.valueOf(minutes[0]);
+        Double _minuteZero = Double.valueOf(minutes[0]);
         Double _minuteOne = Double.valueOf(minutes[1]);
         Double _minuteResult= _minuteZero / _minuteOne;
 

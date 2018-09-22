@@ -1,9 +1,11 @@
 package com.example.tristangriffin.projectx;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.database.Cursor;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -24,6 +26,11 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,6 +42,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import static android.app.Activity.RESULT_CANCELED;
+import static android.app.Activity.RESULT_OK;
 
 public class UserFragment extends Fragment implements View.OnClickListener {
 
@@ -49,6 +59,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
     private static final String DEFAULT_PHOTO_VIEW = "default";
     private static final String LOCAL_PHOTO_VIEW = "local";
+
+    private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 353;
 
     public UserFragment() {
         // Required empty public constructor
@@ -233,6 +245,20 @@ public class UserFragment extends Fragment implements View.OnClickListener {
                 latitude = String.valueOf(location.getLatitude());
                 longitude = String.valueOf(location.getLongitude());
 
+                if (latitude.equals("0.0") && longitude.equals("0.0")) {
+                    //Open up fragment to type location (Google Place Autocomplete)
+                    try {
+                        Intent intent =
+                                new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
+                                        .build(getActivity());
+                        startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+                    } catch (GooglePlayServicesNotAvailableException e) {
+                        e.printStackTrace();
+                    } catch (GooglePlayServicesRepairableException e) {
+                        e.printStackTrace();
+                    }
+                }
+
                 //Time Created
                 timeCreated = exifInterface.getAttribute(ExifInterface.TAG_GPS_TIMESTAMP);
                 dateCreated = exifInterface.getAttribute(ExifInterface.TAG_GPS_DATESTAMP);
@@ -248,5 +274,20 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     private void updateUI(ArrayList<String> imageArray) {
         images = imageArray;
         gridView.setAdapter(new ImageAdapter(getActivity()));
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
+                Place place = PlaceAutocomplete.getPlace(getActivity(), data);
+                Log.d("PLACES", place.getLatLng().toString());
+            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                Log.d("PLACES", "Something went wrong....");
+            } else if (resultCode == RESULT_CANCELED) {
+                Log.d("PLACES", "User cancelled place picker.");
+            }
+        }
+        //super.onActivityResult(requestCode, resultCode, data);
     }
 }
