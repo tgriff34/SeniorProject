@@ -41,13 +41,6 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
             }
         });
 
-        view.findViewById(R.id.action_delete_photos).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                userFragment.DELETING_IMAGES_FLAG = false;
-            }
-        });
-
         view.findViewById(R.id.action_cancel_bottom_sheet).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -5,7 +5,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public interface OnGetDataListener {
-    void onSuccess(ArrayList<String> images);
+    void onSuccess(LinkedHashMap<String, String> images);
 }

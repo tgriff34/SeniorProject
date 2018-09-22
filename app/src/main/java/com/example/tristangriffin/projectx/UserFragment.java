@@ -31,6 +31,9 @@ import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -38,6 +41,7 @@ import static android.app.Activity.RESULT_OK;
 public class UserFragment extends Fragment {
 
     private ArrayList<String> images = new ArrayList<>();
+    private LinkedHashMap<String, String> cloudImages = new LinkedHashMap<>();
     private ArrayList<String> checkedImages = new ArrayList<>();
     private GridView gridView;
     private String latitude = null, longitude = null, timeCreated = null, dateCreated = null;
@@ -102,19 +106,39 @@ public class UserFragment extends Fragment {
             }
         });
 
+        gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String value = new ArrayList<>(cloudImages.keySet()).get(i);
+                Log.d("demo", value);
+                BottomSheetUserImageFragment bottomSheetUserImageFragment = new BottomSheetUserImageFragment();
+                bottomSheetUserImageFragment.setTAG(value);
+                bottomSheetUserImageFragment.show(getFragmentManager(), bottomSheetUserImageFragment.getTag());
+                return false;
+            }
+        });
+
         return view;
     }
 
     private class ImageAdapter extends BaseAdapter {
         private Activity context;
+        private String TAG;
 
-        public ImageAdapter(Activity mContext) {
+        public ImageAdapter(Activity mContext, String mTAG) {
             context = mContext;
+            TAG = mTAG;
         }
 
         @Override
         public int getCount() {
-            return images.size();
+            if (TAG == LOCAL_PHOTO_VIEW) {
+                return images.size();
+            } else if (TAG == DEFAULT_PHOTO_VIEW) {
+                return cloudImages.size();
+            } else {
+                return -1;
+            }
         }
 
         @Override
@@ -145,7 +169,11 @@ public class UserFragment extends Fragment {
                 imageView.setChecked(false);
             }
 
-            Glide.with(context).load(images.get(i)).apply(RequestOptions.centerCropTransform()).into(imageView);
+            if (TAG == LOCAL_PHOTO_VIEW) {
+                Glide.with(context).load(images.get(i)).apply(RequestOptions.centerCropTransform()).into(imageView);
+            } else if (TAG == DEFAULT_PHOTO_VIEW) {
+                Glide.with(context).load(new ArrayList<>(cloudImages.values()).get(i)).apply(RequestOptions.centerCropTransform()).into(imageView);
+            }
 
             return imageView;
         }
@@ -174,7 +202,7 @@ public class UserFragment extends Fragment {
         if (TAG == DEFAULT_PHOTO_VIEW) {
             firebaseCommands.getPhotos(new OnGetDataListener() {
                 @Override
-                public void onSuccess(ArrayList<String> images) {
+                public void onSuccess(LinkedHashMap<String, String> images) {
                     updateUI(images);
                 }
             });
@@ -245,7 +273,13 @@ public class UserFragment extends Fragment {
     //Update UI async
     private void updateUI(ArrayList<String> imageArray) {
         images = imageArray;
-        gridView.setAdapter(new ImageAdapter(getActivity()));
+        gridView.setAdapter(new ImageAdapter(getActivity(), LOCAL_PHOTO_VIEW));
+    }
+
+    //Update UI async
+    private void updateUI(LinkedHashMap<String, String> imageArray) {
+        cloudImages = imageArray;
+        gridView.setAdapter(new ImageAdapter(getActivity(), DEFAULT_PHOTO_VIEW));
     }
 
     @Override

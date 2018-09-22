@@ -24,6 +24,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
 
@@ -37,7 +38,8 @@ public class FirebaseCommands {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     public FirebaseUser user = firebaseAuth.getCurrentUser();
 
-    private ArrayList<String> allImages;
+    //private ArrayList<String> allImages;
+    private LinkedHashMap<String, String> allImages;
     OnGetDataListener ml;
 
     public static FirebaseCommands getInstance() {
@@ -150,7 +152,7 @@ public class FirebaseCommands {
         });
     }
 
-    private void deleteFromDatabase(String TAG) {
+    public void deleteFromDatabase(final String TAG) {
         db.collection("users")
                 .document(user.getUid())
                 .collection("images")
@@ -160,6 +162,7 @@ public class FirebaseCommands {
                     @Override
                     public void onSuccess(Void aVoid) {
                         Log.d("Firebase", "deleteFromDatabase:success");
+                        Log.d("Firebase", TAG);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -171,7 +174,8 @@ public class FirebaseCommands {
     }
 
     public void getPhotos(final OnGetDataListener listener) {
-        allImages = new ArrayList<>();
+        //allImages = new ArrayList<>();
+        allImages = new LinkedHashMap<>();
         db.collection("users")
                 .document(firebaseAuth.getCurrentUser().getUid())
                 .collection("images")
@@ -181,7 +185,8 @@ public class FirebaseCommands {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                allImages.add(document.getString("ref"));
+                                //allImages.add(document.getString("ref"));
+                                allImages.put(document.getId() ,document.getString("ref"));
                             }
                             Log.d("demo", "Cloud images: " + allImages.toString());
                             listener.onSuccess(allImages);
