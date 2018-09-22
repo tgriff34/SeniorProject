@@ -31,11 +31,26 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.bottom_sheet_layout, container, false);
 
+        final UserFragment userFragment = (UserFragment) getFragmentManager().findFragmentByTag(USER_FRAGMENT);
+
         view.findViewById(R.id.action_add_photos).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                UserFragment userFragment = (UserFragment) getFragmentManager().findFragmentByTag(USER_FRAGMENT);
                 userFragment.getImages(getActivity(), userFragment.LOCAL_PHOTO_VIEW);
+                dismiss();
+            }
+        });
+
+        view.findViewById(R.id.action_delete_photos).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                userFragment.DELETING_IMAGES_FLAG = false;
+            }
+        });
+
+        view.findViewById(R.id.action_cancel_bottom_sheet).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 dismiss();
             }
         });

@@ -40,7 +40,6 @@ public class UserFragment extends Fragment {
     private ArrayList<String> images = new ArrayList<>();
     private ArrayList<String> checkedImages = new ArrayList<>();
     private GridView gridView;
-    private TextView _textPhotoAdd;
     private String latitude = null, longitude = null, timeCreated = null, dateCreated = null;
     private Uri file;
 
@@ -50,6 +49,10 @@ public class UserFragment extends Fragment {
     public static final String LOCAL_PHOTO_VIEW = "local";
 
     private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 353;
+
+    public boolean ADDING_IMAGES_FLAG = false;
+    public boolean DELETING_IMAGES_FLAG = false;
+    private boolean GET_LOCATION_FLAG = false;
 
     public UserFragment() {
         // Required empty public constructor
@@ -68,20 +71,12 @@ public class UserFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_user, container, false);
 
         gridView = (GridView) view.findViewById(R.id.grid_view);
-        _textPhotoAdd = view.findViewById(R.id.text_addPhoto);
 
         //Retrieve old display list when fragment changed
         if (savedInstanceState != null) {
             images = savedInstanceState.getStringArrayList("list");
         } else {
             getImages(getActivity(), DEFAULT_PHOTO_VIEW);
-        }
-
-        //If there are no images, display message
-        if (images == null) {
-            _textPhotoAdd.setVisibility(View.VISIBLE);
-        } else {
-            _textPhotoAdd.setVisibility(View.GONE);
         }
 
        /**
@@ -94,9 +89,15 @@ public class UserFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 ImageAdapter adapter = (ImageAdapter) gridView.getAdapter();
-                if (images != null && !images.isEmpty()) {
-                    adapter.notifyDataSetChanged();
-                    uploadImage(images.get(i));
+                if (ADDING_IMAGES_FLAG) {
+                    if (images != null && !images.isEmpty()) {
+                        adapter.notifyDataSetChanged();
+                        uploadImage(images.get(i));
+                    }
+                } else if (DELETING_IMAGES_FLAG) {
+                    if (images != null && !images.isEmpty()) {
+                        adapter.notifyDataSetChanged();
+                    }
                 }
             }
         });
@@ -164,6 +165,8 @@ public class UserFragment extends Fragment {
 
             Log.d("demo", "Local images: " + allImages.toString());
 
+            ADDING_IMAGES_FLAG = true;
+
             updateUI(allImages);
         }
 
@@ -175,6 +178,7 @@ public class UserFragment extends Fragment {
                     updateUI(images);
                 }
             });
+            ADDING_IMAGES_FLAG = false;
         }
     }
 
@@ -196,7 +200,7 @@ public class UserFragment extends Fragment {
     private void uploadImage(String image) {
         file = Uri.fromFile(new File(image));
 
-        boolean GET_LOCATION_FLAG = false;
+        GET_LOCATION_FLAG = false;
 
         //Add Exif Here
         String stringFile = file.getPath();

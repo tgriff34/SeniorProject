@@ -150,6 +150,26 @@ public class FirebaseCommands {
         });
     }
 
+    private void deleteFromDatabase(String TAG) {
+        db.collection("users")
+                .document(user.getUid())
+                .collection("images")
+                .document(TAG)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Firebase", "deleteFromDatabase:success");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("Firebase", "deleteFromDatabase:failure");
+                    }
+                });
+    }
+
     public void getPhotos(final OnGetDataListener listener) {
         allImages = new ArrayList<>();
         db.collection("users")
