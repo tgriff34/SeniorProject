@@ -23,7 +23,7 @@
         <activity android:name=".SignUpActivity"></activity>
 
         <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBn-A7r4AacXJkndXbhckMGEmVTHjHyYvU"
+            android:value="AIzaSyCHZBvU4NvjuK0U945h4LVdTirqnTp4xrk"
             />
     </application>
 

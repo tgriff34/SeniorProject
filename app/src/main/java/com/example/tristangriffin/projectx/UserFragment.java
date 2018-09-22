@@ -5,12 +5,9 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.media.ExifInterface;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.design.button.MaterialButton;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -21,8 +18,8 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -30,14 +27,6 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.io.File;
 import java.io.IOException;
@@ -46,19 +35,19 @@ import java.util.ArrayList;
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
 
-public class UserFragment extends Fragment implements View.OnClickListener {
+public class UserFragment extends Fragment {
 
     private ArrayList<String> images = new ArrayList<>();
     private ArrayList<String> checkedImages = new ArrayList<>();
     private GridView gridView;
     private TextView _textPhotoAdd;
-    private FloatingActionButton _photoAdd;
-    private MaterialButton _photoConfirm;
+    private String latitude = null, longitude = null, timeCreated = null, dateCreated = null;
+    private Uri file;
 
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
     private static final String DEFAULT_PHOTO_VIEW = "default";
-    private static final String LOCAL_PHOTO_VIEW = "local";
+    public static final String LOCAL_PHOTO_VIEW = "local";
 
     private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 353;
 
@@ -79,8 +68,6 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         View view = inflater.inflate(R.layout.fragment_user, container, false);
 
         gridView = (GridView) view.findViewById(R.id.grid_view);
-        _photoConfirm = view.findViewById(R.id.button_confirmPhoto);
-        _photoAdd = view.findViewById(R.id.button_addPhoto);
         _textPhotoAdd = view.findViewById(R.id.text_addPhoto);
 
         //Retrieve old display list when fragment changed
@@ -97,47 +84,24 @@ public class UserFragment extends Fragment implements View.OnClickListener {
             _textPhotoAdd.setVisibility(View.GONE);
         }
 
-        //Button presses
-        _photoConfirm.setOnClickListener(this);
-        _photoAdd.setOnClickListener(this);
-
+       /**
+        *   TODO: Set flag
+        *   Setup some sort of flag for the listener to differentiate between adding,
+        *   deleting, etc...
+        *   Right now whenever you click it uploads
+        */
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 ImageAdapter adapter = (ImageAdapter) gridView.getAdapter();
                 if (images != null && !images.isEmpty()) {
                     adapter.notifyDataSetChanged();
+                    uploadImage(images.get(i));
                 }
             }
         });
 
         return view;
-    }
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.button_addPhoto:
-                getImages(getActivity(), LOCAL_PHOTO_VIEW);
-                if (gridView.getAdapter().isEmpty()) {
-
-                } else {
-                    _textPhotoAdd.setVisibility(View.GONE);
-                    _photoAdd.hide();
-                    _photoConfirm.setVisibility(View.VISIBLE);
-                }
-                break;
-
-            case R.id.button_confirmPhoto:
-                getCheckedImages();
-                if (checkedImages != null) {
-                    uploadImages();
-                }
-                _photoAdd.show();
-                _photoConfirm.setVisibility(View.GONE);
-                getImages(getActivity(), DEFAULT_PHOTO_VIEW);
-                break;
-        }
     }
 
     private class ImageAdapter extends BaseAdapter {
@@ -165,7 +129,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         @Override
         public View getView(int i, View view, ViewGroup viewGroup) {
             CheckableImageView imageView;
-
+            //TODO: Possibly make it more columns / smaller images
             if (view == null) {
                 imageView = new CheckableImageView(context);
                 imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
@@ -186,10 +150,8 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         }
     }
 
-    private void getImages(Activity activity, String TAG) {
-
+    public void getImages(Activity activity, String TAG) {
         final ArrayList<String> allImages = new ArrayList<>();
-
         //When you want to add photos from local hdd
         if (TAG == LOCAL_PHOTO_VIEW) {
             String[] columns = {MediaStore.MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
@@ -217,6 +179,7 @@ public class UserFragment extends Fragment implements View.OnClickListener {
     }
 
     //Retrieve checked images from gridview
+    //TODO: Use for deletion maybe...
     private ArrayList<String> getCheckedImages() {
         SparseBooleanArray a = gridView.getCheckedItemPositions();
         for (int i = 0; i < a.size(); i++) {
@@ -230,42 +193,47 @@ public class UserFragment extends Fragment implements View.OnClickListener {
 
 
     //Uploads files to Firebase Storage
-    private void uploadImages() {
-        //Go through checked images
-        for (String image : checkedImages) {
-            Uri file = Uri.fromFile(new File(image));
-            //Add Exif Here
-            String stringFile = file.getPath();
-            String latitude = null, longitude = null, timeCreated = null, dateCreated = null;
-            try {
-                ExifInterface exifInterface = new ExifInterface(stringFile);
+    private void uploadImage(String image) {
+        file = Uri.fromFile(new File(image));
 
-                //Location
-                GeoLocationConverter location = new GeoLocationConverter(exifInterface);
-                latitude = String.valueOf(location.getLatitude());
-                longitude = String.valueOf(location.getLongitude());
+        boolean GET_LOCATION_FLAG = false;
 
-                if (latitude.equals("0.0") && longitude.equals("0.0")) {
-                    //Open up fragment to type location (Google Place Autocomplete)
-                    try {
-                        Intent intent =
-                                new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
-                                        .build(getActivity());
-                        startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
-                    } catch (GooglePlayServicesNotAvailableException e) {
-                        e.printStackTrace();
-                    } catch (GooglePlayServicesRepairableException e) {
-                        e.printStackTrace();
-                    }
+        //Add Exif Here
+        String stringFile = file.getPath();
+        try {
+            ExifInterface exifInterface = new ExifInterface(stringFile);
+
+            //Location
+            GeoLocationConverter location = new GeoLocationConverter(exifInterface);
+            latitude = String.valueOf(location.getLatitude());
+            longitude = String.valueOf(location.getLongitude());
+
+            if (latitude.equals("0.0") && longitude.equals("0.0")) {
+                GET_LOCATION_FLAG = true;
+                //Open up fragment to type location (Google Place Autocomplete)
+                try {
+                    Intent intent =
+                            new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+                                    .build(getActivity());
+
+                    startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    e.printStackTrace();
+                } catch (GooglePlayServicesRepairableException e) {
+                    e.printStackTrace();
                 }
-
-                //Time Created
-                timeCreated = exifInterface.getAttribute(ExifInterface.TAG_GPS_TIMESTAMP);
-                dateCreated = exifInterface.getAttribute(ExifInterface.TAG_GPS_DATESTAMP);
-            } catch (IOException e) {
-                e.printStackTrace();
             }
-            //End of Exif
+
+            //Time Created
+            timeCreated = exifInterface.getAttribute(ExifInterface.TAG_GPS_TIMESTAMP);
+            dateCreated = exifInterface.getAttribute(ExifInterface.TAG_GPS_DATESTAMP);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //End of Exif
+        if (!GET_LOCATION_FLAG) {
+            Toast.makeText(getActivity(), "Success", Toast.LENGTH_SHORT).show();
             firebaseCommands.uploadPhotos(file, longitude, latitude, timeCreated, dateCreated);
         }
     }
@@ -281,7 +249,10 @@ public class UserFragment extends Fragment implements View.OnClickListener {
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(getActivity(), data);
-                Log.d("PLACES", place.getLatLng().toString());
+                latitude = String.valueOf(place.getLatLng().latitude);
+                longitude = String.valueOf(place.getLatLng().longitude);
+                firebaseCommands.uploadPhotos(file, longitude, latitude, timeCreated, dateCreated);
+                Log.d("demo", place.getLatLng().toString());
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Log.d("PLACES", "Something went wrong....");
             } else if (resultCode == RESULT_CANCELED) {
