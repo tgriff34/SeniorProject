@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -14,6 +15,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -39,6 +41,7 @@ public class FirebaseCommands {
     public FirebaseUser user = firebaseAuth.getCurrentUser();
 
     private LinkedHashMap<String, String> allImages;
+    private static final String DEFAULT_ALL_IMAGE_COLLECTION = "images";
 
     public static FirebaseCommands getInstance() {
         return ourInstance;
@@ -109,7 +112,7 @@ public class FirebaseCommands {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Log.d("Firebase", "uploadSuccess:true");
-                addToDatabase(fileRef, TAG, longitude, latitude, timeCreated, dateCreated);
+                addToDatabase(fileRef, null, DEFAULT_ALL_IMAGE_COLLECTION, TAG, longitude, latitude, timeCreated, dateCreated);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -119,35 +122,68 @@ public class FirebaseCommands {
         });
     }
 
-    private void addToDatabase(StorageReference ref, final String TAG, final String longitude,
-                               final String latitude, final String timeCreated, final String dateCreated) {
-        ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                Map<String, Object> dbImageReference = new HashMap<>();
-                dbImageReference.put("ref", uri.toString());
-                dbImageReference.put("longitude", longitude);
-                dbImageReference.put("latitude", latitude);
-                dbImageReference.put("time", timeCreated);
-                dbImageReference.put("date", dateCreated);
-                db.collection("users")
-                        .document(user.getUid())
-                        .collection("images")
-                        .document(TAG)
-                        .set(dbImageReference)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Log.d("Firebase", "dbRef:success");
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e("Firebase", "debRef:failure");
-                    }
-                });
-            }
-        });
+    private void addToDatabase(@Nullable StorageReference ref, @Nullable final String URI, final String collection,
+                               final String TAG, final String longitude, final String latitude,
+                               final String timeCreated, final String dateCreated) {
+
+        final Map<String, Object> dbImageReference = new HashMap<>();
+
+        if (URI == null) {
+
+            //First time adding to database
+
+            ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    dbImageReference.put("ref", uri.toString());
+                    dbImageReference.put("longitude", longitude);
+                    dbImageReference.put("latitude", latitude);
+                    dbImageReference.put("time", timeCreated);
+                    dbImageReference.put("date", dateCreated);
+                    db.collection("users")
+                            .document(user.getUid())
+                            .collection(collection)
+                            .document(TAG)
+                            .set(dbImageReference)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Log.d("Firebase", "dbRef:success");
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.e("Firebase", "debRef:failure");
+                        }
+                    });
+                }
+            });
+        } else {
+
+            //Adding photo from all photos to own collection
+
+            dbImageReference.put("ref", URI);
+            dbImageReference.put("longitude", longitude);
+            dbImageReference.put("latitude", latitude);
+            dbImageReference.put("time", timeCreated);
+            dbImageReference.put("date", dateCreated);
+            db.collection("users")
+                    .document(user.getUid())
+                    .collection(collection)
+                    .document(TAG)
+                    .set(dbImageReference)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d("Firebase", "dbRef:success");
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.e("Firebase", "debRef:failure");
+                }
+            });
+        }
     }
 
     public void deleteFromDatabase(final String TAG) {
@@ -171,6 +207,36 @@ public class FirebaseCommands {
                 });
     }
 
+    public void addPhotoToCollection(final String TAG) {
+        db.collection("users")
+                .document(user.getUid())
+                .collection("images")
+                .document(TAG)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot documentSnapshot = task.getResult();
+                            if (documentSnapshot.exists() && documentSnapshot != null) {
+                                Log.d("Firebase", documentSnapshot.toString());
+                                String uri = String.valueOf(documentSnapshot.get("ref"));
+                                String date = String.valueOf(documentSnapshot.get("date"));
+                                String latitude = String.valueOf(documentSnapshot.get("latitude"));
+                                String longitude = String.valueOf(documentSnapshot.get("longitude"));
+                                String time = String.valueOf(documentSnapshot.get("time"));
+
+                                //TODO: Add option for user input
+                                /**
+                                 * TEST is test collection before user input is added
+                                 */
+                                addToDatabase(null, uri, "TEST", TAG, longitude, latitude, time, date);
+                            }
+                        }
+                    }
+                });
+    }
+
     public void getPhotos(final OnGetDataListener listener) {
         allImages = new LinkedHashMap<>();
         db.collection("users")
@@ -182,7 +248,7 @@ public class FirebaseCommands {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                allImages.put(document.getId() ,document.getString("ref"));
+                                allImages.put(document.getId(), document.getString("ref"));
                             }
                             Log.d("demo", "Cloud images: " + allImages.toString());
                             listener.onSuccess(allImages);

@@ -9,14 +9,17 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -44,7 +47,7 @@ public class UserFragment extends Fragment {
 
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
-    private static final String DEFAULT_PHOTO_VIEW = "default";
+    public static final String DEFAULT_PHOTO_VIEW = "default";
     public static final String LOCAL_PHOTO_VIEW = "local";
 
     private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 353;
@@ -77,16 +80,17 @@ public class UserFragment extends Fragment {
             getImages(getActivity(), DEFAULT_PHOTO_VIEW);
         }
 
-       /**
-        *   TODO: Set flag
-        *   Setup some sort of flag for the listener to differentiate between adding,
-        *   deleting, etc...
-        *   Right now whenever you click it uploads
-        */
+        /**
+         *   TODO: Set flag
+         *   Setup some sort of flag for the listener to differentiate between adding,
+         *   deleting, etc...
+         *   Right now whenever you click it uploads
+         */
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                ImageAdapter adapter = (ImageAdapter) gridView.getAdapter();
+                //ImageAdapter adapter = (ImageAdapter) gridView.getAdapter();
+                GridViewImageAdapter adapter = (GridViewImageAdapter) gridView.getAdapter();
                 if (ADDING_IMAGES_FLAG) {
                     if (images != null && !images.isEmpty()) {
                         adapter.notifyDataSetChanged();
@@ -113,67 +117,6 @@ public class UserFragment extends Fragment {
         });
 
         return view;
-    }
-
-    private class ImageAdapter extends BaseAdapter {
-        private Activity context;
-        private String TAG;
-
-        private ImageAdapter(Activity mContext, String mTAG) {
-            context = mContext;
-            TAG = mTAG;
-        }
-
-        @Override
-        public int getCount() {
-            switch (TAG) {
-                case LOCAL_PHOTO_VIEW:
-                    return images.size();
-
-                case DEFAULT_PHOTO_VIEW:
-                    return cloudImages.size();
-
-                default:
-                    return -1;
-            }
-        }
-
-        @Override
-        public Object getItem(int i) {
-            return i;
-        }
-
-        @Override
-        public long getItemId(int i) {
-            return i;
-        }
-
-        @Override
-        public View getView(int i, View view, ViewGroup viewGroup) {
-            CheckableImageView imageView;
-            //TODO: Possibly make it more columns / smaller images
-            if (view == null) {
-                imageView = new CheckableImageView(context);
-                imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-                imageView.setLayoutParams(new GridView.LayoutParams(500, 500));
-            } else {
-                imageView = (CheckableImageView) view;
-            }
-
-            if (gridView.isItemChecked(i)) {
-                imageView.setChecked(true);
-            } else {
-                imageView.setChecked(false);
-            }
-
-            if (TAG.equals(LOCAL_PHOTO_VIEW)) {
-                Glide.with(context).load(images.get(i)).apply(RequestOptions.centerCropTransform()).into(imageView);
-            } else if (TAG.equals(DEFAULT_PHOTO_VIEW)) {
-                Glide.with(context).load(new ArrayList<>(cloudImages.values()).get(i)).apply(RequestOptions.centerCropTransform()).into(imageView);
-            }
-
-            return imageView;
-        }
     }
 
     public void getImages(Activity activity, String TAG) {
@@ -254,13 +197,17 @@ public class UserFragment extends Fragment {
     //Update UI async
     private void updateUI(ArrayList<String> imageArray) {
         images = imageArray;
-        gridView.setAdapter(new ImageAdapter(getActivity(), LOCAL_PHOTO_VIEW));
+        //gridView.setAdapter(new ImageAdapter(getActivity(), LOCAL_PHOTO_VIEW));
+        gridView.setAdapter(new GridViewImageAdapter(getActivity(), LOCAL_PHOTO_VIEW,
+                gridView, images));
     }
 
     //Update UI async
     private void updateUI(LinkedHashMap<String, String> imageArray) {
         cloudImages = imageArray;
-        gridView.setAdapter(new ImageAdapter(getActivity(), DEFAULT_PHOTO_VIEW));
+        //gridView.setAdapter(new ImageAdapter(getActivity(), DEFAULT_PHOTO_VIEW));
+        gridView.setAdapter(new GridViewImageAdapter(getActivity(), DEFAULT_PHOTO_VIEW,
+                gridView, cloudImages));
     }
 
     @Override

@@ -30,6 +30,15 @@ public class BottomSheetUserImageFragment extends BottomSheetDialogFragment{
 
         UserFragment userFragment = (UserFragment) getFragmentManager().findFragmentByTag(USER_FRAGMENT);
 
+        view.findViewById(R.id.action_add_to_collection_photos).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                firebaseCommands.addPhotoToCollection(TAG);
+                dismiss();
+            }
+        });
+
         view.findViewById(R.id.action_delete_photos).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

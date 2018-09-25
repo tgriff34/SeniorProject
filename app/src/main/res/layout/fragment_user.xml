@@ -30,7 +30,6 @@
         android:padding="12dp"
         android:stretchMode="columnWidth"
         >
-
     </GridView>
 
 
