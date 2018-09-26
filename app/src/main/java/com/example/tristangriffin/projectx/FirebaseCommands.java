@@ -103,7 +103,7 @@ public class FirebaseCommands {
 
     public void uploadPhotos(Uri uri, final String longitude, final String latitude,
                              final String timeCreated, final String dateCreated) {
-        final StorageReference fileRef = storageReference.child("images/public" + user.getUid() + "/" + uri.getLastPathSegment());
+        final StorageReference fileRef = storageReference.child("images/public/" + user.getUid() + "/" + uri.getLastPathSegment());
         final String TAG = uri.getLastPathSegment();
 
         UploadTask uploadTask = fileRef.putFile(uri);
