@@ -4,31 +4,31 @@
 
     <item
         android:id="@+id/action_user"
-        android:icon="@drawable/baseline_face_black_18dp"
+        android:icon="@drawable/baseline_class_black_24dp"
         android:title="@string/text_user"
         app:showAsAction="always|withText" />
 
     <item
         android:id="@+id/action_favorites"
-        android:icon="@drawable/baseline_favorite_black_18dp"
+        android:icon="@drawable/baseline_favorite_black_24dp"
         android:title="@string/text_favorites"
         app:showAsAction="always|withText" />
 
     <item
         android:id="@+id/action_navi"
-        android:icon="@drawable/baseline_explore_black_18dp"
+        android:icon="@drawable/baseline_explore_black_24dp"
         android:title="@string/text_navigation"
         app:showAsAction="always|withText" />
 
     <item
         android:id="@+id/action_search"
-        android:icon="@drawable/baseline_search_black_18dp"
+        android:icon="@drawable/baseline_search_black_24dp"
         android:title="@string/text_search"
         app:showAsAction="always|withText" />
 
     <item
         android:id="@+id/action_settings"
-        android:icon="@drawable/baseline_settings_black_18dp"
+        android:icon="@drawable/baseline_settings_black_24dp"
         android:title="@string/text_settings"
         app:showAsAction="always|withText" />
 
