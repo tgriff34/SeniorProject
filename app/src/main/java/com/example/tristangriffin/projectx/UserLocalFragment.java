@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -38,7 +39,6 @@ import static android.app.Activity.RESULT_OK;
 public class UserLocalFragment extends Fragment {
 
     private ArrayList<String> images = new ArrayList<>();
-
     private GridView gridView;
     private String latitude = null, longitude = null, timeCreated = null, dateCreated = null;
     private Uri file;
@@ -64,7 +64,6 @@ public class UserLocalFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_user_local, container, false);
 
         gridView = view.findViewById(R.id.grid_local_view);
-
         getImages(getActivity());
 
         setHasOptionsMenu(true);

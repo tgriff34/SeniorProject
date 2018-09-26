@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -69,7 +70,7 @@ public class FirebaseCommands {
                 });
     }
 
-    public void signIn(String email, String password, Activity activity, final OnSignInListener listener) {
+    public void signIn(String email, String password, final Activity activity, final OnSignInListener listener) {
         firebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -79,6 +80,7 @@ public class FirebaseCommands {
                             listener.onSignIn(user);
                             Log.d("demo", "signedInUserWithEmailAndPassword:success");
                         } else {
+                            listener.failedSignIn();
                             Log.d("demo", "signedInUserWithEmailAndPassword:failure");
                         }
                     }
