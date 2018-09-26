@@ -3,6 +3,8 @@ package com.example.tristangriffin.projectx;
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 

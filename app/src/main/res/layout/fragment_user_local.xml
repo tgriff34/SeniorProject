@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".UserLocalFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <GridView
+        android:id="@+id/grid_local_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:choiceMode="multipleChoice"
+        android:columnWidth="280dp"
+        android:gravity="center"
+        android:horizontalSpacing="12dp"
+        android:numColumns="2"
+        android:padding="12dp"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="12dp" />
+
+</FrameLayout>

@@ -24,11 +24,11 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
 
-    private static final String USER_FRAGMENT = "UserFrag";
-    private static final String FAVORITES_FRAGMENT = "FavFrag";
-    private static final String NAVIGATION_FRAGMENT = "NaviFrag";
-    private static final String SEARCH_FRAGMENT = "SearchFrag";
-    private static final String SETTINGS_FRAGMENT = "SettingsFrag";
+    public static final String USER_FRAGMENT = "UserFrag";
+    public static final String FAVORITES_FRAGMENT = "FavFrag";
+    public static final String NAVIGATION_FRAGMENT = "NaviFrag";
+    public static final String SEARCH_FRAGMENT = "SearchFrag";
+    public static final String SETTINGS_FRAGMENT = "SettingsFrag";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +101,10 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_options:
                 BottomSheetFragment bottomSheetFragment = new BottomSheetFragment();
                 bottomSheetFragment.show(getSupportFragmentManager(), bottomSheetFragment.getTag());
+                return true;
+
+            case R.id.action_done:
+                getSupportFragmentManager().popBackStackImmediate();
                 return true;
         }
 

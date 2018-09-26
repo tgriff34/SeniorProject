@@ -1,5 +1,6 @@
 package com.example.tristangriffin.projectx;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -9,21 +10,15 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.RecyclerView;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
@@ -42,6 +37,7 @@ public class UserFragment extends Fragment {
     private ArrayList<String> images = new ArrayList<>();
     private LinkedHashMap<String, String> cloudImages = new LinkedHashMap<>();
     private GridView gridView;
+    private SwipeRefreshLayout swipeContainer;
     private String latitude = null, longitude = null, timeCreated = null, dateCreated = null;
     private Uri file;
 
@@ -62,9 +58,10 @@ public class UserFragment extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putStringArrayList("list", images);
+        //outState.putStringArrayList("list", images);
     }
 
+    @SuppressLint("ResourceAsColor")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -72,13 +69,18 @@ public class UserFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_user, container, false);
 
         gridView = view.findViewById(R.id.grid_view);
+        swipeContainer = view.findViewById(R.id.swipeContainer);
 
         //Retrieve old display list when fragment changed
+        /*
         if (savedInstanceState != null) {
             images = savedInstanceState.getStringArrayList("list");
         } else {
             getImages(getActivity(), DEFAULT_PHOTO_VIEW);
         }
+        */
+
+        getImages(getActivity(), DEFAULT_PHOTO_VIEW);
 
         /**
          *   TODO: Set flag
@@ -86,6 +88,7 @@ public class UserFragment extends Fragment {
          *   deleting, etc...
          *   Right now whenever you click it uploads
          */
+        /*
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -103,6 +106,7 @@ public class UserFragment extends Fragment {
                 }
             }
         });
+        */
 
         gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -116,10 +120,28 @@ public class UserFragment extends Fragment {
             }
         });
 
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (ADDING_IMAGES_FLAG) {
+                    getImages(getActivity(), LOCAL_PHOTO_VIEW);
+                } else {
+                    getImages(getActivity(), DEFAULT_PHOTO_VIEW);
+                }
+                swipeContainer.setRefreshing(false);
+            }
+        });
+
+        swipeContainer.setColorSchemeColors(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+
         return view;
     }
 
     public void getImages(Activity activity, String TAG) {
+        /*
         final ArrayList<String> allImages = new ArrayList<>();
         //When you want to add photos from local hdd
         if (TAG.equals(LOCAL_PHOTO_VIEW)) {
@@ -135,9 +157,10 @@ public class UserFragment extends Fragment {
             ADDING_IMAGES_FLAG = true;
             updateUI(allImages);
         }
+        */
 
         //When you want to view current photos on cloud (default view)
-        if (TAG.equals(DEFAULT_PHOTO_VIEW)) {
+        //if (TAG.equals(DEFAULT_PHOTO_VIEW)) {
             firebaseCommands.getPhotos(new OnGetDataListener() {
                 @Override
                 public void onSuccess(LinkedHashMap<String, String> images) {
@@ -145,9 +168,10 @@ public class UserFragment extends Fragment {
                 }
             });
             ADDING_IMAGES_FLAG = false;
-        }
+        //}
     }
 
+    /*
     //Uploads files to Firebase Storage
     private void uploadImage(String image) {
         file = Uri.fromFile(new File(image));
@@ -189,7 +213,7 @@ public class UserFragment extends Fragment {
 
         //End of Exif
         if (!GET_LOCATION_FLAG) {
-            Toast.makeText(getActivity(), "Success", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
             firebaseCommands.uploadPhotos(file, longitude, latitude, timeCreated, dateCreated);
         }
     }
@@ -201,6 +225,7 @@ public class UserFragment extends Fragment {
         gridView.setAdapter(new GridViewImageAdapter(getActivity(), LOCAL_PHOTO_VIEW,
                 gridView, images));
     }
+    */
 
     //Update UI async
     private void updateUI(LinkedHashMap<String, String> imageArray) {
@@ -210,6 +235,7 @@ public class UserFragment extends Fragment {
                 gridView, cloudImages));
     }
 
+    /*
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
@@ -220,11 +246,15 @@ public class UserFragment extends Fragment {
                 firebaseCommands.uploadPhotos(file, longitude, latitude, timeCreated, dateCreated);
                 Log.d("demo", place.getLatLng().toString());
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                //Fails with Genymotion
+                Toast.makeText(getContext(), "Request Failed", Toast.LENGTH_SHORT).show();
                 Log.d("PLACES", "Something went wrong....");
             } else if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(getContext(), "Request Cancelled", Toast.LENGTH_SHORT).show();
                 Log.d("PLACES", "User cancelled place picker.");
             }
         }
         //super.onActivityResult(requestCode, resultCode, data);
     }
+    */
 }

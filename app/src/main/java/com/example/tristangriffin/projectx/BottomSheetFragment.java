@@ -2,16 +2,16 @@ package com.example.tristangriffin.projectx;
 
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialogFragment;
-import android.util.Log;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 public class BottomSheetFragment extends BottomSheetDialogFragment {
 
-    private static final String USER_FRAGMENT = "UserFrag";
+    //private static final String USER_FRAGMENT = "UserFrag";
+    private static final String USER_LOCAL_FRAGMENT_TAG = "UserLocalFrag";
     //private static final String FAVORITES_FRAGMENT = "FavFrag";
     //private static final String NAVIGATION_FRAGMENT = "NaviFrag";
     //private static final String SEARCH_FRAGMENT = "SearchFrag";
@@ -31,12 +31,12 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.bottom_sheet_layout, container, false);
 
-        final UserFragment userFragment = (UserFragment) getFragmentManager().findFragmentByTag(USER_FRAGMENT);
 
         view.findViewById(R.id.action_add_photos).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                userFragment.getImages(getActivity(), userFragment.LOCAL_PHOTO_VIEW);
+                UserLocalFragment userLocalFragment = new UserLocalFragment();
+                setFragment(userLocalFragment, USER_LOCAL_FRAGMENT_TAG);
                 dismiss();
             }
         });
@@ -49,5 +49,14 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         });
 
         return view;
+    }
+
+    private void setFragment(Fragment fragment, String TAG) {
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .addToBackStack(TAG)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .replace(R.id.fragment_container, fragment, TAG)
+                .commit();
+
     }
 }
