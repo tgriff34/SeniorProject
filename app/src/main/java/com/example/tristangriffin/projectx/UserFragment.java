@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -38,6 +39,7 @@ public class UserFragment extends Fragment {
     private LinkedHashMap<String, String> cloudImages = new LinkedHashMap<>();
     private GridView gridView;
     private SwipeRefreshLayout swipeContainer;
+    private ProgressBar progressBar;
     private String latitude = null, longitude = null, timeCreated = null, dateCreated = null;
     private Uri file;
 
@@ -70,6 +72,9 @@ public class UserFragment extends Fragment {
 
         gridView = view.findViewById(R.id.grid_view);
         swipeContainer = view.findViewById(R.id.swipeContainer);
+        progressBar = view.findViewById(R.id.user_progressbar);
+        progressBar.setVisibility(View.GONE);
+        progressBar.setIndeterminate(true);
 
         //Retrieve old display list when fragment changed
         /*
@@ -161,13 +166,14 @@ public class UserFragment extends Fragment {
 
         //When you want to view current photos on cloud (default view)
         //if (TAG.equals(DEFAULT_PHOTO_VIEW)) {
-            firebaseCommands.getPhotos(new OnGetDataListener() {
-                @Override
-                public void onSuccess(LinkedHashMap<String, String> images) {
-                    updateUI(images);
-                }
-            });
-            ADDING_IMAGES_FLAG = false;
+        progressBar.setVisibility(View.VISIBLE);
+        firebaseCommands.getPhotos(new OnGetDataListener() {
+            @Override
+            public void onSuccess(LinkedHashMap<String, String> images) {
+                updateUI(images);
+            }
+        });
+        ADDING_IMAGES_FLAG = false;
         //}
     }
 
@@ -233,6 +239,7 @@ public class UserFragment extends Fragment {
         //gridView.setAdapter(new ImageAdapter(getActivity(), DEFAULT_PHOTO_VIEW));
         gridView.setAdapter(new GridViewImageAdapter(getActivity(), DEFAULT_PHOTO_VIEW,
                 gridView, cloudImages));
+        progressBar.setVisibility(View.GONE);
     }
 
     /*

@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        item.setChecked(true);
                         switch (item.getItemId()) {
                             case R.id.action_user:
                                 setFragment(userFragment, USER_FRAGMENT);
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
     private void setFragment(Fragment fragment, String FRAGMENT_TAG) {
         getSupportFragmentManager().beginTransaction()
                 .addToBackStack(FRAGMENT_TAG)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .setTransition(FragmentTransaction.TRANSIT_NONE)
                 .replace(R.id.fragment_container, fragment, FRAGMENT_TAG)
                 .commit();
     }
