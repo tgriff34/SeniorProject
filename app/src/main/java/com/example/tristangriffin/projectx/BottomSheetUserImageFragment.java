@@ -35,8 +35,8 @@ public class BottomSheetUserImageFragment extends BottomSheetDialogFragment{
         view.findViewById(R.id.action_add_to_collection_photos).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                firebaseCommands.addPhotoToCollection(TAG);
+                //firebaseCommands.addPhotoToCollection(TAG, "Album1");
+                firebaseCommands.createPhotoCollection("album1", "public");
                 dismiss();
             }
         });

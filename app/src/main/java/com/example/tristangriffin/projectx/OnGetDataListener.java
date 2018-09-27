@@ -10,4 +10,5 @@ import java.util.Map;
 
 public interface OnGetDataListener {
     void onSuccess(LinkedHashMap<String, String> images);
+    void onGetAlbumSuccess(ArrayList<String> albums);
 }

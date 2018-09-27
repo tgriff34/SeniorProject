@@ -42,7 +42,9 @@ public class FirebaseCommands {
     public FirebaseUser user = firebaseAuth.getCurrentUser();
 
     private LinkedHashMap<String, String> allImages;
-    private static final String DEFAULT_ALL_IMAGE_COLLECTION = "images";
+    private ArrayList<String> allAlbums;
+
+    private static final String DEFAULT_ALL_IMAGE_COLLECTION = "AllImages";
 
     public static FirebaseCommands getInstance() {
         return ourInstance;
@@ -101,6 +103,22 @@ public class FirebaseCommands {
                         listener.onSignUp();
                     }
                 });
+
+        Map<String, Object> newPublicPhotoLibrary = new HashMap<>();
+        newPublicPhotoLibrary.put("name", "AllImages");
+        db.collection("users")
+                .document(user.getUid())
+                .collection("public")
+                .document("AllImages")
+                .set(newPublicPhotoLibrary);
+
+        Map<String, Object> newPrivatePhotoLibrary = new HashMap<>();
+        newPrivatePhotoLibrary.put("name", "AllImages");
+        db.collection("users")
+                .document(user.getUid())
+                .collection("private")
+                .document("AllImages")
+                .set(newPrivatePhotoLibrary);
     }
 
     public void uploadPhotos(Uri uri, final String longitude, final String latitude,
@@ -144,7 +162,9 @@ public class FirebaseCommands {
                     dbImageReference.put("date", dateCreated);
                     db.collection("users")
                             .document(user.getUid())
-                            .collection(collection)
+                            .collection("public")
+                            .document(collection)
+                            .collection("images")
                             .document(TAG)
                             .set(dbImageReference)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -171,7 +191,9 @@ public class FirebaseCommands {
             dbImageReference.put("date", dateCreated);
             db.collection("users")
                     .document(user.getUid())
-                    .collection(collection)
+                    .collection("public")
+                    .document(collection)
+                    .collection("images")
                     .document(TAG)
                     .set(dbImageReference)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -191,6 +213,8 @@ public class FirebaseCommands {
     public void deleteFromDatabase(final String TAG) {
         db.collection("users")
                 .document(user.getUid())
+                .collection("public")
+                .document(DEFAULT_ALL_IMAGE_COLLECTION)
                 .collection("images")
                 .document(TAG)
                 .delete()
@@ -209,9 +233,21 @@ public class FirebaseCommands {
                 });
     }
 
-    public void addPhotoToCollection(final String TAG) {
+    public void createPhotoCollection(String name, String setting) {
+        Map<String, Object> collectionName = new HashMap<>();
+        collectionName.put("name", name);
         db.collection("users")
                 .document(user.getUid())
+                .collection(setting)
+                .document(name)
+                .set(collectionName);
+    }
+
+    public void addPhotoToCollection(final String TAG, final String collection) {
+        db.collection("users")
+                .document(user.getUid())
+                .collection("public")
+                .document(DEFAULT_ALL_IMAGE_COLLECTION)
                 .collection("images")
                 .document(TAG)
                 .get()
@@ -232,17 +268,41 @@ public class FirebaseCommands {
                                 /**
                                  * TEST is test collection before user input is added
                                  */
-                                addToDatabase(null, uri, "TEST", TAG, longitude, latitude, time, date);
+                                addToDatabase(null, uri, collection, TAG, longitude, latitude, time, date);
                             }
                         }
                     }
                 });
     }
 
-    public void getPhotos(final OnGetDataListener listener) {
-        allImages = new LinkedHashMap<>();
+    public void getAlbums(final OnGetDataListener listener) {
+        allAlbums = new ArrayList<>();
         db.collection("users")
-                .document(firebaseAuth.getCurrentUser().getUid())
+                .document(user.getUid())
+                .collection("public")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                allAlbums.add(documentSnapshot.get("name").toString());
+                            }
+                            listener.onGetAlbumSuccess(allAlbums);
+                        } else {
+                            Log.d("Firebase", "Error getting albums", task.getException());
+                        }
+                    }
+                });
+    }
+
+    public void getPhotos(final OnGetDataListener listener, String albumName) {
+        allImages = new LinkedHashMap<>();
+        //TODO: Get images from all albums
+        db.collection("users")
+                .document(user.getUid())
+                .collection("public")
+                .document(albumName)
                 .collection("images")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
