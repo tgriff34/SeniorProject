@@ -1,8 +1,6 @@
 package com.example.tristangriffin.projectx;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -84,15 +82,10 @@ public class UserImageFragment extends Fragment {
     }
 
     private void getImages() {
-        firebaseCommands.getPhotos(new OnGetDataListener() {
+        firebaseCommands.getPhotos(new OnGetPhotosListener() {
             @Override
-            public void onSuccess(LinkedHashMap<String, String> images) {
+            public void onGetPhotosSuccess(LinkedHashMap<String, String> images) {
                 updateUI(images);
-            }
-
-            @Override
-            public void onGetAlbumSuccess(ArrayList<String> albums) {
-
             }
         }, albumName);
     }

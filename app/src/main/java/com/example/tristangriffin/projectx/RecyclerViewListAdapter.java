@@ -15,17 +15,22 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
+import com.google.rpc.Help;
+
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewListAdapter.MyViewHolder> {
 
-    private ArrayList<String> albums;
+    private LinkedHashMap<String, String> albums;
     private Context context;
 
     private static final String USER_IMAGE_FRAGMENT_TAG = "UserImageFrag";
     public static final String ALBUM_NAME = "album_name";
 
-    public RecyclerViewListAdapter(Context mContext, ArrayList<String> mAlbums) {
+    public RecyclerViewListAdapter(Context mContext, LinkedHashMap<String, String> mAlbums) {
         context = mContext;
         albums = mAlbums;
     }
@@ -33,13 +38,13 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
     public static class MyViewHolder extends RecyclerView.ViewHolder  implements View.OnClickListener, View.OnLongClickListener {
 
         private TextView nameTextView;
-        private ImageView imageView;
+        private ImageView holderImageView;
         private ItemClickListener clickListener;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
-            nameTextView = (TextView) itemView.findViewById(R.id.album_name_text);
-            imageView = (ImageView) itemView.findViewById(R.id.image_list_preview);
+            nameTextView = (TextView) itemView.findViewById(R.id.album_name);
+            holderImageView = (ImageView) itemView.findViewById(R.id.thumbnail);
             itemView.setOnClickListener(this);
         }
 
@@ -75,10 +80,13 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewListAdapter.MyViewHolder holder, int position) {
-        final String albumName = albums.get(position);
+        final String albumName = new ArrayList<>(albums.keySet()).get(position);
         TextView textView = holder.nameTextView;
+        ImageView imageView = holder.holderImageView;
         //ImageView imageView = holder.imageView;
-        textView.setText(albumName);
+        textView.setText(new ArrayList<>(albums.keySet()).get(position));
+        Glide.with(context).load(new ArrayList<>(albums.values()).get(position)).apply(RequestOptions.centerCropTransform()).into(imageView);
+
 
         holder.setClickListener(new ItemClickListener() {
             @Override
@@ -86,9 +94,8 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
                 if (isLongClick) {
                     //delete album
                 } else {
-                    Log.d("demo", albums.get(position));
                     Bundle bundle = new Bundle();
-                    bundle.putString(ALBUM_NAME, albums.get(position));
+                    bundle.putString(ALBUM_NAME, albumName);
                     UserImageFragment userImageFragment = new UserImageFragment();
                     userImageFragment.setArguments(bundle);
                     ((FragmentActivity) context).getSupportFragmentManager()

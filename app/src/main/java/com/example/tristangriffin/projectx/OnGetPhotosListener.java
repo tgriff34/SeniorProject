@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public interface OnGetDataListener {
-    void onSuccess(LinkedHashMap<String, String> images);
-    void onGetAlbumSuccess(ArrayList<String> albums);
+public interface OnGetPhotosListener {
+    void onGetPhotosSuccess(LinkedHashMap<String, String> images);
 }

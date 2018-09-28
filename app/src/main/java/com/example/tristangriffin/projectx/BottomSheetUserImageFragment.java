@@ -16,7 +16,6 @@ public class BottomSheetUserImageFragment extends BottomSheetDialogFragment{
     private String TAG;
 
     public BottomSheetUserImageFragment() {
-
         // Required empty public constructor
     }
 

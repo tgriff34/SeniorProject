@@ -1,12 +1,10 @@
 package com.example.tristangriffin.projectx;
 
 import android.app.Activity;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -24,12 +22,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.concurrent.Executor;
 
 public class FirebaseCommands {
 
@@ -43,6 +39,7 @@ public class FirebaseCommands {
 
     private LinkedHashMap<String, String> allImages;
     private ArrayList<String> allAlbums;
+    private String thumbnailRef;
 
     private static final String DEFAULT_ALL_IMAGE_COLLECTION = "AllImages";
 
@@ -275,7 +272,7 @@ public class FirebaseCommands {
                 });
     }
 
-    public void getAlbums(final OnGetDataListener listener) {
+    public void getAlbums(final OnGetAlbumListener listener) {
         allAlbums = new ArrayList<>();
         db.collection("users")
                 .document(user.getUid())
@@ -296,7 +293,7 @@ public class FirebaseCommands {
                 });
     }
 
-    public void getPhotos(final OnGetDataListener listener, String albumName) {
+    public void getPhotos(final OnGetPhotosListener listener, String albumName) {
         allImages = new LinkedHashMap<>();
         //TODO: Get images from all albums
         db.collection("users")
@@ -312,8 +309,28 @@ public class FirebaseCommands {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 allImages.put(document.getId(), document.getString("ref"));
                             }
-                            Log.d("demo", "Cloud images: " + allImages.toString());
-                            listener.onSuccess(allImages);
+                            //Log.d("demo", "Cloud images: " + allImages.toString());
+                            listener.onGetPhotosSuccess(allImages);
+                        }
+                    }
+                });
+    }
+
+    public void getThumbnail(final OnGetThumbnailListener listener, String albumName) {
+        db.collection("users")
+                .document(user.getUid())
+                .collection("public")
+                .document(albumName)
+                .collection("images")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                thumbnailRef = documentSnapshot.getString("ref");
+                            }
+                            listener.onGetThumbnailSuccess(thumbnailRef);
                         }
                     }
                 });
