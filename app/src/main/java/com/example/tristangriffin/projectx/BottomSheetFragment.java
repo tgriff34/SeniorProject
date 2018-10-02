@@ -11,11 +11,13 @@ import android.view.ViewGroup;
 public class BottomSheetFragment extends BottomSheetDialogFragment {
 
     //private static final String USER_FRAGMENT = "UserFrag";
-    private static final String USER_LOCAL_FRAGMENT_TAG = "UserLocalFrag";
+    public static final String USER_LOCAL_FRAGMENT_TAG = "UserLocalFrag";
     //private static final String FAVORITES_FRAGMENT = "FavFrag";
     //private static final String NAVIGATION_FRAGMENT = "NaviFrag";
     //private static final String SEARCH_FRAGMENT = "SearchFrag";
     //private static final String SETTINGS_FRAGMENT = "SettingsFrag";
+
+    private String album;
 
     public BottomSheetFragment() {
         // Required empty public constructor
@@ -35,7 +37,10 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
         view.findViewById(R.id.action_add_photos).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Bundle bundle = new Bundle();
+                bundle.putString("album_name", album);
                 UserLocalFragment userLocalFragment = new UserLocalFragment();
+                userLocalFragment.setArguments(bundle);
                 setFragment(userLocalFragment, USER_LOCAL_FRAGMENT_TAG);
                 dismiss();
             }
@@ -58,5 +63,9 @@ public class BottomSheetFragment extends BottomSheetDialogFragment {
                 .replace(R.id.fragment_container, fragment, TAG)
                 .commit();
 
+    }
+
+    public void setVars(String album) {
+        this.album = album;
     }
 }

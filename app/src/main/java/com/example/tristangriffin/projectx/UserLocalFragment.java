@@ -42,6 +42,7 @@ public class UserLocalFragment extends Fragment {
     private GridView gridView;
     private String latitude = null, longitude = null, timeCreated = null, dateCreated = null;
     private Uri file;
+    private String albumName;
 
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
@@ -64,8 +65,8 @@ public class UserLocalFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_user_local, container, false);
 
         gridView = view.findViewById(R.id.grid_local_view);
+        albumName = getArguments().getString("album_name");
         getImages(getActivity());
-
         setHasOptionsMenu(true);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -136,7 +137,7 @@ public class UserLocalFragment extends Fragment {
         //End of Exif
         if (!GET_LOCATION_FLAG) {
             Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
-            firebaseCommands.uploadPhotos(file, longitude, latitude, timeCreated, dateCreated);
+            firebaseCommands.uploadPhotos(file, albumName, longitude, latitude, timeCreated, dateCreated);
         }
     }
 
@@ -161,7 +162,7 @@ public class UserLocalFragment extends Fragment {
                 Place place = PlaceAutocomplete.getPlace(getActivity(), data);
                 latitude = String.valueOf(place.getLatLng().latitude);
                 longitude = String.valueOf(place.getLatLng().longitude);
-                firebaseCommands.uploadPhotos(file, longitude, latitude, timeCreated, dateCreated);
+                firebaseCommands.uploadPhotos(file, albumName, longitude, latitude, timeCreated, dateCreated);
                 Log.d("UserLocalFragment", place.getLatLng().toString());
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Toast.makeText(getContext(), "Request Failed", Toast.LENGTH_SHORT).show();

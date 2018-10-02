@@ -101,6 +101,7 @@ public class FirebaseCommands {
                     }
                 });
 
+        /*
         Map<String, Object> newPublicPhotoLibrary = new HashMap<>();
         newPublicPhotoLibrary.put("name", "AllImages");
         db.collection("users")
@@ -116,9 +117,10 @@ public class FirebaseCommands {
                 .collection("private")
                 .document("AllImages")
                 .set(newPrivatePhotoLibrary);
+                */
     }
 
-    public void uploadPhotos(Uri uri, final String longitude, final String latitude,
+    public void uploadPhotos(Uri uri, final String collection, final String longitude, final String latitude,
                              final String timeCreated, final String dateCreated) {
         final StorageReference fileRef = storageReference.child("images/public/" + user.getUid() + "/" + uri.getLastPathSegment());
         final String TAG = uri.getLastPathSegment();
@@ -129,7 +131,7 @@ public class FirebaseCommands {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Log.d("Firebase", "uploadSuccess:true");
-                addToDatabase(fileRef, null, DEFAULT_ALL_IMAGE_COLLECTION, TAG, longitude, latitude, timeCreated, dateCreated);
+                addToDatabase(fileRef, null, collection, TAG, longitude, latitude, timeCreated, dateCreated);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -142,13 +144,9 @@ public class FirebaseCommands {
     private void addToDatabase(@Nullable StorageReference ref, @Nullable final String URI, final String collection,
                                final String TAG, final String longitude, final String latitude,
                                final String timeCreated, final String dateCreated) {
-
         final Map<String, Object> dbImageReference = new HashMap<>();
-
         if (URI == null) {
-
             //First time adding to database
-
             ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
@@ -177,57 +175,46 @@ public class FirebaseCommands {
                     });
                 }
             });
+        }
+    }
+
+    public void deleteFromDatabase(final String TAG, String collection, boolean deleteAlbumIfEmpty) {
+        if (deleteAlbumIfEmpty) {
+            db.collection("users")
+                    .document(user.getUid())
+                    .collection("public")
+                    .document(collection)
+                    .delete();
         } else {
-
-            //Adding photo from all photos to own collection
-
-            dbImageReference.put("ref", URI);
-            dbImageReference.put("longitude", longitude);
-            dbImageReference.put("latitude", latitude);
-            dbImageReference.put("time", timeCreated);
-            dbImageReference.put("date", dateCreated);
             db.collection("users")
                     .document(user.getUid())
                     .collection("public")
                     .document(collection)
                     .collection("images")
                     .document(TAG)
-                    .set(dbImageReference)
+                    .delete()
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            Log.d("Firebase", "dbRef:success");
+                            Log.d("Firebase", "deleteFromDatabase:success");
+                            Log.d("Firebase", TAG);
                         }
-                    }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.e("Firebase", "debRef:failure");
-                }
-            });
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.d("Firebase", "deleteFromDatabase:failure");
+                        }
+                    });
         }
     }
 
-    public void deleteFromDatabase(final String TAG) {
+    public void deletePhotoCollection(String name, String setting) {
         db.collection("users")
                 .document(user.getUid())
-                .collection("public")
-                .document(DEFAULT_ALL_IMAGE_COLLECTION)
-                .collection("images")
-                .document(TAG)
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("Firebase", "deleteFromDatabase:success");
-                        Log.d("Firebase", TAG);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.d("Firebase", "deleteFromDatabase:failure");
-                    }
-                });
+                .collection(setting)
+                .document(name)
+                .delete();
     }
 
     public void createPhotoCollection(String name, String setting) {
@@ -240,6 +227,7 @@ public class FirebaseCommands {
                 .set(collectionName);
     }
 
+    /*
     public void addPhotoToCollection(final String TAG, final String collection) {
         db.collection("users")
                 .document(user.getUid())
@@ -264,13 +252,13 @@ public class FirebaseCommands {
                                 //TODO: Add option for user input
                                 /**
                                  * TEST is test collection before user input is added
-                                 */
                                 addToDatabase(null, uri, collection, TAG, longitude, latitude, time, date);
                             }
                         }
                     }
                 });
     }
+                                 */
 
     public void getAlbums(final OnGetAlbumListener listener) {
         allAlbums = new ArrayList<>();

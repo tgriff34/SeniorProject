@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -27,7 +28,9 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
     private LinkedHashMap<String, String> albums;
     private Context context;
 
-    private static final String USER_IMAGE_FRAGMENT_TAG = "UserImageFrag";
+    FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
+
+    public static final String USER_IMAGE_FRAGMENT_TAG = "UserImageFrag";
     public static final String ALBUM_NAME = "album_name";
 
     public RecyclerViewListAdapter(Context mContext, LinkedHashMap<String, String> mAlbums) {
@@ -35,16 +38,19 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
         albums = mAlbums;
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder  implements View.OnClickListener, View.OnLongClickListener {
+    public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         private TextView nameTextView;
         private ImageView holderImageView;
+        private ImageButton deleteAlbumButton, favoriteAlbumButton;
         private ItemClickListener clickListener;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             nameTextView = (TextView) itemView.findViewById(R.id.album_name);
             holderImageView = (ImageView) itemView.findViewById(R.id.thumbnail);
+            deleteAlbumButton = (ImageButton) itemView.findViewById(R.id.album_delete_button);
+            favoriteAlbumButton = (ImageButton) itemView.findViewById(R.id.album_favorite_button);
             itemView.setOnClickListener(this);
         }
 
@@ -81,29 +87,31 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
     @Override
     public void onBindViewHolder(@NonNull RecyclerViewListAdapter.MyViewHolder holder, int position) {
         final String albumName = new ArrayList<>(albums.keySet()).get(position);
-        TextView textView = holder.nameTextView;
+        final TextView textView = holder.nameTextView;
         ImageView imageView = holder.holderImageView;
-        //ImageView imageView = holder.imageView;
+
         textView.setText(new ArrayList<>(albums.keySet()).get(position));
         Glide.with(context).load(new ArrayList<>(albums.values()).get(position)).apply(RequestOptions.centerCropTransform()).into(imageView);
 
-
-        holder.setClickListener(new ItemClickListener() {
+        holder.deleteAlbumButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view, int position, boolean isLongClick) {
-                if (isLongClick) {
-                    //delete album
-                } else {
-                    Bundle bundle = new Bundle();
-                    bundle.putString(ALBUM_NAME, albumName);
-                    UserImageFragment userImageFragment = new UserImageFragment();
-                    userImageFragment.setArguments(bundle);
-                    ((FragmentActivity) context).getSupportFragmentManager()
-                            .beginTransaction()
-                            .addToBackStack(USER_IMAGE_FRAGMENT_TAG)
-                            .replace(R.id.fragment_container, userImageFragment, USER_IMAGE_FRAGMENT_TAG)
-                            .commit();
-                }
+            public void onClick(View v) {
+                firebaseCommands.deletePhotoCollection(textView.getText().toString(), "public");
+            }
+        });
+
+        holder.holderImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putString(ALBUM_NAME, albumName);
+                UserImageFragment userImageFragment = new UserImageFragment();
+                userImageFragment.setArguments(bundle);
+                ((FragmentActivity) context).getSupportFragmentManager()
+                        .beginTransaction()
+                        .addToBackStack(USER_IMAGE_FRAGMENT_TAG)
+                        .replace(R.id.fragment_container, userImageFragment, USER_IMAGE_FRAGMENT_TAG)
+                        .commit();
             }
         });
     }

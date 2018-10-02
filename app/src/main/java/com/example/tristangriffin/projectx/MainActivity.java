@@ -1,6 +1,7 @@
 package com.example.tristangriffin.projectx;
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
@@ -9,11 +10,17 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.InputType;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -91,27 +98,47 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_toolbar, menu);
-        Drawable drawable = menu.getItem(0).getIcon();
-        drawable.mutate();
-        drawable.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_options:
-                BottomSheetFragment bottomSheetFragment = new BottomSheetFragment();
-                bottomSheetFragment.show(getSupportFragmentManager(), bottomSheetFragment.getTag());
-                return true;
+            //case R.id.action_options:
+            //    BottomSheetFragment bottomSheetFragment = new BottomSheetFragment();
+            //    bottomSheetFragment.show(getSupportFragmentManager(), bottomSheetFragment.getTag());
+            //    return true;
 
             case R.id.action_done:
                 getSupportFragmentManager().popBackStackImmediate();
                 return true;
-        }
 
-        return true;
+            case R.id.action_add_collection:
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Add Album");
+
+                View viewInflated = LayoutInflater.from(MainActivity.this).inflate(R.layout.text_input_add_album, null);
+
+                final EditText input = (EditText) viewInflated.findViewById(R.id.album_input);
+                builder.setView(viewInflated);
+
+                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        firebaseCommands.createPhotoCollection(input.getText().toString(), "public");
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                builder.show();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void setFragment(Fragment fragment, String FRAGMENT_TAG) {

@@ -1,11 +1,16 @@
 package com.example.tristangriffin.projectx;
 
 import android.annotation.SuppressLint;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -54,6 +59,7 @@ public class UserImageFragment extends Fragment {
         progressBar.setIndeterminate(true);
 
         getImages();
+        setHasOptionsMenu(true);
 
         gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -61,7 +67,11 @@ public class UserImageFragment extends Fragment {
                 String value = new ArrayList<>(cloudImages.keySet()).get(i);
                 Log.d("demo", value);
                 BottomSheetUserImageFragment bottomSheetUserImageFragment = new BottomSheetUserImageFragment();
-                bottomSheetUserImageFragment.setTAG(value);
+                if (cloudImages.size() == 1) {
+                    bottomSheetUserImageFragment.setVars(value, albumName, true);
+                } else {
+                    bottomSheetUserImageFragment.setVars(value, albumName, false);
+                }
                 bottomSheetUserImageFragment.show(getFragmentManager(), bottomSheetUserImageFragment.getTag());
                 return false;
             }
@@ -79,6 +89,26 @@ public class UserImageFragment extends Fragment {
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
         return view;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_options:
+                BottomSheetFragment bottomSheetFragment = new BottomSheetFragment();
+                bottomSheetFragment.setVars(albumName);
+                bottomSheetFragment.show(getFragmentManager(), bottomSheetFragment.getTag());
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_toolbar, menu);
+        Drawable drawable = menu.getItem(0).getIcon();
+        drawable.mutate();
+        drawable.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
     private void getImages() {
