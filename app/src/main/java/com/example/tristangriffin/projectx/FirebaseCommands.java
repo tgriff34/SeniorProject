@@ -14,7 +14,6 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -178,43 +177,50 @@ public class FirebaseCommands {
         }
     }
 
-    public void deleteFromDatabase(final String TAG, String collection, boolean deleteAlbumIfEmpty) {
-        if (deleteAlbumIfEmpty) {
-            db.collection("users")
-                    .document(user.getUid())
-                    .collection("public")
-                    .document(collection)
-                    .delete();
-        } else {
-            db.collection("users")
-                    .document(user.getUid())
-                    .collection("public")
-                    .document(collection)
-                    .collection("images")
-                    .document(TAG)
-                    .delete()
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            Log.d("Firebase", "deleteFromDatabase:success");
-                            Log.d("Firebase", TAG);
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.d("Firebase", "deleteFromDatabase:failure");
-                        }
-                    });
-        }
-    }
-
-    public void deletePhotoCollection(String name, String setting) {
+    public void deleteFromDatabase(final String TAG, final String collection) {
         db.collection("users")
                 .document(user.getUid())
-                .collection(setting)
-                .document(name)
-                .delete();
+                .collection("public")
+                .document(collection)
+                .collection("images")
+                .document(TAG)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d("Firebase", "deleteFromDatabase:success");
+                        Log.d("Firebase", TAG);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.d("Firebase", "deleteFromDatabase:failure");
+                    }
+                });
+    }
+
+    public void deletePhotoCollection(final String name, final String setting, final OnDeleteAlbumListener listener) {
+        getPhotos(new OnGetPhotosListener() {
+            @Override
+            public void onGetPhotosSuccess(LinkedHashMap<String, String> images) {
+               if (images.isEmpty()) {
+                   db.collection("users")
+                           .document(user.getUid())
+                           .collection(setting)
+                           .document(name)
+                           .delete()
+                           .addOnCompleteListener(new OnCompleteListener<Void>() {
+                               @Override
+                               public void onComplete(@NonNull Task<Void> task) {
+                                   listener.onDeleteAlbum(true);
+                               }
+                           });
+               } else {
+                   listener.onDeleteAlbum(false);
+               }
+            }
+        }, name);
     }
 
     public void createPhotoCollection(String name, String setting) {

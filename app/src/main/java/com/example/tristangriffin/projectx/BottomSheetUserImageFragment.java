@@ -16,7 +16,6 @@ public class BottomSheetUserImageFragment extends BottomSheetDialogFragment{
 
     FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
     private String TAG, album;
-    private boolean deleteAlbumIfEmpty = false;
 
     public BottomSheetUserImageFragment() {
         // Required empty public constructor
@@ -43,7 +42,7 @@ public class BottomSheetUserImageFragment extends BottomSheetDialogFragment{
         view.findViewById(R.id.action_delete_photos).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                firebaseCommands.deleteFromDatabase(TAG, album, deleteAlbumIfEmpty);
+                firebaseCommands.deleteFromDatabase(TAG, album);
                 dismiss();
             }
         });
@@ -58,9 +57,8 @@ public class BottomSheetUserImageFragment extends BottomSheetDialogFragment{
         return view;
     }
 
-    public void setVars(String TAG, String album, boolean deleteAlbumIfEmpty) {
+    public void setVars(String TAG, String album) {
         this.TAG = TAG;
         this.album = album;
-        this.deleteAlbumIfEmpty = deleteAlbumIfEmpty;
     }
 }

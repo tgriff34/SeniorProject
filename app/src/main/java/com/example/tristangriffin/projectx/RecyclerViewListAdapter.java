@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -100,7 +101,16 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
         holder.deleteAlbumButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //firebaseCommands.deletePhotoCollection(textView.getText().toString(), "public");
+                firebaseCommands.deletePhotoCollection(textView.getText().toString(), "public", new OnDeleteAlbumListener() {
+                    @Override
+                    public void onDeleteAlbum(boolean isDeleted) {
+                        if (isDeleted) {
+                            Toast.makeText(context, "Delete photos first", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(context, "Album deleted", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
             }
         });
 

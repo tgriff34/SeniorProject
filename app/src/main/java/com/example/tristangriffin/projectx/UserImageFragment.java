@@ -71,11 +71,7 @@ public class UserImageFragment extends Fragment {
                 String value = new ArrayList<>(cloudImages.keySet()).get(i);
                 Log.d("demo", value);
                 BottomSheetUserImageFragment bottomSheetUserImageFragment = new BottomSheetUserImageFragment();
-                if (cloudImages.size() == 1) {
-                    bottomSheetUserImageFragment.setVars(value, albumName, true);
-                } else {
-                    bottomSheetUserImageFragment.setVars(value, albumName, false);
-                }
+                bottomSheetUserImageFragment.setVars(value, albumName);
                 bottomSheetUserImageFragment.show(getFragmentManager(), bottomSheetUserImageFragment.getTag());
                 return false;
             }
