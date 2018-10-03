@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -29,6 +30,7 @@ public class UserImageFragment extends Fragment {
     private GridView gridView;
     private SwipeRefreshLayout swipeContainer;
     private ProgressBar progressBar;
+    private TextView textInfo;
     private String albumName;
 
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
@@ -52,10 +54,12 @@ public class UserImageFragment extends Fragment {
 
         albumName = getArguments().getString(ALBUM_NAME);
 
+        textInfo = view.findViewById(R.id.text_noImages);
         gridView = view.findViewById(R.id.grid_album_view);
         swipeContainer = view.findViewById(R.id.imageSwipeContainer);
         progressBar = view.findViewById(R.id.image_progressbar);
-        progressBar.setVisibility(View.GONE);
+        progressBar.setVisibility(View.VISIBLE);
+        textInfo.setVisibility(View.GONE);
         progressBar.setIndeterminate(true);
 
         getImages();
@@ -125,5 +129,10 @@ public class UserImageFragment extends Fragment {
         gridView.setAdapter(new GridViewImageAdapter(getActivity(), DEFAULT_PHOTO_VIEW,
                 gridView, cloudImages));
         progressBar.setVisibility(View.GONE);
+        if (cloudImages.isEmpty()) {
+            textInfo.setVisibility(View.VISIBLE);
+        } else {
+            textInfo.setVisibility(View.GONE);
+        }
     }
 }

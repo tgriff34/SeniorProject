@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +22,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+
+import static com.example.tristangriffin.projectx.RecyclerViewListAdapter.ALBUM_NAME;
+import static com.example.tristangriffin.projectx.RecyclerViewListAdapter.USER_IMAGE_FRAGMENT_TAG;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -126,6 +130,15 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         firebaseCommands.createPhotoCollection(input.getText().toString(), "public");
+                        Bundle bundle = new Bundle();
+                        bundle.putString(ALBUM_NAME, input.getText().toString());
+                        UserImageFragment userImageFragment = new UserImageFragment();
+                        userImageFragment.setArguments(bundle);
+                        getSupportFragmentManager()
+                                .beginTransaction()
+                                .addToBackStack(USER_IMAGE_FRAGMENT_TAG)
+                                .replace(R.id.fragment_container, userImageFragment, USER_IMAGE_FRAGMENT_TAG)
+                                .commit();
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

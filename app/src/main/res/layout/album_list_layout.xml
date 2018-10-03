@@ -7,12 +7,12 @@
     <android.support.v7.widget.CardView
         android:id="@+id/card_view"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="240dp"
         android:layout_gravity="center"
         android:layout_margin="4dp"
         app:cardCornerRadius="4dp"
         app:cardElevation="3dp"
-        app:cardBackgroundColor="@color/white"
+        app:cardBackgroundColor="@color/colorPrimaryDark2"
         app:cardUseCompatPadding="true">
 
         <RelativeLayout
@@ -31,11 +31,34 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/thumbnail"
-                android:maxLines="1"
-                android:padding="12dp"
-                android:textColor="@color/colorPrimaryDark2"
+                android:padding="8dp"
+                android:maxLength="13"
+                android:ellipsize="end"
+                android:textColor="@color/white"
                 android:textSize="22sp"
-                android:textStyle="bold" />
+                />
+
+            <Button
+                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                android:id="@+id/album_favorite_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Favorite"
+                android:layout_below="@id/thumbnail"
+                android:layout_toLeftOf="@id/album_delete_button"
+                />
+
+            <Button
+                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                android:id="@+id/album_delete_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delete"
+                android:layout_below="@id/thumbnail"
+                android:layout_alignParentRight="true"
+                />
+
+            <!--
             <ImageButton
                 android:id="@+id/album_favorite_button"
                 android:layout_width="50dp"
@@ -57,6 +80,7 @@
                 android:background="@color/white"
                 android:layout_marginRight="5dp"
                 />
+                -->
             
         </RelativeLayout>
 

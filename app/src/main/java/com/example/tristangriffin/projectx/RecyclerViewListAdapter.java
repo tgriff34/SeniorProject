@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -42,15 +43,15 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
 
         private TextView nameTextView;
         private ImageView holderImageView;
-        private ImageButton deleteAlbumButton, favoriteAlbumButton;
+        private Button deleteAlbumButton, favoriteAlbumButton;
         private ItemClickListener clickListener;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
             nameTextView = (TextView) itemView.findViewById(R.id.album_name);
             holderImageView = (ImageView) itemView.findViewById(R.id.thumbnail);
-            deleteAlbumButton = (ImageButton) itemView.findViewById(R.id.album_delete_button);
-            favoriteAlbumButton = (ImageButton) itemView.findViewById(R.id.album_favorite_button);
+            deleteAlbumButton = (Button) itemView.findViewById(R.id.album_delete_button);
+            favoriteAlbumButton = (Button) itemView.findViewById(R.id.album_favorite_button);
             itemView.setOnClickListener(this);
         }
 
@@ -93,14 +94,42 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
         textView.setText(new ArrayList<>(albums.keySet()).get(position));
         Glide.with(context).load(new ArrayList<>(albums.values()).get(position)).apply(RequestOptions.centerCropTransform()).into(imageView);
 
+        /**
+         * TODO: ADD DELETE COLLECTION LOGIC
+         */
         holder.deleteAlbumButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                firebaseCommands.deletePhotoCollection(textView.getText().toString(), "public");
+                //firebaseCommands.deletePhotoCollection(textView.getText().toString(), "public");
+            }
+        });
+
+        /**
+         * TODO: ADD FAVORITE ALBUM LOGIC
+         */
+        holder.favoriteAlbumButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
             }
         });
 
         holder.holderImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Bundle bundle = new Bundle();
+                bundle.putString(ALBUM_NAME, albumName);
+                UserImageFragment userImageFragment = new UserImageFragment();
+                userImageFragment.setArguments(bundle);
+                ((FragmentActivity) context).getSupportFragmentManager()
+                        .beginTransaction()
+                        .addToBackStack(USER_IMAGE_FRAGMENT_TAG)
+                        .replace(R.id.fragment_container, userImageFragment, USER_IMAGE_FRAGMENT_TAG)
+                        .commit();
+            }
+        });
+
+        holder.nameTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
