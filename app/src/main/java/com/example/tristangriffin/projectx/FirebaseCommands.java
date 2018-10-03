@@ -205,6 +205,7 @@ public class FirebaseCommands {
             @Override
             public void onGetPhotosSuccess(LinkedHashMap<String, String> images) {
                if (images.isEmpty()) {
+                   Log.d("demo", images.toString());
                    db.collection("users")
                            .document(user.getUid())
                            .collection(setting)

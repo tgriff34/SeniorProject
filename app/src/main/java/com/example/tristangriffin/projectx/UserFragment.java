@@ -23,7 +23,7 @@ import java.util.LinkedHashMap;
 
 public class UserFragment extends Fragment {
 
-    private LinkedHashMap<String, String> cloudImages = new LinkedHashMap<>();
+    private LinkedHashMap<String, String> cloudImages;
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeContainer;
     private ProgressBar progressBar;
@@ -75,6 +75,7 @@ public class UserFragment extends Fragment {
 
     private void getAlbums() {
         progressBar.setVisibility(View.VISIBLE);
+        cloudImages = new LinkedHashMap<>();
         firebaseCommands.getAlbums(new OnGetAlbumListener() {
             @Override
             public void onGetAlbumSuccess(ArrayList<String> albums) {

@@ -104,10 +104,11 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
                 firebaseCommands.deletePhotoCollection(textView.getText().toString(), "public", new OnDeleteAlbumListener() {
                     @Override
                     public void onDeleteAlbum(boolean isDeleted) {
+                        Log.d("demo", "isDeleted: " + isDeleted);
                         if (isDeleted) {
-                            Toast.makeText(context, "Delete photos first", Toast.LENGTH_SHORT).show();
-                        } else {
                             Toast.makeText(context, "Album deleted", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(context, "Delete photos first", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
