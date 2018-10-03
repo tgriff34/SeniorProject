@@ -204,22 +204,15 @@ public class FirebaseCommands {
         getPhotos(new OnGetPhotosListener() {
             @Override
             public void onGetPhotosSuccess(LinkedHashMap<String, String> images) {
-               if (images.isEmpty()) {
-                   Log.d("demo", images.toString());
-                   db.collection("users")
-                           .document(user.getUid())
-                           .collection(setting)
-                           .document(name)
-                           .delete()
-                           .addOnCompleteListener(new OnCompleteListener<Void>() {
-                               @Override
-                               public void onComplete(@NonNull Task<Void> task) {
-                                   listener.onDeleteAlbum(true);
-                               }
-                           });
-               } else {
-                   listener.onDeleteAlbum(false);
-               }
+                for (Map.Entry<String, String> photo : images.entrySet()) {
+                    deleteFromDatabase(photo.getKey(), name);
+                }
+                db.collection("users")
+                        .document(user.getUid())
+                        .collection(setting)
+                        .document(name)
+                        .delete();
+                listener.onDeleteAlbum(true);
             }
         }, name);
     }
