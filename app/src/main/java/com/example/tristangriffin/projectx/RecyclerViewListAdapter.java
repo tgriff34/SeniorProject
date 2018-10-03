@@ -25,6 +25,8 @@ import com.google.rpc.Help;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import static com.example.tristangriffin.projectx.MainActivity.USER_FRAGMENT;
+
 public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewListAdapter.MyViewHolder> {
 
     private LinkedHashMap<String, String> albums;
@@ -104,11 +106,12 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
                 firebaseCommands.deletePhotoCollection(textView.getText().toString(), "public", new OnDeleteAlbumListener() {
                     @Override
                     public void onDeleteAlbum(boolean isDeleted) {
-                        Log.d("demo", "isDeleted: " + isDeleted);
                         if (isDeleted) {
+                            UserFragment userFragment = (UserFragment)((FragmentActivity) context).getSupportFragmentManager().findFragmentByTag(USER_FRAGMENT);
+                            userFragment.getAlbums();
                             Toast.makeText(context, "Album deleted", Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(context, "Delete photos first", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Error deleting album", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });

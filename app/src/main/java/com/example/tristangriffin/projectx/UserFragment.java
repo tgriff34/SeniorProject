@@ -73,7 +73,7 @@ public class UserFragment extends Fragment {
         return view;
     }
 
-    private void getAlbums() {
+    public void getAlbums() {
         progressBar.setVisibility(View.VISIBLE);
         cloudImages = new LinkedHashMap<>();
         firebaseCommands.getAlbums(new OnGetAlbumListener() {
