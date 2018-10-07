@@ -99,27 +99,9 @@ public class FirebaseCommands {
                         listener.onSignUp();
                     }
                 });
-
-        /*
-        Map<String, Object> newPublicPhotoLibrary = new HashMap<>();
-        newPublicPhotoLibrary.put("name", "AllImages");
-        db.collection("users")
-                .document(user.getUid())
-                .collection("public")
-                .document("AllImages")
-                .set(newPublicPhotoLibrary);
-
-        Map<String, Object> newPrivatePhotoLibrary = new HashMap<>();
-        newPrivatePhotoLibrary.put("name", "AllImages");
-        db.collection("users")
-                .document(user.getUid())
-                .collection("private")
-                .document("AllImages")
-                .set(newPrivatePhotoLibrary);
-                */
     }
 
-    public void uploadPhotos(Uri uri, final String collection, final String longitude, final String latitude,
+    public void uploadPhotos(Uri uri, final String collection, final String location, final String longitude, final String latitude,
                              final String timeCreated, final String dateCreated) {
         final StorageReference fileRef = storageReference.child("images/public/" + user.getUid() + "/" + uri.getLastPathSegment());
         final String TAG = uri.getLastPathSegment();
@@ -130,7 +112,7 @@ public class FirebaseCommands {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 Log.d("Firebase", "uploadSuccess:true");
-                addToDatabase(fileRef, null, collection, TAG, longitude, latitude, timeCreated, dateCreated);
+                addToDatabase(fileRef, null, collection, TAG, location, longitude, latitude, timeCreated, dateCreated);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -141,7 +123,7 @@ public class FirebaseCommands {
     }
 
     private void addToDatabase(@Nullable StorageReference ref, @Nullable final String URI, final String collection,
-                               final String TAG, final String longitude, final String latitude,
+                               final String TAG, final String location, final String longitude, final String latitude,
                                final String timeCreated, final String dateCreated) {
         final Map<String, Object> dbImageReference = new HashMap<>();
         if (URI == null) {
@@ -152,6 +134,7 @@ public class FirebaseCommands {
                     dbImageReference.put("ref", uri.toString());
                     dbImageReference.put("longitude", longitude);
                     dbImageReference.put("latitude", latitude);
+                    dbImageReference.put("location", location);
                     dbImageReference.put("time", timeCreated);
                     dbImageReference.put("date", dateCreated);
                     db.collection("users")

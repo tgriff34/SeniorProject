@@ -32,7 +32,7 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
     private LinkedHashMap<String, String> albums;
     private Context context;
 
-    FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
+    private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
     public static final String USER_IMAGE_FRAGMENT_TAG = "UserImageFrag";
     public static final String ALBUM_NAME = "album_name";
@@ -42,12 +42,11 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
         albums = mAlbums;
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
 
         private TextView nameTextView;
         private ImageView holderImageView;
         private Button deleteAlbumButton, favoriteAlbumButton;
-        private ItemClickListener clickListener;
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -55,24 +54,7 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
             holderImageView = (ImageView) itemView.findViewById(R.id.thumbnail);
             deleteAlbumButton = (Button) itemView.findViewById(R.id.album_delete_button);
             favoriteAlbumButton = (Button) itemView.findViewById(R.id.album_favorite_button);
-            itemView.setOnClickListener(this);
         }
-
-        public void setClickListener(ItemClickListener itemClickListener) {
-            this.clickListener = itemClickListener;
-        }
-
-        @Override
-        public void onClick(View view) {
-            clickListener.onClick(view, getLayoutPosition(), false);
-        }
-
-        @Override
-        public boolean onLongClick(View view) {
-            clickListener.onClick(view, getLayoutPosition(), true);
-            return true;
-        }
-
     }
 
     @NonNull

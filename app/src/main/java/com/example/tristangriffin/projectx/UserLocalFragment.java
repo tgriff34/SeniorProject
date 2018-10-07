@@ -3,6 +3,8 @@ package com.example.tristangriffin.projectx;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.location.Address;
+import android.location.Geocoder;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -31,6 +33,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -40,9 +44,11 @@ public class UserLocalFragment extends Fragment {
 
     private ArrayList<String> images = new ArrayList<>();
     private GridView gridView;
-    private String latitude = null, longitude = null, timeCreated = null, dateCreated = null;
+    private String latitude = null, longitude = null,
+            timeCreated = null, dateCreated = null, location = null;
     private Uri file;
     private String albumName;
+    private Geocoder geocoder;
 
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
@@ -137,13 +143,20 @@ public class UserLocalFragment extends Fragment {
         //End of Exif
         if (!GET_LOCATION_FLAG) {
             Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
-            firebaseCommands.uploadPhotos(file, albumName, longitude, latitude, timeCreated, dateCreated);
+            geocoder = new Geocoder(getActivity(), Locale.getDefault());
+            List<Address> addresses = null;
+            try {
+                addresses = geocoder.getFromLocation(Double.parseDouble(latitude), Double.parseDouble(longitude), 1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            location = addresses.get(0).getAddressLine(0);
+            firebaseCommands.uploadPhotos(file, albumName, location, longitude, latitude, timeCreated, dateCreated);
         }
     }
 
     private void updateUI(ArrayList<String> imageArray) {
         images = imageArray;
-        //gridView.setAdapter(new ImageAdapter(getActivity(), LOCAL_PHOTO_VIEW));
         gridView.setAdapter(new GridViewImageAdapter(getActivity(), LOCAL_PHOTO_VIEW,
                 gridView, images));
     }
@@ -162,7 +175,8 @@ public class UserLocalFragment extends Fragment {
                 Place place = PlaceAutocomplete.getPlace(getActivity(), data);
                 latitude = String.valueOf(place.getLatLng().latitude);
                 longitude = String.valueOf(place.getLatLng().longitude);
-                firebaseCommands.uploadPhotos(file, albumName, longitude, latitude, timeCreated, dateCreated);
+                location = String.valueOf(place.getAddress());
+                firebaseCommands.uploadPhotos(file, albumName, location, longitude, latitude, timeCreated, dateCreated);
                 Log.d("UserLocalFragment", place.getLatLng().toString());
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Toast.makeText(getContext(), "Request Failed", Toast.LENGTH_SHORT).show();
