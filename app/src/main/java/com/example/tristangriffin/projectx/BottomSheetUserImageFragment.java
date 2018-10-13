@@ -42,7 +42,7 @@ public class BottomSheetUserImageFragment extends BottomSheetDialogFragment{
         view.findViewById(R.id.action_delete_photos).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                firebaseCommands.deleteFromDatabase(TAG, album);
+                firebaseCommands.deleteFromDatabase(TAG, album, "public");
                 dismiss();
             }
         });

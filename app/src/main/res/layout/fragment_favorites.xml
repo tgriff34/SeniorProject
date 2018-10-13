@@ -7,9 +7,27 @@
     tools:context=".FavoritesFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <ProgressBar
+        android:id="@+id/favorites_progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="4dp"
+        android:layout_gravity="center"
+        />
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/favorites_swipeContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Favorites Fragment" />
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/favorites_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </android.support.v7.widget.RecyclerView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
 
 </FrameLayout>

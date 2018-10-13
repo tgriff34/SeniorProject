@@ -81,6 +81,20 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
         Glide.with(context).load(new ArrayList<>(albums.values()).get(position)).apply(RequestOptions.centerCropTransform()).into(imageView);
 
         /**
+         * Is the album favorited?
+         */
+        firebaseCommands.isFavoritePhotoCollection(textView.getText().toString(), "public", new OnGetIsFavoriteAlbumListener() {
+            @Override
+            public void isFavoriteAlbum(boolean isFavoriteAlbum) {
+                if (isFavoriteAlbum) {
+                    favoriteButton.setText("Unfavorite");
+                } else {
+                    favoriteButton.setText("Favorite");
+                }
+            }
+        });
+
+        /**
          * TODO: ADD DELETE COLLECTION LOGIC
          */
         holder.deleteAlbumButton.setOnClickListener(new View.OnClickListener() {

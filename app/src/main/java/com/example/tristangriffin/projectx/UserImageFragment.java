@@ -112,12 +112,12 @@ public class UserImageFragment extends Fragment {
     }
 
     private void getImages() {
-        firebaseCommands.getPhotos(new OnGetPhotosListener() {
+        firebaseCommands.getPhotos(albumName, "public", new OnGetPhotosListener() {
             @Override
             public void onGetPhotosSuccess(LinkedHashMap<String, String> images) {
                 updateUI(images);
             }
-        }, albumName);
+        });
     }
 
     private void updateUI(LinkedHashMap<String, String> imageArray) {

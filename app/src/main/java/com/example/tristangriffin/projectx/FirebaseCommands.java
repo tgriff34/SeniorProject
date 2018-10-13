@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -41,7 +42,7 @@ public class FirebaseCommands {
     private ArrayList<String> allAlbums;
     private String thumbnailRef;
 
-    private static final String DEFAULT_ALL_IMAGE_COLLECTION = "AllImages";
+    private static final String USER_TAG = "users";
 
     public static FirebaseCommands getInstance() {
         return ourInstance;
@@ -161,10 +162,10 @@ public class FirebaseCommands {
         }
     }
 
-    public void deleteFromDatabase(final String TAG, final String collection) {
+    public void deleteFromDatabase(final String TAG, final String collection, final String setting) {
         db.collection("users")
                 .document(user.getUid())
-                .collection("public")
+                .collection(setting)
                 .document(collection)
                 .collection("images")
                 .document(TAG)
@@ -185,11 +186,11 @@ public class FirebaseCommands {
     }
 
     public void deletePhotoCollection(final String name, final String setting, final OnDeleteAlbumListener listener) {
-        getPhotos(new OnGetPhotosListener() {
+        getPhotos(name, setting, new OnGetPhotosListener() {
             @Override
             public void onGetPhotosSuccess(LinkedHashMap<String, String> images) {
                 for (Map.Entry<String, String> photo : images.entrySet()) {
-                    deleteFromDatabase(photo.getKey(), name);
+                    deleteFromDatabase(photo.getKey(), name, setting);
                 }
                 db.collection("users")
                         .document(user.getUid())
@@ -198,10 +199,68 @@ public class FirebaseCommands {
                         .delete();
                 listener.onDeleteAlbum(true);
             }
-        }, name);
+        });
     }
 
     public void favoritePhotoCollection(final String name, final String setting) {
+        Map<String, Object> isFavorite = new HashMap<>();
+        isFavorite.put("name", name);
+        isFavorite.put("isFavorite", true);
+        db.collection("users")
+                .document(user.getUid())
+                .collection(setting)
+                .document(name)
+                .set(isFavorite);
+
+        db.collection("users")
+                .document(user.getUid())
+                .collection(setting)
+                .document(name)
+                .collection("images")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            Map<String, Object> albumName = new HashMap<>();
+                            albumName.put("name", name);
+                            db.collection("users")
+                                    .document(user.getUid())
+                                    .collection("favorites")
+                                    .document(name).set(albumName);
+                            for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                db.collection("users")
+                                        .document(user.getUid())
+                                        .collection("favorites")
+                                        .document(name)
+                                        .collection("images")
+                                        .document(documentSnapshot.getId())
+                                        .set(documentSnapshot.getData());
+                                Log.d("demo", documentSnapshot.getId() + " => " + documentSnapshot.getData());
+                            }
+                        }
+                    }
+                });
+    }
+
+    public void unfavoritePhotoCollection(final String name) {
+        Map<String, Object> albumSetting = new HashMap<>();
+        albumSetting.put("name", name);
+        albumSetting.put("isFavorite", false);
+        db.collection("users")
+                .document(user.getUid())
+                .collection("public")
+                .document(name)
+                .set(albumSetting);
+
+        deletePhotoCollection(name, "favorites", new OnDeleteAlbumListener() {
+            @Override
+            public void onDeleteAlbum(boolean isDeleted) {
+            }
+        });
+    }
+
+    public void isFavoritePhotoCollection(final String name, final String setting, final OnGetIsFavoriteAlbumListener listener) {
         db.collection("users")
                 .document(user.getUid())
                 .collection(setting)
@@ -211,30 +270,17 @@ public class FirebaseCommands {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
-                            DocumentSnapshot documentSnapshot = task.getResult();
-                            Map<String, Object> photoAlbum = new HashMap<>();
-                            photoAlbum.put("name", documentSnapshot.get("name"));
-                            db.collection("users")
-                                    .document(user.getUid())
-                                    .collection("favorites")
-                                    .document(documentSnapshot.get("name").toString())
-                                    .set(photoAlbum);
+                            boolean isFavorite = (boolean) task.getResult().get("isFavorite");
+                            listener.isFavoriteAlbum(isFavorite);
                         }
                     }
                 });
     }
 
-    public void unfavoritePhotoCollection(final String name) {
-        db.collection("users")
-                .document(user.getUid())
-                .collection("favorites")
-                .document(name)
-                .delete();
-    }
-
     public void createPhotoCollection(String name, String setting) {
         Map<String, Object> collectionName = new HashMap<>();
         collectionName.put("name", name);
+        collectionName.put("isFavorite", false);
         db.collection("users")
                 .document(user.getUid())
                 .collection(setting)
@@ -242,11 +288,11 @@ public class FirebaseCommands {
                 .set(collectionName);
     }
 
-    public void getAlbums(final OnGetAlbumListener listener) {
+    public void getAlbums(final String setting, final OnGetAlbumListener listener) {
         allAlbums = new ArrayList<>();
         db.collection("users")
                 .document(user.getUid())
-                .collection("public")
+                .collection(setting)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -263,12 +309,12 @@ public class FirebaseCommands {
                 });
     }
 
-    public void getPhotos(final OnGetPhotosListener listener, String albumName) {
+    public void getPhotos(final String albumName, final String setting, final OnGetPhotosListener listener) {
         allImages = new LinkedHashMap<>();
-        //TODO: Get images from all albums
+        //TODO: Get images from album
         db.collection("users")
                 .document(user.getUid())
-                .collection("public")
+                .collection(setting)
                 .document(albumName)
                 .collection("images")
                 .get()
@@ -286,10 +332,10 @@ public class FirebaseCommands {
                 });
     }
 
-    public void getThumbnail(final OnGetThumbnailListener listener, String albumName) {
+    public void getThumbnail(final String albumName, final String setting, final OnGetThumbnailListener listener) {
         db.collection("users")
                 .document(user.getUid())
-                .collection("public")
+                .collection(setting)
                 .document(albumName)
                 .collection("images")
                 .get()

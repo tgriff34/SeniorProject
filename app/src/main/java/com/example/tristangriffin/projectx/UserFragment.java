@@ -76,7 +76,7 @@ public class UserFragment extends Fragment {
     public void getAlbums() {
         progressBar.setVisibility(View.VISIBLE);
         cloudImages = new LinkedHashMap<>();
-        firebaseCommands.getAlbums(new OnGetAlbumListener() {
+        firebaseCommands.getAlbums("public", new OnGetAlbumListener() {
             @Override
             public void onGetAlbumSuccess(ArrayList<String> albums) {
                 getThumbnail(albums);
@@ -87,13 +87,13 @@ public class UserFragment extends Fragment {
     private void getThumbnail(final ArrayList<String> albums) {
         for (int i = 0; i < albums.size(); i++ ) {
             final int j = i;
-            firebaseCommands.getThumbnail(new OnGetThumbnailListener() {
+            firebaseCommands.getThumbnail(albums.get(i), "public", new OnGetThumbnailListener() {
                 @Override
                 public void onGetThumbnailSuccess(String string) {
                     cloudImages.put(albums.get(j), string);
                     updateUI();
                 }
-            }, albums.get(i));
+            });
         }
     }
 
