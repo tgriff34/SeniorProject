@@ -32,7 +32,9 @@ import com.google.firebase.storage.FirebaseStorage;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -72,8 +74,8 @@ public class UserLocalFragment extends Fragment {
 
         gridView = view.findViewById(R.id.grid_local_view);
         albumName = getArguments().getString("album_name");
-        getImages(getActivity());
         setHasOptionsMenu(true);
+        getImages(getActivity());
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -98,7 +100,6 @@ public class UserLocalFragment extends Fragment {
             allImages.add(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA)));
         }
         cursor.close();
-        Log.d("UserLocalFragment", "Local images: " + allImages.toString());
         updateUI(allImages);
     }
 

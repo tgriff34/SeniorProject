@@ -75,6 +75,7 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
         final String albumName = new ArrayList<>(albums.keySet()).get(position);
         final TextView textView = holder.nameTextView;
         ImageView imageView = holder.holderImageView;
+        final Button favoriteButton = holder.favoriteAlbumButton;
 
         textView.setText(new ArrayList<>(albums.keySet()).get(position));
         Glide.with(context).load(new ArrayList<>(albums.values()).get(position)).apply(RequestOptions.centerCropTransform()).into(imageView);
@@ -106,7 +107,13 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
         holder.favoriteAlbumButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (favoriteButton.getText().equals("Favorite")) {
+                    firebaseCommands.favoritePhotoCollection(textView.getText().toString(), "public");
+                    favoriteButton.setText("Unfavorite");
+                } else {
+                    firebaseCommands.unfavoritePhotoCollection(textView.getText().toString());
+                    favoriteButton.setText("Favorite");
+                }
             }
         });
 

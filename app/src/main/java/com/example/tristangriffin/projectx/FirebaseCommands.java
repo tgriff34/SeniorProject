@@ -14,6 +14,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -200,6 +201,37 @@ public class FirebaseCommands {
         }, name);
     }
 
+    public void favoritePhotoCollection(final String name, final String setting) {
+        db.collection("users")
+                .document(user.getUid())
+                .collection(setting)
+                .document(name)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot documentSnapshot = task.getResult();
+                            Map<String, Object> photoAlbum = new HashMap<>();
+                            photoAlbum.put("name", documentSnapshot.get("name"));
+                            db.collection("users")
+                                    .document(user.getUid())
+                                    .collection("favorites")
+                                    .document(documentSnapshot.get("name").toString())
+                                    .set(photoAlbum);
+                        }
+                    }
+                });
+    }
+
+    public void unfavoritePhotoCollection(final String name) {
+        db.collection("users")
+                .document(user.getUid())
+                .collection("favorites")
+                .document(name)
+                .delete();
+    }
+
     public void createPhotoCollection(String name, String setting) {
         Map<String, Object> collectionName = new HashMap<>();
         collectionName.put("name", name);
@@ -209,39 +241,6 @@ public class FirebaseCommands {
                 .document(name)
                 .set(collectionName);
     }
-
-    /*
-    public void addPhotoToCollection(final String TAG, final String collection) {
-        db.collection("users")
-                .document(user.getUid())
-                .collection("public")
-                .document(DEFAULT_ALL_IMAGE_COLLECTION)
-                .collection("images")
-                .document(TAG)
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                        if (task.isSuccessful()) {
-                            DocumentSnapshot documentSnapshot = task.getResult();
-                            if (documentSnapshot.exists() && documentSnapshot != null) {
-                                Log.d("Firebase", documentSnapshot.toString());
-                                String uri = String.valueOf(documentSnapshot.get("ref"));
-                                String date = String.valueOf(documentSnapshot.get("date"));
-                                String latitude = String.valueOf(documentSnapshot.get("latitude"));
-                                String longitude = String.valueOf(documentSnapshot.get("longitude"));
-                                String time = String.valueOf(documentSnapshot.get("time"));
-
-                                //TODO: Add option for user input
-                                /**
-                                 * TEST is test collection before user input is added
-                                addToDatabase(null, uri, collection, TAG, longitude, latitude, time, date);
-                            }
-                        }
-                    }
-                });
-    }
-                                 */
 
     public void getAlbums(final OnGetAlbumListener listener) {
         allAlbums = new ArrayList<>();
