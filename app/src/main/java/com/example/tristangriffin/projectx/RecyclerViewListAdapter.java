@@ -83,13 +83,13 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
         /**
          * Is the album favorited?
          */
-        firebaseCommands.isFavoritePhotoCollection(textView.getText().toString(), "public", new OnGetIsFavoriteAlbumListener() {
+        firebaseCommands.getFavoritedPhotoCollection(new OnGetFavoritedAlbumListener() {
             @Override
-            public void isFavoriteAlbum(boolean isFavoriteAlbum) {
-                if (isFavoriteAlbum) {
-                    favoriteButton.setText("Unfavorite");
-                } else {
-                    favoriteButton.setText("Favorite");
+            public void getFavoritedAlbum(ArrayList<String> albums) {
+                for (int i = 0; i < albums.size(); i++) {
+                    if (albumName.equals(albums.get(i))) {
+                        favoriteButton.setText("Unfavorite");
+                    }
                 }
             }
         });
@@ -125,7 +125,7 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
                     firebaseCommands.favoritePhotoCollection(textView.getText().toString(), "public");
                     favoriteButton.setText("Unfavorite");
                 } else {
-                    firebaseCommands.unfavoritePhotoCollection(textView.getText().toString());
+                    firebaseCommands.unfavoritePhotoCollection(textView.getText().toString(), "public");
                     favoriteButton.setText("Favorite");
                 }
             }

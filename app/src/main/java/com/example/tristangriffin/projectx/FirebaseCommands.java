@@ -136,6 +136,7 @@ public class FirebaseCommands {
             ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                 @Override
                 public void onSuccess(Uri uri) {
+                    dbImageReference.put("album", collection);
                     dbImageReference.put("ref", uri.toString());
                     dbImageReference.put("longitude", longitude);
                     dbImageReference.put("latitude", latitude);
@@ -214,70 +215,34 @@ public class FirebaseCommands {
                 .collection(setting)
                 .document(name)
                 .set(isFavorite);
-
-        db.collection("users")
-                .document(user.getUid())
-                .collection(setting)
-                .document(name)
-                .collection("images")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-                            Map<String, Object> albumName = new HashMap<>();
-                            albumName.put("name", name);
-                            db.collection("users")
-                                    .document(user.getUid())
-                                    .collection("favorites")
-                                    .document(name).set(albumName);
-                            for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                db.collection("users")
-                                        .document(user.getUid())
-                                        .collection("favorites")
-                                        .document(name)
-                                        .collection("images")
-                                        .document(documentSnapshot.getId())
-                                        .set(documentSnapshot.getData());
-                                Log.d("demo", documentSnapshot.getId() + " => " + documentSnapshot.getData());
-                            }
-                        }
-                    }
-                });
     }
 
-    public void unfavoritePhotoCollection(final String name) {
+    public void unfavoritePhotoCollection(final String name, final String setting) {
         Map<String, Object> albumSetting = new HashMap<>();
         albumSetting.put("name", name);
         albumSetting.put("isFavorite", false);
         db.collection("users")
                 .document(user.getUid())
-                .collection("public")
-                .document(name)
-                .set(albumSetting);
-
-        /**
-         * TODO: Might need to add a listener here...
-         */
-        deletePhotoCollection(name, "favorites", new OnDeleteAlbumListener() {
-            @Override
-            public void onDeleteAlbum(boolean isDeleted) {
-            }
-        });
-    }
-
-    public void isFavoritePhotoCollection(final String name, final String setting, final OnGetIsFavoriteAlbumListener listener) {
-        db.collection("users")
-                .document(user.getUid())
                 .collection(setting)
                 .document(name)
+                .set(albumSetting);
+    }
+
+    public void getFavoritedPhotoCollection(final OnGetFavoritedAlbumListener listener) {
+        final ArrayList<String> favoritedAlbums = new ArrayList<>();
+        db.collection("users")
+                .document(user.getUid())
+                .collection("public")
+                .whereEqualTo("isFavorite", true)
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
-                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            boolean isFavorite = (boolean) task.getResult().get("isFavorite");
-                            listener.isFavoriteAlbum(isFavorite);
+                            for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                favoritedAlbums.add(documentSnapshot.getId());
+                            }
+                            listener.getFavoritedAlbum(favoritedAlbums);
                         }
                     }
                 });
@@ -381,10 +346,32 @@ public class FirebaseCommands {
                     for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
                         searchedAlbums.add(documentSnapshot.getId());
                     }
-                    listener.searchedAlbums(searchedAlbums);
+                }
+            }
+        });
+        getAlbums("public", new OnGetAlbumListener() {
+            @Override
+            public void onGetAlbumSuccess(ArrayList<String> albums) {
+                for (String album : albums) {
+                    db.collection("users")
+                            .document(user.getUid())
+                            .collection("public")
+                            .document(album)
+                            .collection("images")
+                            .orderBy("location").startAt(searchString).endAt(searchString + "\uf8ff").get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                    searchedAlbums.add(documentSnapshot.get("album").toString());
+                                }
+                                listener.searchedAlbums(searchedAlbums);
+                            }
+                        }
+                    });
                 }
             }
         });
     }
-
 }

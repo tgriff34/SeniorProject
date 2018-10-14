@@ -68,9 +68,9 @@ public class FavoritesFragment extends Fragment {
     private void getFavoriteAlbums() {
         progressBar.setVisibility(View.VISIBLE);
         favoritedImages = new LinkedHashMap<>();
-        firebaseCommands.getAlbums("favorites", new OnGetAlbumListener() {
+        firebaseCommands.getFavoritedPhotoCollection(new OnGetFavoritedAlbumListener() {
             @Override
-            public void onGetAlbumSuccess(ArrayList<String> albums) {
+            public void getFavoritedAlbum(ArrayList<String> albums) {
                 getThumbnail(albums);
             }
         });
