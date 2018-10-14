@@ -1,6 +1,8 @@
 package com.example.tristangriffin.projectx;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.location.Address;
@@ -118,20 +120,38 @@ public class UserLocalFragment extends Fragment {
             latitude = String.valueOf(location.getLatitude());
             longitude = String.valueOf(location.getLongitude());
 
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
             if (latitude.equals("0.0") && longitude.equals("0.0")) {
                 GET_LOCATION_FLAG = true;
                 //Open up fragment to type location (Google Place Autocomplete)
-                try {
-                    Intent intent =
-                            new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
-                                    .build(getActivity());
+                builder.setTitle("Set Location");
+                builder.setMessage("This image does not have a location associated with." +
+                        "  Would you like to associate a location with this image?");
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        try {
+                            Intent intent =
+                                    new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+                                            .build(getActivity());
 
-                    startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
-                } catch (GooglePlayServicesNotAvailableException e) {
-                    e.printStackTrace();
-                } catch (GooglePlayServicesRepairableException e) {
-                    e.printStackTrace();
-                }
+                            startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
+                        } catch (GooglePlayServicesNotAvailableException e) {
+                            e.printStackTrace();
+                        } catch (GooglePlayServicesRepairableException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                        Toast.makeText(getContext(), "Image not added to album.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+                builder.show();
             }
 
             //Time Created

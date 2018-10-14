@@ -253,6 +253,9 @@ public class FirebaseCommands {
                 .document(name)
                 .set(albumSetting);
 
+        /**
+         * TODO: Might need to add a listener here...
+         */
         deletePhotoCollection(name, "favorites", new OnDeleteAlbumListener() {
             @Override
             public void onDeleteAlbum(boolean isDeleted) {
