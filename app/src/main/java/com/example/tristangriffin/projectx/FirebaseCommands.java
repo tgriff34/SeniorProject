@@ -15,14 +15,17 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -354,4 +357,34 @@ public class FirebaseCommands {
                     }
                 });
     }
+
+    public void searchAlbums(final String searchString, final OnGetSearchAlbumsListener listener) {
+        final ArrayList<String> searchedAlbums = new ArrayList<>();
+
+        CollectionReference publicRef = db.collection("users").document(user.getUid()).collection("public");
+        CollectionReference privateRef = db.collection("users").document(user.getUid()).collection("private");
+
+        publicRef.orderBy("name").startAt(searchString).endAt(searchString + "\uf8ff").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                        searchedAlbums.add(documentSnapshot.getId());
+                    }
+                }
+            }
+        });
+        privateRef.orderBy("name").startAt(searchString).endAt(searchString + "\uf8ff").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                        searchedAlbums.add(documentSnapshot.getId());
+                    }
+                    listener.searchedAlbums(searchedAlbums);
+                }
+            }
+        });
+    }
+
 }
