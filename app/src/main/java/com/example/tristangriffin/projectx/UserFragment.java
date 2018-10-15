@@ -17,6 +17,9 @@ import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -27,6 +30,7 @@ public class UserFragment extends Fragment {
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeContainer;
     private ProgressBar progressBar;
+    private TextView textView;
 
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
@@ -51,8 +55,10 @@ public class UserFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recycler_view);
         swipeContainer = view.findViewById(R.id.swipeContainer);
         progressBar = view.findViewById(R.id.user_progressbar);
+        textView = view.findViewById(R.id.user_textInfo);
         progressBar.setVisibility(View.GONE);
         progressBar.setIndeterminate(true);
+        textView.setVisibility(View.GONE);
 
         getAlbums();
         setHasOptionsMenu(true);
@@ -79,7 +85,11 @@ public class UserFragment extends Fragment {
         firebaseCommands.getAlbums("public", new OnGetAlbumListener() {
             @Override
             public void onGetAlbumSuccess(ArrayList<String> albums) {
-                getThumbnail(albums);
+                if (!albums.isEmpty()) {
+                    getThumbnail(albums);
+                } else {
+                    updateUI();
+                }
             }
         });
     }
@@ -102,6 +112,12 @@ public class UserFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(new RecyclerViewListAdapter(getContext(), cloudImages));
         progressBar.setVisibility(View.GONE);
+
+        if (cloudImages.isEmpty()) {
+            textView.setVisibility(View.VISIBLE);
+        } else {
+            textView.setVisibility(View.GONE);
+        }
     }
 
     @Override

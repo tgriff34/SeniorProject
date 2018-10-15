@@ -1,5 +1,6 @@
 package com.example.tristangriffin.projectx;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
@@ -39,6 +40,7 @@ public class SearchFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    @SuppressLint("ResourceAsColor")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -55,13 +57,28 @@ public class SearchFragment extends Fragment {
         searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if ((event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) || (actionId == EditorInfo.IME_ACTION_DONE))) {
+                if ((!searchText.getText().toString().equals("") && event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) || (actionId == EditorInfo.IME_ACTION_DONE))) {
                     getAlbums(searchText.getText().toString());
                 }
                 return false;
             }
         });
 
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.d("demo", "Search String: " + searchText.getText().toString());
+                if (!searchText.getText().toString().equals("")) {
+                    getAlbums(searchText.getText().toString());
+                }
+                swipeContainer.setRefreshing(false);
+            }
+        });
+
+        swipeContainer.setColorSchemeColors(android.R.color.holo_blue_bright,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
 
         return view;
     }
@@ -73,7 +90,11 @@ public class SearchFragment extends Fragment {
             @Override
             public void searchedAlbums(ArrayList<String> albums) {
                 Log.d("demo", "Searched Albums: " + albums);
-                getThumbnail(albums);
+                if (!albums.isEmpty()) {
+                    getThumbnail(albums);
+                } else {
+                    updateUI();
+                }
             }
         });
     }

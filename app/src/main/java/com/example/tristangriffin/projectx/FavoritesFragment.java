@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -23,6 +24,7 @@ public class FavoritesFragment extends Fragment {
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar progressBar;
+    private TextView textView;
 
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
@@ -44,8 +46,10 @@ public class FavoritesFragment extends Fragment {
         recyclerView = view.findViewById(R.id.favorites_recyclerView);
         swipeRefreshLayout = view.findViewById(R.id.favorites_swipeContainer);
         progressBar = view.findViewById(R.id.favorites_progressBar);
+        textView = view.findViewById(R.id.favorites_textInfo);
         progressBar.setIndeterminate(true);
         progressBar.setVisibility(View.GONE);
+        textView.setVisibility(View.GONE);
 
         getFavoriteAlbums();
 
@@ -71,7 +75,11 @@ public class FavoritesFragment extends Fragment {
         firebaseCommands.getFavoritedPhotoCollection(new OnGetFavoritedAlbumListener() {
             @Override
             public void getFavoritedAlbum(ArrayList<String> albums) {
-                getThumbnail(albums);
+                if (!albums.isEmpty()) {
+                    getThumbnail(albums);
+                } else {
+                    updateUI();
+                }
             }
         });
     }
@@ -94,5 +102,11 @@ public class FavoritesFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(new RecyclerViewListAdapter(getContext(), favoritedImages));
         progressBar.setVisibility(View.GONE);
+
+        if (favoritedImages.isEmpty()) {
+            textView.setVisibility(View.VISIBLE);
+        } else {
+            textView.setVisibility(View.GONE);
+        }
     }
 }

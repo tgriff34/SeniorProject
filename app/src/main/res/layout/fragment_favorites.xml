@@ -16,6 +16,13 @@
         android:elevation="4dp"
         android:layout_gravity="center"
         />
+    <TextView
+        android:id="@+id/favorites_textInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="Add favorites from the Albums Tab"
+        />
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/favorites_swipeContainer"
