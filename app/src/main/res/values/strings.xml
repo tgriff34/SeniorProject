@@ -23,8 +23,10 @@
     <string name="user_text_info">Click the options menu to add photos</string>
     <string name="user_text_addphotos">CONFIRM</string>
 
+
     <!-- Settings ListView Resources -->
     <string-array name="settings_array">
+        <item>Change Theme</item>
         <item>Sign Out</item>
     </string-array>
 

@@ -3,9 +3,11 @@ package com.example.tristangriffin.projectx;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -39,6 +41,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String currentTheme = preferences.getString("current_theme", "Light");
+        if (currentTheme.equals("Light")) {
+            setTheme(R.style.LightAppTheme);
+        } else {
+            setTheme(R.style.AppTheme);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -59,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
         final SearchFragment searchFragment = new SearchFragment();
         final SettingsFragment settingsFragment = new SettingsFragment();
 
+        final BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+
         if (firebaseCommands.user == null) {
             Intent intent = new Intent(this, SignInActivity.class);
             startActivity(intent);
@@ -66,31 +77,33 @@ public class MainActivity extends AppCompatActivity {
             setFragment(userFragment, USER_FRAGMENT);
         }
 
-        final BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
-
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                        item.setChecked(true);
                         switch (item.getItemId()) {
                             case R.id.action_user:
+                                item.setChecked(true);
                                 setFragment(userFragment, USER_FRAGMENT);
                                 break;
 
                             case R.id.action_favorites:
+                                item.setChecked(true);
                                 setFragment(favoritesFragment, FAVORITES_FRAGMENT);
                                 break;
 
                             case R.id.action_navi:
+                                item.setChecked(true);
                                 setFragment(navigationFragment, NAVIGATION_FRAGMENT);
                                 break;
 
                             case R.id.action_search:
+                                item.setChecked(true);
                                 setFragment(searchFragment, SEARCH_FRAGMENT);
                                 break;
 
                             case R.id.action_settings:
+                                item.setChecked(true);
                                 setFragment(settingsFragment, SETTINGS_FRAGMENT);
                                 break;
                         }

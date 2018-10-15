@@ -2,9 +2,13 @@ package com.example.tristangriffin.projectx;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +49,17 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         switch (i) {
             case 0:
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+                String currentTheme = sharedPreferences.getString("current_theme", "Light");
+                if (currentTheme.equals("Light")) {
+                    sharedPreferences.edit().putString("current_theme", "Dark").apply();
+                } else {
+                    sharedPreferences.edit().putString("current_theme", "Light").apply();
+                }
+                getActivity().recreate();
+                break;
+
+            case 1:
                 Toast.makeText(getActivity(), "Signed Out", Toast.LENGTH_SHORT).show();
                 FirebaseAuth.getInstance().signOut();
                 Intent intent = new Intent(getActivity(), SignInActivity.class);
