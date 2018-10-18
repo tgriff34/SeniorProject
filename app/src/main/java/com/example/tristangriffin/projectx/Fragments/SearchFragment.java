@@ -1,8 +1,6 @@
-package com.example.tristangriffin.projectx;
+package com.example.tristangriffin.projectx.Fragments;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -17,6 +15,12 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
+import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
+import com.example.tristangriffin.projectx.Listeners.OnGetSearchAlbumsListener;
+import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
+import com.example.tristangriffin.projectx.R;
+import com.example.tristangriffin.projectx.Resources.RecyclerViewListAdapter;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

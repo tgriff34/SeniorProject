@@ -1,32 +1,36 @@
-package com.example.tristangriffin.projectx;
+package com.example.tristangriffin.projectx.Activities;
 
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 
-import static com.example.tristangriffin.projectx.RecyclerViewListAdapter.ALBUM_NAME;
-import static com.example.tristangriffin.projectx.RecyclerViewListAdapter.USER_IMAGE_FRAGMENT_TAG;
+import com.example.tristangriffin.projectx.Resources.FavoritesFragment;
+import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
+import com.example.tristangriffin.projectx.Fragments.NavigationFragment;
+import com.example.tristangriffin.projectx.R;
+import com.example.tristangriffin.projectx.Fragments.SearchFragment;
+import com.example.tristangriffin.projectx.Fragments.SettingsFragment;
+import com.example.tristangriffin.projectx.Fragments.UserFragment;
+import com.example.tristangriffin.projectx.Fragments.UserImageFragment;
+
+import static com.example.tristangriffin.projectx.Resources.RecyclerViewListAdapter.ALBUM_NAME;
+import static com.example.tristangriffin.projectx.Resources.RecyclerViewListAdapter.USER_IMAGE_FRAGMENT_TAG;
 
 public class MainActivity extends AppCompatActivity {
 

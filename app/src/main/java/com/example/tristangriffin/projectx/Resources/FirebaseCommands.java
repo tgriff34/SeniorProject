@@ -1,12 +1,19 @@
-package com.example.tristangriffin.projectx;
+package com.example.tristangriffin.projectx.Resources;
 
 import android.app.Activity;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.widget.Toast;
 
+import com.example.tristangriffin.projectx.Listeners.OnDeleteAlbumListener;
+import com.example.tristangriffin.projectx.Listeners.OnGetAlbumListener;
+import com.example.tristangriffin.projectx.Listeners.OnGetFavoritedAlbumListener;
+import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
+import com.example.tristangriffin.projectx.Listeners.OnGetSearchAlbumsListener;
+import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
+import com.example.tristangriffin.projectx.Listeners.OnSignInListener;
+import com.example.tristangriffin.projectx.Listeners.OnSignUpListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -16,16 +23,13 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;

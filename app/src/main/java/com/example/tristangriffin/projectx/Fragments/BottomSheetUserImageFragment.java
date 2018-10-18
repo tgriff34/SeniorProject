@@ -1,15 +1,13 @@
-package com.example.tristangriffin.projectx;
+package com.example.tristangriffin.projectx.Fragments;
 
 import android.os.Bundle;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import static com.example.tristangriffin.projectx.BottomSheetFragment.USER_LOCAL_FRAGMENT_TAG;
-import static com.example.tristangriffin.projectx.RecyclerViewListAdapter.USER_IMAGE_FRAGMENT_TAG;
+import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
+import com.example.tristangriffin.projectx.R;
 
 
 public class BottomSheetUserImageFragment extends BottomSheetDialogFragment{

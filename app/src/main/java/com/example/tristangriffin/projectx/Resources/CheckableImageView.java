@@ -1,4 +1,4 @@
-package com.example.tristangriffin.projectx;
+package com.example.tristangriffin.projectx.Resources;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+
+import com.example.tristangriffin.projectx.R;
 
 public class CheckableImageView extends android.support.v7.widget.AppCompatImageView {
 

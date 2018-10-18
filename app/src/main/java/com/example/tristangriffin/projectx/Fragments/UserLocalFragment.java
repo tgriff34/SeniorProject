@@ -1,4 +1,4 @@
-package com.example.tristangriffin.projectx;
+package com.example.tristangriffin.projectx.Fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -12,31 +12,28 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.provider.MediaStore;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
+import com.example.tristangriffin.projectx.Resources.GeoLocationConverter;
+import com.example.tristangriffin.projectx.Resources.GridViewImageAdapter;
+import com.example.tristangriffin.projectx.R;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 

@@ -6,6 +6,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorSlightDark">@color/colorPrimaryDark2</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="white">@color/white</item>
     </style>
 
     <style name="LightAppTheme" parent="Theme.AppCompat.NoActionBar">
@@ -13,6 +14,7 @@
         <item name="colorPrimaryDark">@color/gray</item>
         <item name="colorSlightDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="white">@color/white</item>
     </style>
 
     <style name="ToolbarColor" parent="ThemeOverlay.AppCompat.Dark.ActionBar">

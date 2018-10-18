@@ -1,4 +1,4 @@
-package com.example.tristangriffin.projectx;
+package com.example.tristangriffin.projectx.Resources;
 
 import android.media.ExifInterface;
 
@@ -7,7 +7,7 @@ public class GeoLocationConverter {
 
     private float longitude, latitude;
 
-    GeoLocationConverter(ExifInterface exifInterface) {
+    public GeoLocationConverter(ExifInterface exifInterface) {
         String LATITUDE = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
         String LONGITUDE = exifInterface.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
         String LATITUDE_DIR = exifInterface.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);

@@ -1,4 +1,4 @@
-package com.example.tristangriffin.projectx;
+package com.example.tristangriffin.projectx.Resources;
 
 import android.app.Activity;
 import android.view.View;
@@ -13,8 +13,8 @@ import com.bumptech.glide.request.RequestOptions;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import static com.example.tristangriffin.projectx.UserFragment.DEFAULT_PHOTO_VIEW;
-import static com.example.tristangriffin.projectx.UserLocalFragment.LOCAL_PHOTO_VIEW;
+import static com.example.tristangriffin.projectx.Fragments.UserFragment.DEFAULT_PHOTO_VIEW;
+import static com.example.tristangriffin.projectx.Fragments.UserLocalFragment.LOCAL_PHOTO_VIEW;
 
 public class GridViewImageAdapter extends BaseAdapter {
     private Activity context;
