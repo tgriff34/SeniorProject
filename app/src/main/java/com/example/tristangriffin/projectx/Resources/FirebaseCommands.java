@@ -10,6 +10,7 @@ import com.example.tristangriffin.projectx.Listeners.OnDeleteAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetFavoritedAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
+import com.example.tristangriffin.projectx.Listeners.OnGetPicLatLongListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetSearchAlbumsListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
 import com.example.tristangriffin.projectx.Listeners.OnSignInListener;
@@ -325,6 +326,46 @@ public class FirebaseCommands {
                         }
                     }
                 });
+    }
+
+    public void getPictureLatLong(final OnGetPicLatLongListener listener) {
+
+        final Map<String, double[]> picInfoMap = new HashMap<>();
+
+        getAlbums("public", new OnGetAlbumListener() {
+            @Override
+            public void onGetAlbumSuccess(ArrayList<String> albums) {
+                for (String album : albums) {
+                    db.collection("users")
+                            .document(user.getUid())
+                            .collection("public")
+                            .document(album)
+                            .collection("images")
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+
+                                            String location = documentSnapshot.getId();
+                                            double latitude = Double.parseDouble(documentSnapshot.getString("latitude"));
+                                            double longitude = Double.parseDouble(documentSnapshot.getString("longitude"));
+                                            double[] latLong = new double[]{latitude, longitude};
+
+                                            Log.d("demo", "here...");
+
+                                            picInfoMap.put(location, latLong);
+
+                                        }
+                                        Log.d("demo", picInfoMap.toString());
+                                        listener.getPicLatLong(picInfoMap);
+                                    }
+                                }
+                            });
+                }
+            }
+        });
     }
 
     public void searchAlbums(final String searchString, final OnGetSearchAlbumsListener listener) {
