@@ -330,7 +330,7 @@ public class FirebaseCommands {
 
     public void getPictureLatLong(final OnGetPicLatLongListener listener) {
 
-        final Map<String, double[]> picInfoMap = new HashMap<>();
+        final Map<String[], double[]> picInfoMap = new HashMap<>();
 
         getAlbums("public", new OnGetAlbumListener() {
             @Override
@@ -349,13 +349,13 @@ public class FirebaseCommands {
                                         for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
 
                                             String location = documentSnapshot.getId();
+                                            String ref = documentSnapshot.getString("ref");
                                             double latitude = Double.parseDouble(documentSnapshot.getString("latitude"));
                                             double longitude = Double.parseDouble(documentSnapshot.getString("longitude"));
                                             double[] latLong = new double[]{latitude, longitude};
+                                            String[] strings = new String[]{location, ref};
 
-                                            Log.d("demo", "here...");
-
-                                            picInfoMap.put(location, latLong);
+                                            picInfoMap.put(strings, latLong);
 
                                         }
                                         Log.d("demo", picInfoMap.toString());
