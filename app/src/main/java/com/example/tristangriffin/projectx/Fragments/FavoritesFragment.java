@@ -1,4 +1,4 @@
-package com.example.tristangriffin.projectx.Resources;
+package com.example.tristangriffin.projectx.Fragments;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -16,6 +16,8 @@ import android.widget.TextView;
 import com.example.tristangriffin.projectx.Listeners.OnGetFavoritedAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
 import com.example.tristangriffin.projectx.R;
+import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
+import com.example.tristangriffin.projectx.Resources.RecyclerViewListAdapter;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
