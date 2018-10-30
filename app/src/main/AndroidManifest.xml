@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.tristangriffin.projectx">
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -19,17 +20,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.SignInActivity"></activity>
-        <activity android:name=".Activities.SignUpActivity"></activity>
+        <activity android:name=".Activities.SignInActivity" />
+        <activity android:name=".Activities.SignUpActivity" />
 
         <!--
         <meta-data android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCHZBvU4NvjuK0U945h4LVdTirqnTp4xrk" />
-            -->
+        -->
 
-        <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBFM-NUYYeeZ5njsrbbw_veyZOqAZoY-is"
-            />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBFM-NUYYeeZ5njsrbbw_veyZOqAZoY-is" />
+
+        <activity android:name=".Activities.ImageViewerActivity"></activity>
     </application>
 
 </manifest>

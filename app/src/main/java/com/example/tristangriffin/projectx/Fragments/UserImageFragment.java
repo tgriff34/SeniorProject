@@ -1,6 +1,7 @@
 package com.example.tristangriffin.projectx.Fragments;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -18,6 +19,8 @@ import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.tristangriffin.projectx.Activities.ImageViewerActivity;
+import com.example.tristangriffin.projectx.Activities.MainActivity;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Resources.GridViewImageAdapter;
 import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
@@ -41,6 +44,9 @@ public class UserImageFragment extends Fragment {
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
     public static final String DEFAULT_PHOTO_VIEW = "default";
+    public static final String PICTURE_SELECT_NAME = "selected-picture";
+    public static final String ALBUM_SELECT_NAME = "selected-album";
+    private static final int REQUEST_IMAGE_VIEW_CODE = 22;
 
     public UserImageFragment() {
         // Required empty public constructor
@@ -81,6 +87,23 @@ public class UserImageFragment extends Fragment {
                 return false;
             }
         });
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                String value = new ArrayList<>(cloudImages.keySet()).get(i);
+                Log.d("demo", value);
+
+                Bundle bundle = new Bundle();
+                bundle.putString(PICTURE_SELECT_NAME, value);
+                bundle.putString(ALBUM_SELECT_NAME, albumName);
+
+                Intent intent = new Intent(getActivity(), ImageViewerActivity.class);
+                intent.putExtras(bundle);
+                startActivityForResult(intent, REQUEST_IMAGE_VIEW_CODE);
+            }
+        });
+
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

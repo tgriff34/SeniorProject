@@ -1,5 +1,6 @@
 package com.example.tristangriffin.projectx.Fragments;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.tristangriffin.projectx.Activities.ImageViewerActivity;
 import com.example.tristangriffin.projectx.Listeners.OnGetAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetPicLatLongListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
@@ -45,8 +47,14 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
     private Map<String[], double[]> pictureLatLongMap = new HashMap<>();
     private GoogleMap map;
 
+    private String albumName;
     private LinkedHashMap<String, String> cloudImages;
     private RecyclerView recyclerView;
+
+    public static final String PICTURE_SELECT_NAME = "selected-picture";
+    public static final String ALBUM_SELECT_NAME = "selected-album";
+
+    private static final int REQUEST_IMAGE_VIEW_CODE = 22;
 
     public NavigationFragment() {
         // Required empty public constructor
@@ -82,14 +90,29 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap googleMap) {
         map = googleMap;
-
-        InfoWindowAdapter infoWindowAdapter = new InfoWindowAdapter(getActivity());
+        final InfoWindowAdapter infoWindowAdapter = new InfoWindowAdapter(getActivity());
         map.setInfoWindowAdapter(infoWindowAdapter);
 
+        map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                String value = marker.getTitle();
+                Log.d("demo", value);
+
+                Bundle bundle = new Bundle();
+                bundle.putString(PICTURE_SELECT_NAME, value);
+                bundle.putString(ALBUM_SELECT_NAME, albumName);
+
+                Intent intent = new Intent(getActivity(), ImageViewerActivity.class);
+                intent.putExtras(bundle);
+                startActivityForResult(intent, REQUEST_IMAGE_VIEW_CODE);
+            }
+        });
     }
 
     //Private Funcs
     public void getAlbumLocations(String album) {
+        albumName = album;
         firebaseCommands.getPictureLatLong(album, new OnGetPicLatLongListener() {
             @Override
             public void getPicLatLong(Map<String[], double[]> picInfoMap) {
@@ -172,7 +195,7 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
             try {
                 URL url = new URL(infoWindowData[0].getImageRef());
                 Bitmap bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-                smallBitmap = bitmap.createScaledBitmap(bitmap, 100, 100, false);
+                smallBitmap = bitmap.createScaledBitmap(bitmap, 150, 150, false);
                 infoWindowData[0].setImage(smallBitmap);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -183,7 +206,7 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
         @Override
         protected void onPostExecute(InfoWindowData infoWindowData) {
             MarkerOptions options = new MarkerOptions();
-            options.position(infoWindowData.getLatLng());
+            options.position(infoWindowData.getLatLng()).title(infoWindowData.getName());
             Marker m = map.addMarker(options);
             m.setTag(infoWindowData);
         }
