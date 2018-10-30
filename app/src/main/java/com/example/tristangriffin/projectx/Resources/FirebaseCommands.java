@@ -328,42 +328,40 @@ public class FirebaseCommands {
                 });
     }
 
-    public void getPictureLatLong(final OnGetPicLatLongListener listener) {
+    public void getPictureLatLong(final String album, final OnGetPicLatLongListener listener) {
 
         final Map<String[], double[]> picInfoMap = new HashMap<>();
 
         getAlbums("public", new OnGetAlbumListener() {
             @Override
             public void onGetAlbumSuccess(ArrayList<String> albums) {
-                for (String album : albums) {
-                    db.collection("users")
-                            .document(user.getUid())
-                            .collection("public")
-                            .document(album)
-                            .collection("images")
-                            .get()
-                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                    if (task.isSuccessful()) {
-                                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                db.collection("users")
+                        .document(user.getUid())
+                        .collection("public")
+                        .document(album)
+                        .collection("images")
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
 
-                                            String location = documentSnapshot.getId();
-                                            String ref = documentSnapshot.getString("ref");
-                                            double latitude = Double.parseDouble(documentSnapshot.getString("latitude"));
-                                            double longitude = Double.parseDouble(documentSnapshot.getString("longitude"));
-                                            double[] latLong = new double[]{latitude, longitude};
-                                            String[] strings = new String[]{location, ref};
+                                        String location = documentSnapshot.getId();
+                                        String ref = documentSnapshot.getString("ref");
+                                        double latitude = Double.parseDouble(documentSnapshot.getString("latitude"));
+                                        double longitude = Double.parseDouble(documentSnapshot.getString("longitude"));
+                                        double[] latLong = new double[]{latitude, longitude};
+                                        String[] strings = new String[]{location, ref};
 
-                                            picInfoMap.put(strings, latLong);
+                                        picInfoMap.put(strings, latLong);
 
-                                        }
-                                        Log.d("demo", picInfoMap.toString());
-                                        listener.getPicLatLong(picInfoMap);
                                     }
+                                    Log.d("demo", picInfoMap.toString());
+                                    listener.getPicLatLong(picInfoMap);
                                 }
-                            });
-                }
+                            }
+                        });
             }
         });
     }
@@ -405,16 +403,16 @@ public class FirebaseCommands {
                             .collection("images")
                             .orderBy("location").startAt(searchString).endAt(searchString + "\uf8ff").get()
                             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                    searchedAlbums.add(documentSnapshot.get("album").toString());
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                            searchedAlbums.add(documentSnapshot.get("album").toString());
+                                        }
+                                        listener.searchedAlbums(searchedAlbums);
+                                    }
                                 }
-                                listener.searchedAlbums(searchedAlbums);
-                            }
-                        }
-                    });
+                            });
                 }
             }
         });

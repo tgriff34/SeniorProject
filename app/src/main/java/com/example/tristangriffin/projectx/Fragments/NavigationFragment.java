@@ -2,33 +2,38 @@ package com.example.tristangriffin.projectx.Fragments;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.icu.text.IDNA;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.tristangriffin.projectx.Listeners.OnGetAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetPicLatLongListener;
+import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
 import com.example.tristangriffin.projectx.R;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Resources.InfoWindowAdapter;
 import com.example.tristangriffin.projectx.Resources.InfoWindowData;
+import com.example.tristangriffin.projectx.Resources.NavigationListAdapter;
+import com.example.tristangriffin.projectx.Resources.RecyclerViewListAdapter;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class NavigationFragment extends Fragment implements OnMapReadyCallback {
@@ -39,6 +44,9 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
 
     private Map<String[], double[]> pictureLatLongMap = new HashMap<>();
     private GoogleMap map;
+
+    private LinkedHashMap<String, String> cloudImages;
+    private RecyclerView recyclerView;
 
     public NavigationFragment() {
         // Required empty public constructor
@@ -55,12 +63,19 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_navigation, container, false);
 
-        supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        //Album List
+        recyclerView = view.findViewById(R.id.navigation_list);
+        recyclerView.setHasFixedSize(true);
+        getAlbums();
+
+        //Create map view
+        supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map_layout);
         if (supportMapFragment == null) {
             supportMapFragment = SupportMapFragment.newInstance();
-            getFragmentManager().beginTransaction().replace(R.id.map, supportMapFragment).commit();
+            getFragmentManager().beginTransaction().replace(R.id.map_layout, supportMapFragment).commit();
         }
         supportMapFragment.getMapAsync(this);
+
         return view;
     }
 
@@ -71,11 +86,11 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
         InfoWindowAdapter infoWindowAdapter = new InfoWindowAdapter(getActivity());
         map.setInfoWindowAdapter(infoWindowAdapter);
 
-        getAlbumLocations();
     }
 
-    private void getAlbumLocations() {
-        firebaseCommands.getPictureLatLong(new OnGetPicLatLongListener() {
+    //Private Funcs
+    public void getAlbumLocations(String album) {
+        firebaseCommands.getPictureLatLong(album, new OnGetPicLatLongListener() {
             @Override
             public void getPicLatLong(Map<String[], double[]> picInfoMap) {
                 pictureLatLongMap = picInfoMap;
@@ -84,9 +99,44 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
+    private void getAlbums() {
+        //progressBar.setVisibility(View.VISIBLE);
+        cloudImages = new LinkedHashMap<>();
+        firebaseCommands.getAlbums("public", new OnGetAlbumListener() {
+            @Override
+            public void onGetAlbumSuccess(ArrayList<String> albums) {
+                if (!albums.isEmpty()) {
+                    getThumbnail(albums);
+                } else {
+                    updateUI();
+                }
+            }
+        });
+    }
+
+    private void getThumbnail(final ArrayList<String> albums) {
+        for (int i = 0; i < albums.size(); i++) {
+            final int j = i;
+            firebaseCommands.getThumbnail(albums.get(i), "public", new OnGetThumbnailListener() {
+                @Override
+                public void onGetThumbnailSuccess(String string) {
+                    cloudImages.put(albums.get(j), string);
+                    updateUI();
+                }
+            });
+        }
+    }
+
+    private void updateUI() {
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+        recyclerView.setAdapter(new NavigationListAdapter(getContext(), cloudImages));
+        recyclerView.setLayoutManager(linearLayoutManager);
+    }
 
     private void setUpMap() {
         //Initializer
+        map.clear();
         Iterator iterator = pictureLatLongMap.entrySet().iterator();
 
 
