@@ -24,6 +24,7 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.example.tristangriffin.projectx.Listeners.OnGetIfFavoritedAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
 import com.example.tristangriffin.projectx.R;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
@@ -42,9 +43,10 @@ public class ImageViewerActivity extends AppCompatActivity {
     private LinkedHashMap<String, String> cloudImages;
     private String currentImage;
     private String albumName;
+    private boolean checkIfIsFavorite;
     private ProgressBar progressBar;
     private ImageSwitcher imageView;
-    private Button cancelButton;
+    private ImageView cancelButton, favoriteButton;
     private int currentPosition;
 
     private Animation mSlideInLeft;
@@ -61,6 +63,7 @@ public class ImageViewerActivity extends AppCompatActivity {
 
         imageView = findViewById(R.id.imageViewer_imageView);
         cancelButton = findViewById(R.id.imageViewer_exit);
+        favoriteButton = findViewById(R.id.imageViewer_favorite);
         progressBar = findViewById(R.id.imageViewer_progressBar);
         progressBar.setIndeterminate(true);
         progressBar.setVisibility(View.VISIBLE);
@@ -80,11 +83,41 @@ public class ImageViewerActivity extends AppCompatActivity {
 
         getImages();
 
+        firebaseCommands.getIfFavoritedPhotoCollection(albumName, new OnGetIfFavoritedAlbumListener() {
+            @Override
+            public void getIfFavoritedAlbumListener(boolean isFavorite) {
+                if (isFavorite) {
+                    checkIfIsFavorite = true;
+                    favoriteButton.setImageResource(R.drawable.baseline_favorite_white_24dp);
+                } else {
+                    checkIfIsFavorite = false;
+                    favoriteButton.setImageResource(R.drawable.baseline_favorite_border_white_24dp);
+                }
+            }
+        });
+
+
+        //Button presses
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setResult(RESULT_OK);
                 finish();
+            }
+        });
+
+        favoriteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (checkIfIsFavorite) {
+                    checkIfIsFavorite = false;
+                    firebaseCommands.unfavoritePhotoCollection(albumName, "public");
+                    favoriteButton.setImageResource(R.drawable.baseline_favorite_border_white_24dp);
+                } else {
+                    checkIfIsFavorite = true;
+                    firebaseCommands.favoritePhotoCollection(albumName, "public");
+                    favoriteButton.setImageResource(R.drawable.baseline_favorite_white_24dp);
+                }
             }
         });
 
@@ -114,6 +147,7 @@ public class ImageViewerActivity extends AppCompatActivity {
 
     }
 
+    //Private Funcs
     private void getImages() {
         firebaseCommands.getPhotos(albumName, "public", new OnGetPhotosListener() {
             @Override

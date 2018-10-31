@@ -9,6 +9,7 @@ import android.util.Log;
 import com.example.tristangriffin.projectx.Listeners.OnDeleteAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetFavoritedAlbumListener;
+import com.example.tristangriffin.projectx.Listeners.OnGetIfFavoritedAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetPicLatLongListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetSearchAlbumsListener;
@@ -24,6 +25,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -231,6 +233,23 @@ public class FirebaseCommands {
                 .collection(setting)
                 .document(name)
                 .set(albumSetting);
+    }
+
+    public void getIfFavoritedPhotoCollection(String albumName, final OnGetIfFavoritedAlbumListener listener) {
+        db.collection("users")
+                .document(user.getUid())
+                .collection("public")
+                .document(albumName)
+                .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    boolean isFavorite = documentSnapshot.getBoolean("isFavorite");
+                    listener.getIfFavoritedAlbumListener(isFavorite);
+                }
+            }
+        });
     }
 
     public void getFavoritedPhotoCollection(final OnGetFavoritedAlbumListener listener) {
