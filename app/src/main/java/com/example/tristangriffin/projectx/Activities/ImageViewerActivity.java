@@ -1,5 +1,8 @@
 package com.example.tristangriffin.projectx.Activities;
 
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,10 +20,15 @@ import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
 import com.example.tristangriffin.projectx.R;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -45,7 +53,6 @@ public class ImageViewerActivity extends AppCompatActivity {
     private Animation mSlideOutLeft;
 
     private GestureDetector gestureDetector;
-    View.OnTouchListener gestureListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,22 +121,40 @@ public class ImageViewerActivity extends AppCompatActivity {
                 cloudImages = images;
                 progressBar.setVisibility(View.GONE);
                 currentPosition = new ArrayList<>(cloudImages.keySet()).indexOf(currentImage);
-                //updateUI();
-                Glide.with(ImageViewerActivity.this).load(new ArrayList<>(cloudImages.values()).get(currentPosition)).into((ImageView) imageView.getCurrentView());
+                updateUI();
             }
         });
     }
 
     private void updateUI() {
         Log.d("demo", "Current Position: " + currentPosition);
+        Glide.with(this)
+                .load(new ArrayList<>(cloudImages.values()).get(currentPosition))
+                .listener(new RequestListener<Drawable>() {
+                    @Override
+                    public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                        if (currentPosition == cloudImages.size()) {
+                            currentPosition = 0;
+                        }
+                        imageView.setImageDrawable(resource);
+                        return true;
+                    }
+                }).into((ImageView) imageView.getCurrentView());
     }
 
     private void moveNextOrPrevious(int delta) {
         int nextImagePosition = currentPosition + delta;
 
         if (nextImagePosition < 0) {
+            Log.d("demo", "Next Position: " + nextImagePosition + "  " + cloudImages.size());
             return;
-        } else if (nextImagePosition > cloudImages.size()) {
+        } else if (nextImagePosition >= cloudImages.size()) {
+            Log.d("demo", "Next Position: " + nextImagePosition + "  " + cloudImages.size());
             return;
         }
 
@@ -140,8 +165,7 @@ public class ImageViewerActivity extends AppCompatActivity {
 
         Log.d("demo", "Current Position: " + currentPosition);
 
-        //updateUI();
-        Glide.with(this).load(new ArrayList<>(cloudImages.values()).get(currentPosition)).into((ImageView) imageView.getCurrentView());
+        updateUI();
     }
 
     private class SwipeListener extends GestureDetector.SimpleOnGestureListener {
