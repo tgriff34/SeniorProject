@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Sign In / Up -->
+    <dimen name="sign_in_sign_up_margin">25dp</dimen>
+
+    <!-- Bottom navigation -->
     <dimen name="design_bottom_navigation_text_size" tools:override="true">10sp</dimen>
     <dimen name="design_bottom_navigation_active_text_size" tools:override="true">10sp</dimen>
+
+    <!-- Bottom sheet -->
+    <dimen name="bottom_sheet_layout_margin">16dp</dimen>
+    <dimen name="bottom_sheet_text_size">20dp</dimen>
+    <dimen name="bottom_sheet_left_right_margin">16dp</dimen>
+    <dimen name="bottom_sheet_top_down_margin">4dp</dimen>
+
 </resources>

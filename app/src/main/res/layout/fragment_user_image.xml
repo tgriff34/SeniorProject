@@ -33,14 +33,11 @@
             android:id="@+id/grid_album_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:choiceMode="multipleChoice"
-            android:columnWidth="280dp"
+            android:choiceMode="singleChoice"
             android:gravity="center"
-            android:horizontalSpacing="12dp"
             android:numColumns="2"
-            android:padding="12dp"
             android:stretchMode="columnWidth"
-            android:verticalSpacing="12dp" />
+            />
     </android.support.v4.widget.SwipeRefreshLayout>
 
 </FrameLayout>

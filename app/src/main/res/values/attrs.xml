@@ -2,4 +2,5 @@
 <resources>
     <attr name="colorSlightDark" format="reference" />
     <attr name="white" format="reference" />
+    <attr name="colorDanger" format="reference" />
 </resources>

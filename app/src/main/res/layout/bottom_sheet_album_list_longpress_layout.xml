@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/bottom_sheet_layout_margin"
+    android:paddingTop="@dimen/bottom_sheet_layout_margin">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/album_longpress_action_delete_photos_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="4dp"
+        android:backgroundTint="?colorPrimaryDark"
+        android:foreground="?attr/selectableItemBackground"
+        android:orientation="horizontal"
+        android:layout_marginLeft="@dimen/bottom_sheet_left_right_margin"
+        android:layout_marginRight="@dimen/bottom_sheet_left_right_margin"
+        android:layout_marginTop="@dimen/bottom_sheet_top_down_margin"
+        android:layout_marginBottom="@dimen/bottom_sheet_top_down_margin">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Delete"
+            android:padding="15dp"
+            android:textColor="?colorDanger"
+            android:textSize="@dimen/bottom_sheet_text_size" />
+    </android.support.v7.widget.CardView>
+
+    <!--
+    <android.support.v7.widget.CardView
+        android:id="@+id/action_add_to_collection_photos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="4dp"
+        android:backgroundTint="?colorPrimaryDark"
+        android:foreground="?attr/selectableItemBackground"
+        android:orientation="horizontal"
+        android:layout_marginLeft="@dimen/bottom_sheet_left_right_margin"
+        android:layout_marginRight="@dimen/bottom_sheet_left_right_margin"
+        android:layout_marginTop="@dimen/bottom_sheet_top_down_margin"
+        android:layout_marginBottom="@dimen/bottom_sheet_top_down_margin">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="15dp"
+            android:text="Add to collection"
+            android:textColor="?colorAccent"
+            android:textSize="@dimen/bottom_sheet_text_size" />
+    </android.support.v7.widget.CardView>
+    -->
+
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/album_longpress_action_cancel_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="4dp"
+        android:backgroundTint="?colorPrimaryDark"
+        android:foreground="?attr/selectableItemBackground"
+        android:orientation="horizontal"
+        android:layout_marginLeft="@dimen/bottom_sheet_left_right_margin"
+        android:layout_marginRight="@dimen/bottom_sheet_left_right_margin"
+        android:layout_marginTop="@dimen/bottom_sheet_top_down_margin"
+        android:layout_marginBottom="@dimen/bottom_sheet_top_down_margin">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Cancel"
+            android:padding="15dp"
+            android:textColor="?colorAccent"
+            android:textSize="@dimen/bottom_sheet_text_size" />
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

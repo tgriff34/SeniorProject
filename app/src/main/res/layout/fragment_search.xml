@@ -16,7 +16,7 @@
         android:layout_marginStart="15dp"
         android:layout_marginEnd="15dp"
         android:layout_marginBottom="15dp"
-        android:elevation="11dp"
+        android:elevation="4dp"
         android:hint="Search"
         android:maxLines="1"
         android:inputType="text"
@@ -26,7 +26,7 @@
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:elevation="11dp"
+        android:elevation="4dp"
         android:layout_centerInParent="true"
         />
 

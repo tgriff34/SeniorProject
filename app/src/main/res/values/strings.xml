@@ -1,5 +1,12 @@
 <resources>
+    <!-- Titles -->
     <string name="app_name">ProjectX</string>
+    <string name="album_name">Your Albums</string>
+    <string name="local_photos_name">Your Photos</string>
+    <string name="favorites_name">Favorite Albums</string>
+    <string name="navigation_name">Navigation</string>
+    <string name="search_name">Search</string>
+    <string name="settings_name">Settings</string>
 
     <!-- Sign-In/Sign-Up Form Resources -->
     <string name="text_email">E-Mail</string>

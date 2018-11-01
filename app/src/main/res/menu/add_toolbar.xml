@@ -5,7 +5,7 @@
     <item
         android:title="Add"
         android:id="@+id/action_add_collection"
-        android:icon="@drawable/baseline_add_black_24dp"
+        android:icon="@drawable/baseline_add_blue_24dp"
         app:showAsAction="always"
         />
 </menu>

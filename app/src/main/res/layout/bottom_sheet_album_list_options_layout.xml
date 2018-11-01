@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+    android:id="@+id/album_options_bottom_fragment"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/bottom_sheet_layout_margin"
+    android:paddingTop="@dimen/bottom_sheet_layout_margin">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/album_action_add_photos_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="4dp"
+        android:backgroundTint="?colorPrimaryDark"
+        android:foreground="?attr/selectableItemBackground"
+        android:orientation="horizontal"
+        android:layout_marginLeft="@dimen/bottom_sheet_left_right_margin"
+        android:layout_marginRight="@dimen/bottom_sheet_left_right_margin"
+        android:layout_marginTop="@dimen/bottom_sheet_top_down_margin"
+        android:layout_marginBottom="@dimen/bottom_sheet_top_down_margin">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Add"
+            android:padding="15dp"
+            android:textColor="@color/colorAccent"
+            android:textSize="@dimen/bottom_sheet_text_size" />
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/album_action_cancel_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:cardCornerRadius="4dp"
+        app:cardElevation="4dp"
+        android:backgroundTint="?colorPrimaryDark"
+        android:foreground="?attr/selectableItemBackground"
+        android:orientation="horizontal"
+        android:layout_marginLeft="@dimen/bottom_sheet_left_right_margin"
+        android:layout_marginRight="@dimen/bottom_sheet_left_right_margin"
+        android:layout_marginTop="@dimen/bottom_sheet_top_down_margin"
+        android:layout_marginBottom="@dimen/bottom_sheet_top_down_margin">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Cancel"
+            android:padding="15dp"
+            android:textColor="?colorAccent"
+            android:textSize="@dimen/bottom_sheet_text_size" />
+
+    </android.support.v7.widget.CardView>
+    <!--
+    <LinearLayout
+        android:id="@+id/action_add_photos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:background="@color/colorPrimary"
+        android:foreground="?attr/selectableItemBackground"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/bottom_sheet_left_right_margin"
+        android:paddingRight="@dimen/bottom_sheet_left_right_margin"
+        android:paddingBottom="@dimen/bottom_sheet_top_down_margin"
+        android:paddingTop="@dimen/bottom_sheet_top_down_margin">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Add"
+            android:textColor="?colorAccent"
+            android:textSize="@dimen/bottom_sheet_text_size" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/action_delete_photos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:orientation="horizontal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="8dp"
+        android:paddingTop="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="Delete"
+            android:textColor="#737373"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/action_cancel_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:background="@color/colorPrimary"
+        android:foreground="?attr/selectableItemBackground"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/bottom_sheet_left_right_margin"
+        android:paddingRight="@dimen/bottom_sheet_left_right_margin"
+        android:paddingBottom="@dimen/bottom_sheet_top_down_margin"
+        android:paddingTop="@dimen/bottom_sheet_top_down_margin">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Cancel"
+            android:textColor="?colorAccent"
+            android:textSize="@dimen/bottom_sheet_text_size" />
+    </LinearLayout>
+    -->
+
+</LinearLayout>

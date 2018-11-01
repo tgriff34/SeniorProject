@@ -10,8 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
+import com.example.tristangriffin.projectx.Activities.MainActivity;
 import com.example.tristangriffin.projectx.Activities.SignInActivity;
 import com.example.tristangriffin.projectx.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,6 +38,10 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
+
+        //getActivity().setTitle(R.string.settings_name);
+        TextView toolbarTextView = (TextView) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar_title);
+        toolbarTextView.setText(R.string.settings_name);
 
         listView = (ListView) view.findViewById(R.id.list_settings);
         listView.setOnItemClickListener(this);

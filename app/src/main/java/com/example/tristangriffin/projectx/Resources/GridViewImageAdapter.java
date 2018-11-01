@@ -1,6 +1,7 @@
 package com.example.tristangriffin.projectx.Resources;
 
 import android.app.Activity;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -71,7 +72,12 @@ public class GridViewImageAdapter extends BaseAdapter {
         if (view == null) {
             imageView = new CheckableImageView(context);
             imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            imageView.setLayoutParams(new GridView.LayoutParams(500, 500));
+
+            DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+            int screenWidth = metrics.widthPixels;
+
+            imageView.setLayoutParams(new GridView.LayoutParams(screenWidth / 2, screenWidth / 2));
+            imageView.setPadding(12,12,12,12);
         } else {
             imageView = (CheckableImageView) view;
         }

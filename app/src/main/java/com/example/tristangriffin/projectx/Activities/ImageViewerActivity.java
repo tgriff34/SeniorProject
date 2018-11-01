@@ -1,7 +1,9 @@
 package com.example.tristangriffin.projectx.Activities;
 
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -60,7 +62,13 @@ public class ImageViewerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_viewer);
-
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String currentTheme = preferences.getString("current_theme", "Light");
+        if (currentTheme.equals("Light")) {
+            setTheme(R.style.LightAppTheme);
+        } else {
+            setTheme(R.style.AppTheme);
+        }
         imageView = findViewById(R.id.imageViewer_imageView);
         cancelButton = findViewById(R.id.imageViewer_exit);
         favoriteButton = findViewById(R.id.imageViewer_favorite);
@@ -153,7 +161,6 @@ public class ImageViewerActivity extends AppCompatActivity {
             @Override
             public void onGetPhotosSuccess(LinkedHashMap<String, String> images) {
                 cloudImages = images;
-                progressBar.setVisibility(View.GONE);
                 currentPosition = new ArrayList<>(cloudImages.keySet()).indexOf(currentImage);
                 updateUI();
             }
@@ -179,6 +186,7 @@ public class ImageViewerActivity extends AppCompatActivity {
                         return true;
                     }
                 }).into((ImageView) imageView.getCurrentView());
+        progressBar.setVisibility(View.GONE);
     }
 
     private void moveNextOrPrevious(int delta) {

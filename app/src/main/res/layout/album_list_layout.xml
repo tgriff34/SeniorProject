@@ -34,7 +34,6 @@
                 android:padding="8dp"
                 android:maxLength="13"
                 android:ellipsize="end"
-                android:textColor="@color/white"
                 android:textSize="22sp"
                 />
 
@@ -53,6 +52,7 @@
                 android:id="@+id/album_delete_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:textColor="?colorDanger"
                 android:text="Delete"
                 android:layout_below="@id/thumbnail"
                 android:layout_alignParentRight="true"

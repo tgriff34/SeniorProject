@@ -71,6 +71,8 @@ public class UserLocalFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_user_local, container, false);
 
+        getActivity().setTitle(R.string.local_photos_name);
+
         gridView = view.findViewById(R.id.grid_local_view);
         albumName = getArguments().getString("album_name");
         setHasOptionsMenu(true);

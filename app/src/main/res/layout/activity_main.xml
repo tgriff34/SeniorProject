@@ -10,9 +10,20 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?android:attr/actionBarSize"
-        android:background="?colorPrimaryDark"
-        app:theme="@style/ToolbarColor"
-        app:popupTheme="@style/Theme.AppCompat.Light" />
+        android:background="?colorPrimaryDark">
+
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:layout_gravity="center"
+            style="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+            />
+    </android.support.v7.widget.Toolbar>
+
+
+        <!-- app:theme="@style/ToolbarColor" -->
 
     <FrameLayout
         android:id="@+id/fragment_container"

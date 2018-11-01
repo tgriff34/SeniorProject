@@ -2,11 +2,12 @@ package com.example.tristangriffin.projectx.Fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.CardView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,7 +21,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.tristangriffin.projectx.Activities.ImageViewerActivity;
-import com.example.tristangriffin.projectx.Activities.MainActivity;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Resources.GridViewImageAdapter;
 import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
@@ -46,6 +46,7 @@ public class UserImageFragment extends Fragment {
     public static final String DEFAULT_PHOTO_VIEW = "default";
     public static final String PICTURE_SELECT_NAME = "selected-picture";
     public static final String ALBUM_SELECT_NAME = "selected-album";
+    public static final String USER_LOCAL_FRAGMENT_TAG = "UserLocalFrag";
     private static final int REQUEST_IMAGE_VIEW_CODE = 22;
 
     public UserImageFragment() {
@@ -65,6 +66,8 @@ public class UserImageFragment extends Fragment {
 
         albumName = getArguments().getString(ALBUM_NAME);
 
+        getActivity().setTitle(albumName);
+
         textInfo = view.findViewById(R.id.text_noImages);
         gridView = view.findViewById(R.id.grid_album_view);
         swipeContainer = view.findViewById(R.id.imageSwipeContainer);
@@ -79,11 +82,29 @@ public class UserImageFragment extends Fragment {
         gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String value = new ArrayList<>(cloudImages.keySet()).get(i);
+                final String value = new ArrayList<>(cloudImages.keySet()).get(i);
                 Log.d("demo", value);
-                BottomSheetUserImageFragment bottomSheetUserImageFragment = new BottomSheetUserImageFragment();
-                bottomSheetUserImageFragment.setVars(value, albumName);
-                bottomSheetUserImageFragment.show(getFragmentManager(), bottomSheetUserImageFragment.getTag());
+                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(getActivity(), R.style.SheetDialog);
+                View sheetView = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_album_list_longpress_layout, null);
+                mBottomSheetDialog.setContentView(sheetView);
+                mBottomSheetDialog.show();
+
+                CardView delete = (CardView) mBottomSheetDialog.findViewById(R.id.album_longpress_action_delete_photos_bottom_sheet);
+                delete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        firebaseCommands.deleteFromDatabase(value, albumName, "public");
+                        mBottomSheetDialog.dismiss();
+                    }
+                });
+
+                CardView cancel = (CardView) mBottomSheetDialog.findViewById(R.id.album_longpress_action_cancel_bottom_sheet);
+                cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mBottomSheetDialog.dismiss();
+                    }
+                });
                 return false;
             }
         });
@@ -123,9 +144,31 @@ public class UserImageFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_options:
-                BottomSheetFragment bottomSheetFragment = new BottomSheetFragment();
-                bottomSheetFragment.setVars(albumName);
-                bottomSheetFragment.show(getFragmentManager(), bottomSheetFragment.getTag());
+                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(getActivity(), R.style.SheetDialog);
+                View sheetView = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_album_list_options_layout, null);
+                mBottomSheetDialog.setContentView(sheetView);
+                mBottomSheetDialog.show();
+
+                CardView add = (CardView) mBottomSheetDialog.findViewById(R.id.album_action_add_photos_bottom_sheet);
+                add.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Bundle bundle = new Bundle();
+                        bundle.putString("album_name", albumName);
+                        UserLocalFragment userLocalFragment = new UserLocalFragment();
+                        userLocalFragment.setArguments(bundle);
+                        setFragment(userLocalFragment, USER_LOCAL_FRAGMENT_TAG);
+                        mBottomSheetDialog.dismiss();
+                    }
+                });
+
+                CardView cancel = (CardView) mBottomSheetDialog.findViewById(R.id.album_action_cancel_bottom_sheet);
+                cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mBottomSheetDialog.dismiss();
+                    }
+                });
         }
         return super.onOptionsItemSelected(item);
     }
@@ -133,12 +176,10 @@ public class UserImageFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_toolbar, menu);
-        Drawable drawable = menu.getItem(0).getIcon();
-        drawable.mutate();
-        drawable.setColorFilter(getResources().getColor(R.color.white), PorterDuff.Mode.SRC_ATOP);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+    //Private Functions
     private void getImages() {
         firebaseCommands.getPhotos(albumName, "public", new OnGetPhotosListener() {
             @Override
@@ -158,5 +199,13 @@ public class UserImageFragment extends Fragment {
         } else {
             textInfo.setVisibility(View.GONE);
         }
+    }
+
+    private void setFragment(Fragment fragment, String TAG) {
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .addToBackStack(TAG)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .replace(R.id.fragment_container, fragment, TAG)
+                .commit();
     }
 }

@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         //Ask permission to access Photos Gallery
         if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -125,10 +126,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            //case R.id.action_options:
-            //    BottomSheetFragment bottomSheetFragment = new BottomSheetFragment();
-            //    bottomSheetFragment.show(getSupportFragmentManager(), bottomSheetFragment.getTag());
-            //    return true;
 
             case R.id.action_done:
                 getSupportFragmentManager().popBackStackImmediate();
