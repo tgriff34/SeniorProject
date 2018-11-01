@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,6 +22,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.tristangriffin.projectx.Activities.ImageViewerActivity;
+import com.example.tristangriffin.projectx.Activities.MainActivity;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Resources.GridViewImageAdapter;
 import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
@@ -66,7 +68,18 @@ public class UserImageFragment extends Fragment {
 
         albumName = getArguments().getString(ALBUM_NAME);
 
-        getActivity().setTitle(albumName);
+        //getActivity().setTitle(albumName);
+        Toolbar toolbar = (Toolbar) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar);
+        TextView toolbarTextView = (TextView) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar_title);
+        toolbarTextView.setText(albumName);
+
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().onBackPressed();
+            }
+        });
+
 
         textInfo = view.findViewById(R.id.text_noImages);
         gridView = view.findViewById(R.id.grid_album_view);
@@ -94,6 +107,7 @@ public class UserImageFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         firebaseCommands.deleteFromDatabase(value, albumName, "public");
+                        getImages();
                         mBottomSheetDialog.dismiss();
                     }
                 });
@@ -105,7 +119,7 @@ public class UserImageFragment extends Fragment {
                         mBottomSheetDialog.dismiss();
                     }
                 });
-                return false;
+                return true;
             }
         });
 

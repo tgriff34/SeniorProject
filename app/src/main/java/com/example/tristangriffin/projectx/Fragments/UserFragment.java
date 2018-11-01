@@ -64,7 +64,6 @@ public class UserFragment extends Fragment {
         TextView toolbarTextView = (TextView) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar_title);
         toolbarTextView.setText(R.string.album_name);
 
-
         recyclerView = view.findViewById(R.id.recycler_view);
         swipeContainer = view.findViewById(R.id.swipeContainer);
         progressBar = view.findViewById(R.id.user_progressbar);

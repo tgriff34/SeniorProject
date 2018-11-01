@@ -60,8 +60,6 @@ public class ImageViewerActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_image_viewer);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String currentTheme = preferences.getString("current_theme", "Light");
         if (currentTheme.equals("Light")) {
@@ -69,6 +67,10 @@ public class ImageViewerActivity extends AppCompatActivity {
         } else {
             setTheme(R.style.AppTheme);
         }
+
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_image_viewer);
+
         imageView = findViewById(R.id.imageViewer_imageView);
         cancelButton = findViewById(R.id.imageViewer_exit);
         favoriteButton = findViewById(R.id.imageViewer_favorite);

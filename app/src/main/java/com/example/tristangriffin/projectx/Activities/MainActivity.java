@@ -9,6 +9,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -58,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        checkBackStackEntry();
+
 
         //Ask permission to access Photos Gallery
         if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -89,26 +92,31 @@ public class MainActivity extends AppCompatActivity {
                         switch (item.getItemId()) {
                             case R.id.action_user:
                                 item.setChecked(true);
+                                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                                 setFragment(userFragment, USER_FRAGMENT);
                                 break;
 
                             case R.id.action_favorites:
                                 item.setChecked(true);
+                                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                                 setFragment(favoritesFragment, FAVORITES_FRAGMENT);
                                 break;
 
                             case R.id.action_navi:
                                 item.setChecked(true);
+                                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                                 setFragment(navigationFragment, NAVIGATION_FRAGMENT);
                                 break;
 
                             case R.id.action_search:
                                 item.setChecked(true);
+                                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                                 setFragment(searchFragment, SEARCH_FRAGMENT);
                                 break;
 
                             case R.id.action_settings:
                                 item.setChecked(true);
+                                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                                 setFragment(settingsFragment, SETTINGS_FRAGMENT);
                                 break;
                         }
@@ -168,11 +176,24 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    //Private Functions
     private void setFragment(Fragment fragment, String FRAGMENT_TAG) {
         getSupportFragmentManager().beginTransaction()
-                .addToBackStack(FRAGMENT_TAG)
-                .setTransition(FragmentTransaction.TRANSIT_NONE)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .replace(R.id.fragment_container, fragment, FRAGMENT_TAG)
                 .commit();
+    }
+
+    private void checkBackStackEntry() {
+        getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
+            @Override
+            public void onBackStackChanged() {
+                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                } else {
+                    getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                }
+            }
+        });
     }
 }
