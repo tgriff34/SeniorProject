@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import android.widget.Toolbar;
 import com.example.tristangriffin.projectx.Activities.MainActivity;
 import com.example.tristangriffin.projectx.Activities.SignInActivity;
 import com.example.tristangriffin.projectx.R;
+import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.google.firebase.auth.FirebaseAuth;
 
 
@@ -60,12 +62,15 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
                 } else {
                     sharedPreferences.edit().putString("current_theme", "Light").apply();
                 }
-                getActivity().recreate();
+
+                Intent mainIntent = new Intent(getActivity(), MainActivity.class);
+                startActivity(mainIntent);
+                getActivity().finish();
                 break;
 
             case 1:
                 Toast.makeText(getActivity(), "Signed Out", Toast.LENGTH_SHORT).show();
-                FirebaseAuth.getInstance().signOut();
+                FirebaseCommands.getInstance().signOut();
                 Intent intent = new Intent(getActivity(), SignInActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);

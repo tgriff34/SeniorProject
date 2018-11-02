@@ -19,6 +19,7 @@ import com.example.tristangriffin.projectx.Activities.MainActivity;
 import com.example.tristangriffin.projectx.Listeners.OnGetAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetPicLatLongListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
+import com.example.tristangriffin.projectx.Models.Album;
 import com.example.tristangriffin.projectx.R;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Adapters.InfoWindowAdapter;
@@ -49,7 +50,7 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
     private GoogleMap map;
 
     private String albumName;
-    private LinkedHashMap<String, String> cloudImages;
+    private ArrayList<Album> albums;
     private RecyclerView recyclerView;
 
     public static final String PICTURE_SELECT_NAME = "selected-picture";
@@ -129,12 +130,17 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
 
     private void getAlbums() {
         //progressBar.setVisibility(View.VISIBLE);
-        cloudImages = new LinkedHashMap<>();
+        albums = new ArrayList<>();
         firebaseCommands.getAlbums("public", new OnGetAlbumListener() {
             @Override
-            public void onGetAlbumSuccess(ArrayList<String> albums) {
-                if (!albums.isEmpty()) {
-                    getThumbnail(albums);
+            public void onGetAlbumSuccess(ArrayList<String> listOfAlbums) {
+                if (!listOfAlbums.isEmpty()) {
+                    for (int i = 0; i < listOfAlbums.size(); i++){
+                        Album album = new Album();
+                        album.setName(listOfAlbums.get(i));
+                        albums.add(album);
+                        getThumbnail(i);
+                    }
                 } else {
                     updateUI();
                 }
@@ -142,23 +148,20 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
-    private void getThumbnail(final ArrayList<String> albums) {
-        for (int i = 0; i < albums.size(); i++) {
-            final int j = i;
-            firebaseCommands.getThumbnail(albums.get(i), "public", new OnGetThumbnailListener() {
+    private void getThumbnail(final int position) {
+            firebaseCommands.getThumbnail(albums.get(position).getName(), "public", new OnGetThumbnailListener() {
                 @Override
                 public void onGetThumbnailSuccess(String string) {
-                    cloudImages.put(albums.get(j), string);
+                    albums.get(position).setThumbnail(string);
                     updateUI();
                 }
             });
-        }
     }
 
     private void updateUI() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        recyclerView.setAdapter(new NavigationListAdapter(getContext(), cloudImages));
+        recyclerView.setAdapter(new NavigationListAdapter(getContext(), albums));
         recyclerView.setLayoutManager(linearLayoutManager);
     }
 

@@ -218,6 +218,7 @@ public class UserImageFragment extends Fragment {
     private void setFragment(Fragment fragment, String TAG) {
         getActivity().getSupportFragmentManager().beginTransaction()
                 .addToBackStack(TAG)
+                .setCustomAnimations(R.anim.fragment_enter_from_right, R.anim.fragment_exit_to_left, R.anim.fragment_enter_from_left, R.anim.fragment_exit_to_right)
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .replace(R.id.fragment_container, fragment, TAG)
                 .commit();

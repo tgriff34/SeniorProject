@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -44,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
     public static final String NAVIGATION_FRAGMENT = "NaviFrag";
     public static final String SEARCH_FRAGMENT = "SearchFrag";
     public static final String SETTINGS_FRAGMENT = "SettingsFrag";
+
+    private static final String EXTRAS = "EXTRAS";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,12 +82,7 @@ public class MainActivity extends AppCompatActivity {
 
         final BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
 
-        if (firebaseCommands.user == null) {
-            Intent intent = new Intent(this, SignInActivity.class);
-            startActivity(intent);
-        } else {
-            setFragment(userFragment, USER_FRAGMENT);
-        }
+        setFragment(userFragment, USER_FRAGMENT);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -93,31 +91,26 @@ public class MainActivity extends AppCompatActivity {
                         switch (item.getItemId()) {
                             case R.id.action_user:
                                 item.setChecked(true);
-                                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                                 setFragment(userFragment, USER_FRAGMENT);
                                 break;
 
                             case R.id.action_favorites:
                                 item.setChecked(true);
-                                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                                 setFragment(favoritesFragment, FAVORITES_FRAGMENT);
                                 break;
 
                             case R.id.action_navi:
                                 item.setChecked(true);
-                                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                                 setFragment(navigationFragment, NAVIGATION_FRAGMENT);
                                 break;
 
                             case R.id.action_search:
                                 item.setChecked(true);
-                                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                                 setFragment(searchFragment, SEARCH_FRAGMENT);
                                 break;
 
                             case R.id.action_settings:
                                 item.setChecked(true);
-                                getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                                 setFragment(settingsFragment, SETTINGS_FRAGMENT);
                                 break;
                         }
@@ -177,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Private Functions
     private void setFragment(Fragment fragment, String FRAGMENT_TAG) {
+        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         getSupportFragmentManager().beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_NONE)
                 .replace(R.id.fragment_container, fragment, FRAGMENT_TAG)

@@ -14,13 +14,13 @@
         android:supportsRtl="true"
         android:theme="@style/LightAppTheme">
         <activity android:name=".Activities.MainActivity">
+        </activity>
+        <activity android:name=".Activities.SignInActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.SignInActivity" />
         <activity android:name=".Activities.SignUpActivity" />
 
         <!--

@@ -97,6 +97,11 @@ public class FirebaseCommands {
                 });
     }
 
+    public void signOut() {
+        user = null;
+        firebaseAuth.signOut();
+    }
+
     private void createNewUserCollection(FirebaseUser user, final OnSignUpListener listener) {
         Map<String, Object> newUser = new HashMap<>();
         newUser.put("id", user.getUid());

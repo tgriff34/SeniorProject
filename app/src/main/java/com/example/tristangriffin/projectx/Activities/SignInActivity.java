@@ -3,6 +3,7 @@ package com.example.tristangriffin.projectx.Activities;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -20,6 +21,7 @@ public class SignInActivity extends AppCompatActivity {
     private ProgressBar progressBar;
 
     private static final int REQUEST_SIGNUP = 0;
+    private static final int REQUEST_LOGIN = 2;
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
 
@@ -33,6 +35,13 @@ public class SignInActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         progressBar.setIndeterminate(true);
         progressBar.setVisibility(View.GONE);
+
+        Log.d("demo", "USER: " + firebaseCommands.user);
+        if (firebaseCommands.user != null) {
+            Intent intent = new Intent(SignInActivity.this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        }
 
         findViewById(R.id.view_signUp).setOnClickListener(new View.OnClickListener() {
             @Override

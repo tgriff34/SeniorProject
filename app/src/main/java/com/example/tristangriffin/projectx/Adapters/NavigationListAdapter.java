@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.tristangriffin.projectx.Fragments.NavigationFragment;
+import com.example.tristangriffin.projectx.Models.Album;
 import com.example.tristangriffin.projectx.R;
 
 import java.util.ArrayList;
@@ -21,11 +22,11 @@ import java.util.LinkedHashMap;
 
 public class NavigationListAdapter extends RecyclerView.Adapter<NavigationListAdapter.MyViewHolder> {
 
-    private LinkedHashMap<String, String> albums;
+    private ArrayList<Album> albums;
     private Context context;
     public static final String NAVIGATION_FRAGMENT_TAG = "NaviFrag";
 
-    public NavigationListAdapter(Context context, LinkedHashMap<String, String> albums) {
+    public NavigationListAdapter(Context context, ArrayList<Album> albums) {
         this.albums = albums;
         this.context = context;
     }
@@ -57,12 +58,12 @@ public class NavigationListAdapter extends RecyclerView.Adapter<NavigationListAd
 
     @Override
     public void onBindViewHolder(@NonNull NavigationListAdapter.MyViewHolder myViewHolder, int i) {
-        final String albumName = new ArrayList<>(albums.keySet()).get(i);
+        final String albumName = albums.get(i).getName();
         final TextView textView = myViewHolder.nameTextView;
         ImageView imageView = myViewHolder.holderImageView;
 
-        textView.setText(new ArrayList<>(albums.keySet()).get(i));
-        Glide.with(context).load(new ArrayList<>(albums.values()).get(i)).apply(RequestOptions.centerCropTransform()).into(imageView);
+        textView.setText(albumName);
+        Glide.with(context).load(albums.get(i).getThumbnail()).apply(RequestOptions.centerCropTransform()).into(imageView);
         
         
         myViewHolder.holderImageView.setOnClickListener(new View.OnClickListener() {
