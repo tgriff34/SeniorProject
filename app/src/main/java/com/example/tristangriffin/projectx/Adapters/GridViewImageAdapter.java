@@ -1,4 +1,4 @@
-package com.example.tristangriffin.projectx.Resources;
+package com.example.tristangriffin.projectx.Adapters;
 
 import android.app.Activity;
 import android.util.DisplayMetrics;
@@ -10,6 +10,7 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.tristangriffin.projectx.Resources.CheckableImageView;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

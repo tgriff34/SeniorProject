@@ -30,8 +30,8 @@ import com.example.tristangriffin.projectx.Fragments.SettingsFragment;
 import com.example.tristangriffin.projectx.Fragments.UserFragment;
 import com.example.tristangriffin.projectx.Fragments.UserImageFragment;
 
-import static com.example.tristangriffin.projectx.Resources.RecyclerViewListAdapter.ALBUM_NAME;
-import static com.example.tristangriffin.projectx.Resources.RecyclerViewListAdapter.USER_IMAGE_FRAGMENT_TAG;
+import static com.example.tristangriffin.projectx.Adapters.RecyclerViewListAdapter.ALBUM_NAME;
+import static com.example.tristangriffin.projectx.Adapters.RecyclerViewListAdapter.USER_IMAGE_FRAGMENT_TAG;
 
 public class MainActivity extends AppCompatActivity {
 

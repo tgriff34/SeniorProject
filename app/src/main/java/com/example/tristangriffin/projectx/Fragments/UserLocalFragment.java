@@ -24,7 +24,7 @@ import android.widget.Toast;
 
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Resources.GeoLocationConverter;
-import com.example.tristangriffin.projectx.Resources.GridViewImageAdapter;
+import com.example.tristangriffin.projectx.Adapters.GridViewImageAdapter;
 import com.example.tristangriffin.projectx.R;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;

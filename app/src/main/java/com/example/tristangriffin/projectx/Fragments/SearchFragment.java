@@ -15,7 +15,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import com.example.tristangriffin.projectx.Activities.MainActivity;
 import com.example.tristangriffin.projectx.Listeners.OnGetIfFavoritedAlbumListener;
@@ -24,10 +23,9 @@ import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Listeners.OnGetSearchAlbumsListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
 import com.example.tristangriffin.projectx.R;
-import com.example.tristangriffin.projectx.Resources.RecyclerViewListAdapter;
+import com.example.tristangriffin.projectx.Adapters.RecyclerViewListAdapter;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 public class SearchFragment extends Fragment {
 

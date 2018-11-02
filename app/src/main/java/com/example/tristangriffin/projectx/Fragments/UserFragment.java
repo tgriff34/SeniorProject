@@ -1,13 +1,10 @@
 package com.example.tristangriffin.projectx.Fragments;
 
 import android.annotation.SuppressLint;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import com.example.tristangriffin.projectx.Activities.MainActivity;
 import com.example.tristangriffin.projectx.Listeners.OnGetIfFavoritedAlbumListener;
@@ -27,12 +23,9 @@ import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Listeners.OnGetAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
 import com.example.tristangriffin.projectx.R;
-import com.example.tristangriffin.projectx.Resources.RecyclerViewListAdapter;
-
-import org.w3c.dom.Text;
+import com.example.tristangriffin.projectx.Adapters.RecyclerViewListAdapter;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 public class UserFragment extends Fragment {
 

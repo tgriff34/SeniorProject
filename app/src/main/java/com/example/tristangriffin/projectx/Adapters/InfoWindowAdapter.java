@@ -1,4 +1,4 @@
-package com.example.tristangriffin.projectx.Resources;
+package com.example.tristangriffin.projectx.Adapters;
 
 import android.app.Activity;
 import android.content.Context;

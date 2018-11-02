@@ -24,14 +24,14 @@ import android.widget.TextView;
 import com.example.tristangriffin.projectx.Activities.ImageViewerActivity;
 import com.example.tristangriffin.projectx.Activities.MainActivity;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
-import com.example.tristangriffin.projectx.Resources.GridViewImageAdapter;
+import com.example.tristangriffin.projectx.Adapters.GridViewImageAdapter;
 import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
 import com.example.tristangriffin.projectx.R;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
-import static com.example.tristangriffin.projectx.Resources.RecyclerViewListAdapter.ALBUM_NAME;
+import static com.example.tristangriffin.projectx.Adapters.RecyclerViewListAdapter.ALBUM_NAME;
 
 
 public class UserImageFragment extends Fragment {

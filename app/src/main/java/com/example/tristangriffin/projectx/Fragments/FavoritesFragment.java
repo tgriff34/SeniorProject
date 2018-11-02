@@ -6,13 +6,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import com.example.tristangriffin.projectx.Activities.MainActivity;
 import com.example.tristangriffin.projectx.Listeners.OnGetFavoritedAlbumListener;
@@ -21,10 +19,9 @@ import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
 import com.example.tristangriffin.projectx.Models.Album;
 import com.example.tristangriffin.projectx.R;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
-import com.example.tristangriffin.projectx.Resources.RecyclerViewListAdapter;
+import com.example.tristangriffin.projectx.Adapters.RecyclerViewListAdapter;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 public class FavoritesFragment extends Fragment {
 
