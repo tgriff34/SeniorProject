@@ -18,7 +18,6 @@ import com.example.tristangriffin.projectx.Activities.ImageViewerActivity;
 import com.example.tristangriffin.projectx.Activities.MainActivity;
 import com.example.tristangriffin.projectx.Listeners.OnGetAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
-import com.example.tristangriffin.projectx.Listeners.OnGetPicLatLongListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
 import com.example.tristangriffin.projectx.Models.Album;
 import com.example.tristangriffin.projectx.Models.Image;
@@ -37,10 +36,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class NavigationFragment extends Fragment implements OnMapReadyCallback {
 
@@ -120,7 +115,7 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
     //Private Funcs
     public void getAlbumLocations(String album) {
         albumName = album;
-        firebaseCommands.getPhotos(albumName, "public", new OnGetPhotosListener() {
+        firebaseCommands.getPhotos(albumName, new OnGetPhotosListener() {
             @Override
             public void onGetPhotosSuccess(ArrayList<Image> images) {
                 setUpMap(images);
@@ -131,7 +126,7 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
     private void getAlbums() {
         //progressBar.setVisibility(View.VISIBLE);
         albums = new ArrayList<>();
-        firebaseCommands.getAlbums("public", new OnGetAlbumListener() {
+        firebaseCommands.getAlbums(new OnGetAlbumListener() {
             @Override
             public void onGetAlbumSuccess(ArrayList<String> listOfAlbums) {
                 if (!listOfAlbums.isEmpty()) {
@@ -149,7 +144,7 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void getThumbnail(final int position) {
-            firebaseCommands.getThumbnail(albums.get(position).getName(), "public", new OnGetThumbnailListener() {
+            firebaseCommands.getThumbnail(albums.get(position).getName(), new OnGetThumbnailListener() {
                 @Override
                 public void onGetThumbnailSuccess(String string) {
                     albums.get(position).setThumbnail(string);

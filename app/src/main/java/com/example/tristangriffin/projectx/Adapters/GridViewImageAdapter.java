@@ -80,7 +80,7 @@ public class GridViewImageAdapter extends BaseAdapter {
             int screenWidth = metrics.widthPixels;
 
             imageView.setLayoutParams(new GridView.LayoutParams(screenWidth / 2, screenWidth / 2));
-            imageView.setPadding(12,12,12,12);
+            imageView.setPadding(12, 12, 12, 12);
         } else {
             imageView = (CheckableImageView) view;
         }

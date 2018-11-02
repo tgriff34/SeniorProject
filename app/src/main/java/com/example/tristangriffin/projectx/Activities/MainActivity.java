@@ -48,15 +48,20 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String EXTRAS = "EXTRAS";
 
+    private boolean isPublic = false;
+
+    private SharedPreferences preferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String currentTheme = preferences.getString("current_theme", "Light");
         if (currentTheme.equals("Light")) {
             setTheme(R.style.LightAppTheme);
         } else {
             setTheme(R.style.AppTheme);
         }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -137,14 +142,21 @@ public class MainActivity extends AppCompatActivity {
                 final AlertDialog builder = new AlertDialog.Builder(MainActivity.this).create();
                 View viewInflated = LayoutInflater.from(MainActivity.this).inflate(R.layout.text_input_add_album, null);
                 final EditText input = (EditText) viewInflated.findViewById(R.id.album_input);
-                Button okButton = (Button) viewInflated.findViewById(R.id.builder_yes_button);
-                Button noButton = (Button) viewInflated.findViewById(R.id.builder_no_button);
+
                 builder.setView(viewInflated);
                 builder.setCancelable(true);
+
+                Button okButton = (Button) viewInflated.findViewById(R.id.builder_yes_button);
+                Button noButton = (Button) viewInflated.findViewById(R.id.builder_no_button);
+
                 okButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        firebaseCommands.createPhotoCollection(input.getText().toString(), "public");
+                        String isPublicString = preferences.getString("current_privacy", "Public");
+                        isPublic = (isPublicString.equals("Public"));
+
+                        firebaseCommands.createPhotoCollection(input.getText().toString(), isPublic);
+
                         Bundle bundle = new Bundle();
                         bundle.putString(ALBUM_NAME, input.getText().toString());
                         UserImageFragment userImageFragment = new UserImageFragment();
@@ -154,6 +166,8 @@ public class MainActivity extends AppCompatActivity {
                                 .addToBackStack(USER_IMAGE_FRAGMENT_TAG)
                                 .replace(R.id.fragment_container, userImageFragment, USER_IMAGE_FRAGMENT_TAG)
                                 .commit();
+
+                        builder.dismiss();
                     }
                 });
                 noButton.setOnClickListener(new View.OnClickListener() {

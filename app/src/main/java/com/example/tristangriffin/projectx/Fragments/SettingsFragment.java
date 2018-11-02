@@ -25,6 +25,7 @@ import com.google.firebase.auth.FirebaseAuth;
 public class SettingsFragment extends Fragment implements AdapterView.OnItemClickListener {
 
     private ListView listView;
+    private SharedPreferences sharedPreferences;
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -41,6 +42,8 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
 
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
+
         //getActivity().setTitle(R.string.settings_name);
         TextView toolbarTextView = (TextView) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar_title);
         toolbarTextView.setText(R.string.settings_name);
@@ -55,7 +58,6 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         switch (i) {
             case 0:
-                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
                 String currentTheme = sharedPreferences.getString("current_theme", "Light");
                 if (currentTheme.equals("Light")) {
                     sharedPreferences.edit().putString("current_theme", "Dark").apply();
@@ -69,6 +71,18 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
                 break;
 
             case 1:
+                String privacySetting = sharedPreferences.getString("current_privacy", "Public");
+                if (privacySetting.equals("Public")) {
+                    sharedPreferences.edit().putString("current_privacy", "Private").apply();
+                    Toast.makeText(getContext(), "Private", Toast.LENGTH_SHORT).show();
+                } else {
+                    sharedPreferences.edit().putString("current_privacy", "Public").apply();
+                    Toast.makeText(getContext(), "Public", Toast.LENGTH_SHORT).show();
+                }
+
+                break;
+
+            case 2:
                 Toast.makeText(getActivity(), "Signed Out", Toast.LENGTH_SHORT).show();
                 FirebaseCommands.getInstance().signOut();
                 Intent intent = new Intent(getActivity(), SignInActivity.class);

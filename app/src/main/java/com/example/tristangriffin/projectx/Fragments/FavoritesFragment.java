@@ -100,7 +100,7 @@ public class FavoritesFragment extends Fragment {
     }
 
     private void getThumbnail(final int position) {
-        firebaseCommands.getThumbnail(favoritedAlbums.get(position).getName(), "public", new OnGetThumbnailListener() {
+        firebaseCommands.getThumbnail(favoritedAlbums.get(position).getName(), new OnGetThumbnailListener() {
             @Override
             public void onGetThumbnailSuccess(String string) {
                 favoritedAlbums.get(position).setThumbnail(string);

@@ -72,7 +72,7 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final RecyclerViewListAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull final RecyclerViewListAdapter.MyViewHolder holder, final int position) {
         final String albumName = albums.get(position).getName();
         final TextView textView = holder.nameTextView;
         ImageView imageView = holder.holderImageView;
@@ -120,11 +120,11 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
         holder.confirmDeleteAlbumButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                firebaseCommands.deletePhotoCollection(textView.getText().toString(), "public", new OnDeleteAlbumListener() {
+                firebaseCommands.deletePhotoCollection(textView.getText().toString(), new OnDeleteAlbumListener() {
                     @Override
                     public void onDeleteAlbum(boolean isDeleted) {
                         if (isDeleted) {
-                            UserFragment userFragment = (UserFragment)((FragmentActivity) context).getSupportFragmentManager().findFragmentByTag(USER_FRAGMENT);
+                            UserFragment userFragment = (UserFragment) ((FragmentActivity) context).getSupportFragmentManager().findFragmentByTag(USER_FRAGMENT);
                             userFragment.getAlbums();
                             Toast.makeText(context, "Album deleted", Toast.LENGTH_SHORT).show();
                         } else {
@@ -152,10 +152,12 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
             @Override
             public void onClick(View v) {
                 if (favoriteButton.getText().equals("Favorite")) {
-                    firebaseCommands.favoritePhotoCollection(textView.getText().toString(), "public");
+                    firebaseCommands.favoritePhotoCollection(albums.get(position));
+                    albums.get(position).setFavorite(true);
                     favoriteButton.setText("Unfavorite");
                 } else {
-                    firebaseCommands.unfavoritePhotoCollection(textView.getText().toString(), "public");
+                    firebaseCommands.favoritePhotoCollection(albums.get(position));
+                    albums.get(position).setFavorite(false);
                     favoriteButton.setText("Favorite");
                 }
             }
@@ -165,16 +167,7 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
         holder.holderImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle bundle = new Bundle();
-                bundle.putString(ALBUM_NAME, albumName);
-                UserImageFragment userImageFragment = new UserImageFragment();
-                userImageFragment.setArguments(bundle);
-                ((FragmentActivity) context).getSupportFragmentManager()
-                        .beginTransaction()
-                        .setCustomAnimations(R.anim.fragment_enter_from_right, R.anim.fragment_exit_to_left, R.anim.fragment_enter_from_left, R.anim.fragment_exit_to_right)
-                        .addToBackStack(USER_IMAGE_FRAGMENT_TAG)
-                        .replace(R.id.fragment_container, userImageFragment, USER_IMAGE_FRAGMENT_TAG)
-                        .commit();
+                setFragment(albumName);
             }
         });
 
@@ -182,20 +175,27 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
         holder.nameTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bundle bundle = new Bundle();
-                bundle.putString(ALBUM_NAME, albumName);
-                UserImageFragment userImageFragment = new UserImageFragment();
-                userImageFragment.setArguments(bundle);
-                ((FragmentActivity) context).getSupportFragmentManager()
-                        .beginTransaction()
-                        .setCustomAnimations(R.anim.fragment_enter_from_right, R.anim.fragment_exit_to_left, R.anim.fragment_enter_from_left, R.anim.fragment_exit_to_right)
-                        .addToBackStack(USER_IMAGE_FRAGMENT_TAG)
-                        .replace(R.id.fragment_container, userImageFragment, USER_IMAGE_FRAGMENT_TAG)
-                        .commit();
+                setFragment(albumName);
             }
         });
     }
 
+    //Private Functions
+    private void setFragment(String albumName) {
+        Bundle bundle = new Bundle();
+        bundle.putString(ALBUM_NAME, albumName);
+        UserImageFragment userImageFragment = new UserImageFragment();
+        userImageFragment.setArguments(bundle);
+        ((FragmentActivity) context).getSupportFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(R.anim.fragment_enter_from_right, R.anim.fragment_exit_to_left, R.anim.fragment_enter_from_left, R.anim.fragment_exit_to_right)
+                .addToBackStack(USER_IMAGE_FRAGMENT_TAG)
+                .replace(R.id.fragment_container, userImageFragment, USER_IMAGE_FRAGMENT_TAG)
+                .commit();
+    }
+
+
+    // Required Functions
     @Override
     public int getItemCount() {
         return albums.size();

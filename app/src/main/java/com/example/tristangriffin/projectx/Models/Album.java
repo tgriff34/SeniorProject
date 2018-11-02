@@ -1,8 +1,8 @@
 package com.example.tristangriffin.projectx.Models;
 
 public class Album {
-    String name, thumbnail;
-    boolean isFavorite;
+    String name, thumbnail, id;
+    boolean isFavorite, isPublic;
 
     public String getName() {
         return name;
@@ -28,12 +28,30 @@ public class Album {
         isFavorite = favorite;
     }
 
+    public boolean isPublic() {
+        return isPublic;
+    }
+
+    public void setPublic(boolean aPublic) {
+        isPublic = aPublic;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
         return "Album{" +
                 "name='" + name + '\'' +
+                ", id='" + id + '\'' +
                 ", thumbnail='" + thumbnail + '\'' +
-                ", isFavorite=" + isFavorite +
+                ", isFavorite='" + isFavorite + '\'' +
+                ", isPublic='" + isPublic +
                 '}';
     }
 }

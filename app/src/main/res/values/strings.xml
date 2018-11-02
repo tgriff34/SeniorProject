@@ -34,6 +34,7 @@
     <!-- Settings ListView Resources -->
     <string-array name="settings_array">
         <item>Change Theme</item>
+        <item>Change Default Privacy</item>
         <item>Sign Out</item>
     </string-array>
 

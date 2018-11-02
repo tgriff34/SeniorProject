@@ -11,12 +11,15 @@ import com.example.tristangriffin.projectx.Listeners.OnGetAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetFavoritedAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetIfFavoritedAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
-import com.example.tristangriffin.projectx.Listeners.OnGetPicLatLongListener;
+import com.example.tristangriffin.projectx.Listeners.OnGetPublicAlbumsListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetSearchAlbumsListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
+import com.example.tristangriffin.projectx.Listeners.OnGetUsersListener;
 import com.example.tristangriffin.projectx.Listeners.OnSignInListener;
 import com.example.tristangriffin.projectx.Listeners.OnSignUpListener;
+import com.example.tristangriffin.projectx.Models.Album;
 import com.example.tristangriffin.projectx.Models.Image;
+import com.example.tristangriffin.projectx.Models.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -36,7 +39,6 @@ import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class FirebaseCommands {
@@ -50,10 +52,13 @@ public class FirebaseCommands {
     public FirebaseUser user = firebaseAuth.getCurrentUser();
 
     private ArrayList<Image> allImages;
+    private ArrayList<User> users;
     private ArrayList<String> allAlbums;
     private String thumbnailRef;
 
     private static final String USER_TAG = "users";
+    private static final String ALBUM_TAG = "albums";
+    private static final String IMAGES_TAG = "images";
 
     public static FirebaseCommands getInstance() {
         return ourInstance;
@@ -63,6 +68,9 @@ public class FirebaseCommands {
 
     }
 
+    /**
+     *  USER METHODS
+     */
     public void createUser(String email, String password, Activity activity, final OnSignUpListener listener) {
         firebaseAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
@@ -103,11 +111,68 @@ public class FirebaseCommands {
         firebaseAuth.signOut();
     }
 
+    private void getUsers(final OnGetUsersListener listener) {
+        users = new ArrayList<>();
+        db.collection(USER_TAG).
+                get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
+                        User user = new User();
+                        user.setId(queryDocumentSnapshot.getId());
+                        users.add(user);
+                    }
+                    listener.onGetUsers(users);
+                }
+            }
+        });
+    }
+
+    private void getPublicAlbums(final OnGetPublicAlbumsListener listener) {
+        final ArrayList<Album> publicAlbums = new ArrayList<>();
+
+        getUsers(new OnGetUsersListener() {
+            @Override
+            public void onGetUsers(ArrayList<User> users) {
+                for (User user: users) {
+                    if (user.getId() != firebaseAuth.getUid()) {
+                        db.collection(USER_TAG)
+                                .document(user.getId())
+                                .collection(ALBUM_TAG)
+                                .whereEqualTo("isPublic", true)
+                                .get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                                Album album = new Album();
+                                                album.setName(documentSnapshot.getId());
+                                                album.setId(documentSnapshot.getString("id"));
+                                                album.setFavorite(documentSnapshot.getBoolean("isFavorite"));
+                                                album.setPublic(documentSnapshot.getBoolean("isPublic"));
+
+                                                publicAlbums.add(album);
+                                            }
+                                            listener.getPublicAlbums(publicAlbums);
+                                        }
+                                    }
+                                });
+                    }
+                }
+            }
+        });
+    }
+
+    /**
+     *  DIVIDER
+     */
     private void createNewUserCollection(FirebaseUser user, final OnSignUpListener listener) {
         Map<String, Object> newUser = new HashMap<>();
         newUser.put("id", user.getUid());
         newUser.put("email", user.getEmail());
-        db.collection("users")
+        db.collection(USER_TAG)
                 .document(user.getUid())
                 .set(newUser)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -156,11 +221,11 @@ public class FirebaseCommands {
                     dbImageReference.put("location", location);
                     dbImageReference.put("time", timeCreated);
                     dbImageReference.put("date", dateCreated);
-                    db.collection("users")
+                    db.collection(USER_TAG)
                             .document(user.getUid())
-                            .collection("public")
+                            .collection(ALBUM_TAG)
                             .document(collection)
-                            .collection("images")
+                            .collection(IMAGES_TAG)
                             .document(TAG)
                             .set(dbImageReference)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -179,12 +244,12 @@ public class FirebaseCommands {
         }
     }
 
-    public void deleteFromDatabase(final String TAG, final String collection, final String setting) {
-        db.collection("users")
+    public void deleteFromDatabase(final String TAG, final String collection) {
+        db.collection(USER_TAG)
                 .document(user.getUid())
-                .collection(setting)
+                .collection(ALBUM_TAG)
                 .document(collection)
-                .collection("images")
+                .collection(IMAGES_TAG)
                 .document(TAG)
                 .delete()
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -202,16 +267,16 @@ public class FirebaseCommands {
                 });
     }
 
-    public void deletePhotoCollection(final String name, final String setting, final OnDeleteAlbumListener listener) {
-        getPhotos(name, setting, new OnGetPhotosListener() {
+    public void deletePhotoCollection(final String name, final OnDeleteAlbumListener listener) {
+        getPhotos(name, new OnGetPhotosListener() {
             @Override
             public void onGetPhotosSuccess(ArrayList<Image> images) {
                 for (Image image: images) {
-                    deleteFromDatabase(image.getId(), name, setting);
+                    deleteFromDatabase(image.getId(), name);
                 }
                 db.collection("users")
                         .document(user.getUid())
-                        .collection(setting)
+                        .collection(ALBUM_TAG)
                         .document(name)
                         .delete();
                 listener.onDeleteAlbum(true);
@@ -219,32 +284,27 @@ public class FirebaseCommands {
         });
     }
 
-    public void favoritePhotoCollection(final String name, final String setting) {
-        Map<String, Object> isFavorite = new HashMap<>();
-        isFavorite.put("name", name);
-        isFavorite.put("isFavorite", true);
-        db.collection("users")
+    /* PASS ENTIRE ALBUM */
+    public void favoritePhotoCollection(Album album) {
+        Map<String, Object> favorite = new HashMap<>();
+        favorite.put("name", album.getName());
+        if (album.isFavorite()) {
+            favorite.put("isFavorite", false);
+        } else {
+            favorite.put("isFavorite", true);
+        }
+        favorite.put("isPublic", album.isPublic());
+        db.collection(USER_TAG)
                 .document(user.getUid())
-                .collection(setting)
-                .document(name)
-                .set(isFavorite);
-    }
-
-    public void unfavoritePhotoCollection(final String name, final String setting) {
-        Map<String, Object> albumSetting = new HashMap<>();
-        albumSetting.put("name", name);
-        albumSetting.put("isFavorite", false);
-        db.collection("users")
-                .document(user.getUid())
-                .collection(setting)
-                .document(name)
-                .set(albumSetting);
+                .collection(ALBUM_TAG)
+                .document(album.getName())
+                .set(favorite);
     }
 
     public void getIfFavoritedPhotoCollection(String albumName, final OnGetIfFavoritedAlbumListener listener) {
-        db.collection("users")
+        db.collection(USER_TAG)
                 .document(user.getUid())
-                .collection("public")
+                .collection(ALBUM_TAG)
                 .document(albumName)
                 .get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -260,9 +320,9 @@ public class FirebaseCommands {
 
     public void getFavoritedPhotoCollection(final OnGetFavoritedAlbumListener listener) {
         final ArrayList<String> favoritedAlbums = new ArrayList<>();
-        db.collection("users")
+        db.collection(USER_TAG)
                 .document(user.getUid())
-                .collection("public")
+                .collection(ALBUM_TAG)
                 .whereEqualTo("isFavorite", true)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -278,22 +338,24 @@ public class FirebaseCommands {
                 });
     }
 
-    public void createPhotoCollection(String name, String setting) {
+    public void createPhotoCollection(String name, boolean setting) {
         Map<String, Object> collectionName = new HashMap<>();
         collectionName.put("name", name);
         collectionName.put("isFavorite", false);
-        db.collection("users")
+        collectionName.put("isPublic", setting);
+        collectionName.put("id", user.getUid());
+        db.collection(USER_TAG)
                 .document(user.getUid())
-                .collection(setting)
+                .collection(ALBUM_TAG)
                 .document(name)
                 .set(collectionName);
     }
 
-    public void getAlbums(final String setting, final OnGetAlbumListener listener) {
+    public void getAlbums(final OnGetAlbumListener listener) {
         allAlbums = new ArrayList<>();
-        db.collection("users")
+        db.collection(USER_TAG)
                 .document(user.getUid())
-                .collection(setting)
+                .collection(ALBUM_TAG)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -310,14 +372,14 @@ public class FirebaseCommands {
                 });
     }
 
-    public void getPhotos(final String albumName, final String setting, final OnGetPhotosListener listener) {
+    public void getPhotos(final String albumName, final OnGetPhotosListener listener) {
         allImages = new ArrayList<>();
         //TODO: Get images from album
-        db.collection("users")
+        db.collection(USER_TAG)
                 .document(user.getUid())
-                .collection(setting)
+                .collection(ALBUM_TAG)
                 .document(albumName)
-                .collection("images")
+                .collection(IMAGES_TAG)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -341,12 +403,12 @@ public class FirebaseCommands {
                 });
     }
 
-    public void getThumbnail(final String albumName, final String setting, final OnGetThumbnailListener listener) {
-        db.collection("users")
+    public void getThumbnail(final String albumName, final OnGetThumbnailListener listener) {
+        db.collection(USER_TAG)
                 .document(user.getUid())
-                .collection(setting)
+                .collection(ALBUM_TAG)
                 .document(albumName)
-                .collection("images")
+                .collection(IMAGES_TAG)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -361,51 +423,12 @@ public class FirebaseCommands {
                 });
     }
 
-    public void getPictureLatLong(final String album, final OnGetPicLatLongListener listener) {
-
-        final Map<String[], double[]> picInfoMap = new HashMap<>();
-
-        getAlbums("public", new OnGetAlbumListener() {
-            @Override
-            public void onGetAlbumSuccess(ArrayList<String> albums) {
-                db.collection("users")
-                        .document(user.getUid())
-                        .collection("public")
-                        .document(album)
-                        .collection("images")
-                        .get()
-                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-
-                                        String location = documentSnapshot.getId();
-                                        String ref = documentSnapshot.getString("ref");
-                                        double latitude = Double.parseDouble(documentSnapshot.getString("latitude"));
-                                        double longitude = Double.parseDouble(documentSnapshot.getString("longitude"));
-                                        double[] latLong = new double[]{latitude, longitude};
-                                        String[] strings = new String[]{location, ref};
-
-                                        picInfoMap.put(strings, latLong);
-
-                                    }
-                                    Log.d("demo", picInfoMap.toString());
-                                    listener.getPicLatLong(picInfoMap);
-                                }
-                            }
-                        });
-            }
-        });
-    }
-
     public void searchAlbums(final String searchString, final OnGetSearchAlbumsListener listener) {
         final ArrayList<String> searchedAlbums = new ArrayList<>();
 
-        CollectionReference publicRef = db.collection("users").document(user.getUid()).collection("public");
-        CollectionReference privateRef = db.collection("users").document(user.getUid()).collection("private");
+        CollectionReference userRef = db.collection(USER_TAG).document(user.getUid()).collection(ALBUM_TAG);
 
-        publicRef.orderBy("name").startAt(searchString).endAt(searchString + "\uf8ff").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        userRef.orderBy("name").startAt(searchString).endAt(searchString + "\uf8ff").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
@@ -415,25 +438,41 @@ public class FirebaseCommands {
                 }
             }
         });
-        privateRef.orderBy("name").startAt(searchString).endAt(searchString + "\uf8ff").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+        getPublicAlbums(new OnGetPublicAlbumsListener() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                        searchedAlbums.add(documentSnapshot.getId());
-                    }
+            public void getPublicAlbums(ArrayList<Album> albums) {
+                for (Album album : albums) {
+                    db.collection(USER_TAG)
+                            .document(album.getId())
+                            .collection(ALBUM_TAG)
+                            .document(album.getName())
+                            .collection(IMAGES_TAG)
+                            .orderBy("location").startAt(searchString).endAt(searchString + "\uf8ff").get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    if (task.isSuccessful()) {
+                                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                            searchedAlbums.add(documentSnapshot.get("album").toString());
+                                        }
+                                    }
+                                }
+                            });
                 }
+                listener.searchedAlbums(searchedAlbums);
             }
         });
-        getAlbums("public", new OnGetAlbumListener() {
+
+        getAlbums(new OnGetAlbumListener() {
             @Override
             public void onGetAlbumSuccess(ArrayList<String> albums) {
                 for (String album : albums) {
-                    db.collection("users")
+                    db.collection(USER_TAG)
                             .document(user.getUid())
-                            .collection("public")
+                            .collection(ALBUM_TAG)
                             .document(album)
-                            .collection("images")
+                            .collection(IMAGES_TAG)
                             .orderBy("location").startAt(searchString).endAt(searchString + "\uf8ff").get()
                             .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                 @Override

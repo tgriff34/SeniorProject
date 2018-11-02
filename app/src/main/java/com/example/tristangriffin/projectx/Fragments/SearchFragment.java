@@ -119,7 +119,7 @@ public class SearchFragment extends Fragment {
         /**
          * Fix for public and private
          */
-        firebaseCommands.getThumbnail(searchedAlbums.get(position).getName(), "public", new OnGetThumbnailListener() {
+        firebaseCommands.getThumbnail(searchedAlbums.get(position).getName(), new OnGetThumbnailListener() {
             @Override
             public void onGetThumbnailSuccess(String string) {
                 searchedAlbums.get(position).setThumbnail(string);

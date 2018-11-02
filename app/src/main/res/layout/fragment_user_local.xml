@@ -8,6 +8,8 @@
 
     <!-- TODO: Update blank fragment layout -->
 
+
+
     <GridView
         android:id="@+id/grid_local_view"
         android:layout_width="match_parent"
@@ -15,7 +17,8 @@
         android:choiceMode="multipleChoice"
         android:gravity="center"
         android:numColumns="2"
-        android:stretchMode="columnWidth" />
+        android:stretchMode="columnWidth" >
+    </GridView>
 
 
 </FrameLayout>

@@ -107,7 +107,7 @@ public class UserImageFragment extends Fragment {
                 delete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        firebaseCommands.deleteFromDatabase(value, albumName, "public");
+                        firebaseCommands.deleteFromDatabase(value, albumName);
                         getImages();
                         mBottomSheetDialog.dismiss();
                     }
@@ -196,7 +196,7 @@ public class UserImageFragment extends Fragment {
 
     //Private Functions
     private void getImages() {
-        firebaseCommands.getPhotos(albumName, "public", new OnGetPhotosListener() {
+        firebaseCommands.getPhotos(albumName, new OnGetPhotosListener() {
             @Override
             public void onGetPhotosSuccess(ArrayList<Image> images) {
                 cloudImages = images;

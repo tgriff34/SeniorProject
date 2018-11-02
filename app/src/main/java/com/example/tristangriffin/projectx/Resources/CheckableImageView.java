@@ -1,17 +1,13 @@
 package com.example.tristangriffin.projectx.Resources;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.widget.Checkable;
 
-import com.example.tristangriffin.projectx.R;
-
-public class CheckableImageView extends android.support.v7.widget.AppCompatImageView {
+public class CheckableImageView extends android.support.v7.widget.AppCompatImageView implements Checkable {
 
     private boolean isChecked = false;
+    private static final int[] CHECKED_STATE_SET = { android.R.attr.state_checked };
 
     public CheckableImageView(Context context) {
         super(context);
@@ -24,19 +20,28 @@ public class CheckableImageView extends android.support.v7.widget.AppCompatImage
     public CheckableImageView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
+
+    @Override
+    public int[] onCreateDrawableState(int extraSpace) {
+        final int[] drawableState = super.onCreateDrawableState(extraSpace + 1);
+        if (isChecked())
+            mergeDrawableStates(drawableState, CHECKED_STATE_SET);
+        return drawableState;
+    }
+
+    @Override
     public void setChecked(boolean checked) {
         this.isChecked = checked;
+        refreshDrawableState();
     }
+
+    @Override
     public boolean isChecked(){
         return isChecked;
     }
+
     @Override
-    protected void onDraw(Canvas canvas) {
-        super.onDraw(canvas);
-        if (isChecked) {
-            Bitmap check = BitmapFactory.decodeResource(getResources(), R.drawable.baseline_done_black_18dp);
-            canvas.drawBitmap(check, canvas.getWidth() - check.getWidth() - 15,
-                    canvas.getHeight() - check.getHeight() - 15, new Paint());
-        }
+    public void toggle() {
+        setChecked(!isChecked);
     }
 }

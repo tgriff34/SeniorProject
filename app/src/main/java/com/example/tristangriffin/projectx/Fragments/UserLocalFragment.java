@@ -74,6 +74,7 @@ public class UserLocalFragment extends Fragment {
         getActivity().setTitle(R.string.local_photos_name);
 
         gridView = view.findViewById(R.id.grid_local_view);
+        gridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE);
         albumName = getArguments().getString("album_name");
         setHasOptionsMenu(true);
         getImages(getActivity());
@@ -81,9 +82,6 @@ public class UserLocalFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                GridViewImageAdapter adapter = (GridViewImageAdapter) gridView.getAdapter();
-
-                adapter.notifyDataSetChanged();
                 uploadImage(images.get(position));
             }
         });
@@ -192,6 +190,10 @@ public class UserLocalFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
+
+                GridViewImageAdapter adapter = (GridViewImageAdapter) gridView.getAdapter();
+                adapter.notifyDataSetChanged();
+
                 Place place = PlaceAutocomplete.getPlace(getActivity(), data);
                 latitude = String.valueOf(place.getLatLng().latitude);
                 longitude = String.valueOf(place.getLatLng().longitude);

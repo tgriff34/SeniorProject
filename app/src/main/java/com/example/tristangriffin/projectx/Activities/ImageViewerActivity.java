@@ -118,11 +118,11 @@ public class ImageViewerActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (checkIfIsFavorite) {
                     checkIfIsFavorite = false;
-                    firebaseCommands.unfavoritePhotoCollection(albumName, "public");
+                    //firebaseCommands.unfavoritePhotoCollection(albumName);
                     favoriteButton.setImageResource(R.drawable.baseline_favorite_border_white_24dp);
                 } else {
                     checkIfIsFavorite = true;
-                    firebaseCommands.favoritePhotoCollection(albumName, "public");
+                    //firebaseCommands.favoritePhotoCollection(albumName);
                     favoriteButton.setImageResource(R.drawable.baseline_favorite_white_24dp);
                 }
             }
@@ -156,7 +156,7 @@ public class ImageViewerActivity extends AppCompatActivity {
 
     //Private Funcs
     private void getImages() {
-        firebaseCommands.getPhotos(albumName, "public", new OnGetPhotosListener() {
+        firebaseCommands.getPhotos(albumName, new OnGetPhotosListener() {
             @Override
             public void onGetPhotosSuccess(ArrayList<Image> images) {
                 cloudImages = images;
