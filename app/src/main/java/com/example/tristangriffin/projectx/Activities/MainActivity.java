@@ -19,6 +19,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.tristangriffin.projectx.Fragments.FavoritesFragment;
@@ -140,17 +141,16 @@ public class MainActivity extends AppCompatActivity {
                 return true;
 
             case R.id.action_add_collection:
-                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                builder.setTitle("Add Album");
-
+                final AlertDialog builder = new AlertDialog.Builder(MainActivity.this).create();
                 View viewInflated = LayoutInflater.from(MainActivity.this).inflate(R.layout.text_input_add_album, null);
-
                 final EditText input = (EditText) viewInflated.findViewById(R.id.album_input);
+                Button okButton = (Button) viewInflated.findViewById(R.id.builder_yes_button);
+                Button noButton = (Button) viewInflated.findViewById(R.id.builder_no_button);
                 builder.setView(viewInflated);
-
-                builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                builder.setCancelable(true);
+                okButton.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void onClick(View v) {
                         firebaseCommands.createPhotoCollection(input.getText().toString(), "public");
                         Bundle bundle = new Bundle();
                         bundle.putString(ALBUM_NAME, input.getText().toString());
@@ -163,13 +163,12 @@ public class MainActivity extends AppCompatActivity {
                                 .commit();
                     }
                 });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                noButton.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
+                    public void onClick(View v) {
+                        builder.dismiss();
                     }
                 });
-
                 builder.show();
                 return true;
         }
