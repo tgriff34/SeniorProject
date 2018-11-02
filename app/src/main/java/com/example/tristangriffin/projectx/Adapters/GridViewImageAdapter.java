@@ -10,8 +10,10 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.tristangriffin.projectx.Models.Image;
 import com.example.tristangriffin.projectx.Resources.CheckableImageView;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -23,7 +25,7 @@ public class GridViewImageAdapter extends BaseAdapter {
     private GridView gridView;
     private String TAG;
     private ArrayList<String> images;
-    private LinkedHashMap<String, String> cloudImages;
+    private ArrayList<Image> cloudImages;
 
     public GridViewImageAdapter(Activity mContext, String mTAG, GridView mGridView, ArrayList<String> mImages) {
         context = mContext;
@@ -33,7 +35,7 @@ public class GridViewImageAdapter extends BaseAdapter {
     }
 
     public GridViewImageAdapter(Activity mContext, String mTAG, GridView mGridView,
-                                 LinkedHashMap<String, String> mCloudImages) {
+                                 ArrayList<Image> mCloudImages, String test) {
         context = mContext;
         gridView = mGridView;
         TAG = mTAG;
@@ -92,7 +94,7 @@ public class GridViewImageAdapter extends BaseAdapter {
         if (TAG.equals(LOCAL_PHOTO_VIEW)) {
             Glide.with(context).load(images.get(i)).apply(RequestOptions.centerCropTransform()).into(imageView);
         } else if (TAG.equals(DEFAULT_PHOTO_VIEW)) {
-            Glide.with(context).load(new ArrayList<>(cloudImages.values()).get(i)).apply(RequestOptions.centerCropTransform()).into(imageView);
+            Glide.with(context).load(cloudImages.get(i).getRef()).apply(RequestOptions.centerCropTransform()).into(imageView);
         }
 
         return imageView;

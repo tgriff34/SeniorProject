@@ -16,6 +16,7 @@ import com.example.tristangriffin.projectx.Listeners.OnGetSearchAlbumsListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
 import com.example.tristangriffin.projectx.Listeners.OnSignInListener;
 import com.example.tristangriffin.projectx.Listeners.OnSignUpListener;
+import com.example.tristangriffin.projectx.Models.Image;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -48,7 +49,7 @@ public class FirebaseCommands {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     public FirebaseUser user = firebaseAuth.getCurrentUser();
 
-    private LinkedHashMap<String, String> allImages;
+    private ArrayList<Image> allImages;
     private ArrayList<String> allAlbums;
     private String thumbnailRef;
 
@@ -204,9 +205,9 @@ public class FirebaseCommands {
     public void deletePhotoCollection(final String name, final String setting, final OnDeleteAlbumListener listener) {
         getPhotos(name, setting, new OnGetPhotosListener() {
             @Override
-            public void onGetPhotosSuccess(LinkedHashMap<String, String> images) {
-                for (Map.Entry<String, String> photo : images.entrySet()) {
-                    deleteFromDatabase(photo.getKey(), name, setting);
+            public void onGetPhotosSuccess(ArrayList<Image> images) {
+                for (Image image: images) {
+                    deleteFromDatabase(image.getId(), name, setting);
                 }
                 db.collection("users")
                         .document(user.getUid())
@@ -310,7 +311,7 @@ public class FirebaseCommands {
     }
 
     public void getPhotos(final String albumName, final String setting, final OnGetPhotosListener listener) {
-        allImages = new LinkedHashMap<>();
+        allImages = new ArrayList<>();
         //TODO: Get images from album
         db.collection("users")
                 .document(user.getUid())
@@ -323,7 +324,15 @@ public class FirebaseCommands {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                allImages.put(document.getId(), document.getString("ref"));
+                                Image image = new Image();
+                                image.setId(document.getId());
+                                image.setRef(document.getString("ref"));
+                                image.setAlbum(document.getString("album"));
+                                image.setLocation(document.getString("location"));
+                                image.setLatitude(document.getString("latitude"));
+                                image.setLongitude(document.getString("longitude"));
+                                allImages.add(image);
+                                //allImages.put(document.getId(), document.getString("ref"));
                             }
                             //Log.d("demo", "Cloud images: " + allImages.toString());
                             listener.onGetPhotosSuccess(allImages);

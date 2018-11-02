@@ -2,7 +2,6 @@ package com.example.tristangriffin.projectx.Activities;
 
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -14,11 +13,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.bumptech.glide.Glide;
@@ -28,10 +25,10 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.tristangriffin.projectx.Listeners.OnGetIfFavoritedAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
+import com.example.tristangriffin.projectx.Models.Image;
 import com.example.tristangriffin.projectx.R;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
@@ -42,7 +39,7 @@ public class ImageViewerActivity extends AppCompatActivity {
 
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
-    private LinkedHashMap<String, String> cloudImages;
+    private ArrayList<Image> cloudImages;
     private String currentImage;
     private String albumName;
     private boolean checkIfIsFavorite;
@@ -161,9 +158,13 @@ public class ImageViewerActivity extends AppCompatActivity {
     private void getImages() {
         firebaseCommands.getPhotos(albumName, "public", new OnGetPhotosListener() {
             @Override
-            public void onGetPhotosSuccess(LinkedHashMap<String, String> images) {
+            public void onGetPhotosSuccess(ArrayList<Image> images) {
                 cloudImages = images;
-                currentPosition = new ArrayList<>(cloudImages.keySet()).indexOf(currentImage);
+                for (int i = 0; i < cloudImages.size(); i++) {
+                    if (cloudImages.get(i).getId() == currentImage) {
+                        currentPosition = i;
+                    }
+                }
                 updateUI();
             }
         });
@@ -172,7 +173,7 @@ public class ImageViewerActivity extends AppCompatActivity {
     private void updateUI() {
         Log.d("demo", "Current Position: " + currentPosition);
         Glide.with(this)
-                .load(new ArrayList<>(cloudImages.values()).get(currentPosition))
+                .load(cloudImages.get(currentPosition).getRef())
                 .listener(new RequestListener<Drawable>() {
                     @Override
                     public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {

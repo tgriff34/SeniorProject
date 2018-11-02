@@ -17,9 +17,11 @@ import android.widget.TextView;
 import com.example.tristangriffin.projectx.Activities.ImageViewerActivity;
 import com.example.tristangriffin.projectx.Activities.MainActivity;
 import com.example.tristangriffin.projectx.Listeners.OnGetAlbumListener;
+import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetPicLatLongListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
 import com.example.tristangriffin.projectx.Models.Album;
+import com.example.tristangriffin.projectx.Models.Image;
 import com.example.tristangriffin.projectx.R;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Adapters.InfoWindowAdapter;
@@ -46,7 +48,6 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
     FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
     SupportMapFragment supportMapFragment;
 
-    private Map<String[], double[]> pictureLatLongMap = new HashMap<>();
     private GoogleMap map;
 
     private String albumName;
@@ -119,11 +120,10 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
     //Private Funcs
     public void getAlbumLocations(String album) {
         albumName = album;
-        firebaseCommands.getPictureLatLong(album, new OnGetPicLatLongListener() {
+        firebaseCommands.getPhotos(albumName, "public", new OnGetPhotosListener() {
             @Override
-            public void getPicLatLong(Map<String[], double[]> picInfoMap) {
-                pictureLatLongMap = picInfoMap;
-                setUpMap();
+            public void onGetPhotosSuccess(ArrayList<Image> images) {
+                setUpMap(images);
             }
         });
     }
@@ -165,32 +165,22 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
         recyclerView.setLayoutManager(linearLayoutManager);
     }
 
-    private void setUpMap() {
+    private void setUpMap(ArrayList<Image> images) {
         //Initializer
         map.clear();
-        Iterator iterator = pictureLatLongMap.entrySet().iterator();
 
-
-        while (iterator.hasNext()) {
-            Map.Entry pair = (Map.Entry) iterator.next();
-
-            final String[] locationName = (String[]) pair.getKey();
-            double latitude = pictureLatLongMap.get(locationName)[0];
-            double longitude = pictureLatLongMap.get(locationName)[1];
-            LatLng latLng = new LatLng(latitude, longitude);
-
-            Log.d("demo", "Name: " + locationName[0]);
-            Log.d("demo", "Ref: " + locationName[1]);
-
+        for (Image image: images) {
             InfoWindowData info = new InfoWindowData();
-            info.setName(locationName[0]);
-            info.setImageRef(locationName[1]);
+            info.setName(image.getId());
+            info.setImageRef(image.getRef());
+
+            double latitude = Double.parseDouble(image.getLatitude());
+            double longitude = Double.parseDouble(image.getLongitude());
+            LatLng latLng = new LatLng(latitude, longitude);
             info.setLatLng(latLng);
 
             DownloadImageAndMakeMarker downloadImageAndMakeMarker = new DownloadImageAndMakeMarker();
             downloadImageAndMakeMarker.execute(info);
-
-            iterator.remove();
         }
     }
 

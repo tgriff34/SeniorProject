@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.example.tristangriffin.projectx.Activities.ImageViewerActivity;
 import com.example.tristangriffin.projectx.Activities.MainActivity;
+import com.example.tristangriffin.projectx.Models.Image;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Adapters.GridViewImageAdapter;
 import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
@@ -36,7 +37,7 @@ import static com.example.tristangriffin.projectx.Adapters.RecyclerViewListAdapt
 
 public class UserImageFragment extends Fragment {
 
-    private LinkedHashMap<String, String> cloudImages = new LinkedHashMap<>();
+    private ArrayList<Image> cloudImages = new ArrayList<>();
     private GridView gridView;
     private SwipeRefreshLayout swipeContainer;
     private ProgressBar progressBar;
@@ -95,7 +96,7 @@ public class UserImageFragment extends Fragment {
         gridView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                final String value = new ArrayList<>(cloudImages.keySet()).get(i);
+                final String value = cloudImages.get(i).getId();
                 Log.d("demo", value);
                 final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(getActivity(), R.style.SheetDialog);
                 View sheetView = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_album_list_longpress_layout, null);
@@ -126,7 +127,7 @@ public class UserImageFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                String value = new ArrayList<>(cloudImages.keySet()).get(i);
+                String value = cloudImages.get(i).getId();
                 Log.d("demo", value);
 
                 Bundle bundle = new Bundle();
@@ -197,16 +198,16 @@ public class UserImageFragment extends Fragment {
     private void getImages() {
         firebaseCommands.getPhotos(albumName, "public", new OnGetPhotosListener() {
             @Override
-            public void onGetPhotosSuccess(LinkedHashMap<String, String> images) {
-                updateUI(images);
+            public void onGetPhotosSuccess(ArrayList<Image> images) {
+                cloudImages = images;
+                updateUI();
             }
         });
     }
 
-    private void updateUI(LinkedHashMap<String, String> imageArray) {
-        cloudImages = imageArray;
+    private void updateUI() {
         gridView.setAdapter(new GridViewImageAdapter(getActivity(), DEFAULT_PHOTO_VIEW,
-                gridView, cloudImages));
+                gridView, cloudImages, null));
         progressBar.setVisibility(View.GONE);
         if (cloudImages.isEmpty()) {
             textInfo.setVisibility(View.VISIBLE);
