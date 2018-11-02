@@ -428,11 +428,11 @@ public class FirebaseCommands {
                                         for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
                                             searchedAlbums.add(documentSnapshot.get("album").toString());
                                         }
-                                        listener.searchedAlbums(searchedAlbums);
                                     }
                                 }
                             });
                 }
+                listener.searchedAlbums(searchedAlbums);
             }
         });
     }

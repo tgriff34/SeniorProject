@@ -5,6 +5,7 @@ import android.content.Context;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.example.tristangriffin.projectx.Models.InfoWindowData;
 import com.example.tristangriffin.projectx.R;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.Marker;

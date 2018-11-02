@@ -18,6 +18,8 @@ import android.widget.TextView;
 import android.widget.Toolbar;
 
 import com.example.tristangriffin.projectx.Activities.MainActivity;
+import com.example.tristangriffin.projectx.Listeners.OnGetIfFavoritedAlbumListener;
+import com.example.tristangriffin.projectx.Models.Album;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Listeners.OnGetSearchAlbumsListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
@@ -29,7 +31,7 @@ import java.util.LinkedHashMap;
 
 public class SearchFragment extends Fragment {
 
-    private LinkedHashMap<String, String> searchedAlbums;
+    private ArrayList<Album> searchedAlbums;
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeContainer;
     private ProgressBar progressBar;
@@ -68,7 +70,7 @@ public class SearchFragment extends Fragment {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if ((!searchText.getText().toString().equals("") && event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) || (actionId == EditorInfo.IME_ACTION_DONE))) {
-                    getAlbums(searchText.getText().toString());
+                    searchAlbums(searchText.getText().toString());
                 }
                 return false;
             }
@@ -79,7 +81,7 @@ public class SearchFragment extends Fragment {
             public void onRefresh() {
                 Log.d("demo", "Search String: " + searchText.getText().toString());
                 if (!searchText.getText().toString().equals("")) {
-                    getAlbums(searchText.getText().toString());
+                    searchAlbums(searchText.getText().toString());
                 }
                 swipeContainer.setRefreshing(false);
             }
@@ -93,15 +95,21 @@ public class SearchFragment extends Fragment {
         return view;
     }
 
-    private void getAlbums(String searchString) {
+    private void searchAlbums(String searchString) {
+        Log.d("demo", "Searching...");
         progressBar.setVisibility(View.VISIBLE);
-        searchedAlbums = new LinkedHashMap<>();
+        searchedAlbums = new ArrayList<>();
         firebaseCommands.searchAlbums(searchString, new OnGetSearchAlbumsListener() {
             @Override
             public void searchedAlbums(ArrayList<String> albums) {
-                Log.d("demo", "Searched Albums: " + albums);
+                Log.d("demo", "Searched Albums: " + albums.toString());
                 if (!albums.isEmpty()) {
-                    getThumbnail(albums);
+                    for (int i = 0; i < albums.size(); i++) {
+                        Album newAlbum = new Album();
+                        newAlbum.setName(albums.get(i));
+                        searchedAlbums.add(newAlbum);
+                        getThumbnail(i);
+                    }
                 } else {
                     updateUI();
                 }
@@ -109,20 +117,27 @@ public class SearchFragment extends Fragment {
         });
     }
 
-    private void getThumbnail(final ArrayList<String> albums) {
-        for (int i = 0; i < albums.size(); i++ ) {
-            final int j = i;
-            /**
-             * Fix for public and private
-             */
-            firebaseCommands.getThumbnail(albums.get(i), "public", new OnGetThumbnailListener() {
-                @Override
-                public void onGetThumbnailSuccess(String string) {
-                    searchedAlbums.put(albums.get(j), string);
-                    updateUI();
-                }
-            });
-        }
+    private void getThumbnail(final int position) {
+        /**
+         * Fix for public and private
+         */
+        firebaseCommands.getThumbnail(searchedAlbums.get(position).getName(), "public", new OnGetThumbnailListener() {
+            @Override
+            public void onGetThumbnailSuccess(String string) {
+                searchedAlbums.get(position).setThumbnail(string);
+                getIsFavorite(position);
+            }
+        });
+    }
+
+    private void getIsFavorite(final int position) {
+        firebaseCommands.getIfFavoritedPhotoCollection(searchedAlbums.get(position).getName(), new OnGetIfFavoritedAlbumListener() {
+            @Override
+            public void getIfFavoritedAlbumListener(boolean isFavorite) {
+                searchedAlbums.get(position).setFavorite(isFavorite);
+                updateUI();
+            }
+        });
     }
 
     private void updateUI() {

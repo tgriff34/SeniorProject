@@ -1,4 +1,4 @@
-package com.example.tristangriffin.projectx.Resources;
+package com.example.tristangriffin.projectx.Models;
 
 import android.graphics.Bitmap;
 

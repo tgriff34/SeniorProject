@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import com.example.tristangriffin.projectx.Activities.ImageViewerActivity;
 import com.example.tristangriffin.projectx.Activities.MainActivity;
@@ -23,9 +22,8 @@ import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
 import com.example.tristangriffin.projectx.R;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Resources.InfoWindowAdapter;
-import com.example.tristangriffin.projectx.Resources.InfoWindowData;
+import com.example.tristangriffin.projectx.Models.InfoWindowData;
 import com.example.tristangriffin.projectx.Resources.NavigationListAdapter;
-import com.example.tristangriffin.projectx.Resources.RecyclerViewListAdapter;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;

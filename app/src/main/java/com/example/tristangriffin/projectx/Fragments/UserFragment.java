@@ -21,6 +21,8 @@ import android.widget.TextView;
 import android.widget.Toolbar;
 
 import com.example.tristangriffin.projectx.Activities.MainActivity;
+import com.example.tristangriffin.projectx.Listeners.OnGetIfFavoritedAlbumListener;
+import com.example.tristangriffin.projectx.Models.Album;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Listeners.OnGetAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
@@ -34,7 +36,8 @@ import java.util.LinkedHashMap;
 
 public class UserFragment extends Fragment {
 
-    private LinkedHashMap<String, String> cloudImages;
+    //private LinkedHashMap<String, String> cloudImages;
+    private ArrayList<Album> albums;
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeContainer;
     private ProgressBar progressBar;
@@ -93,12 +96,18 @@ public class UserFragment extends Fragment {
 
     public void getAlbums() {
         progressBar.setVisibility(View.VISIBLE);
-        cloudImages = new LinkedHashMap<>();
+        //cloudImages = new LinkedHashMap<>();
+        albums = new ArrayList<>();
         firebaseCommands.getAlbums("public", new OnGetAlbumListener() {
             @Override
-            public void onGetAlbumSuccess(ArrayList<String> albums) {
-                if (!albums.isEmpty()) {
-                    getThumbnail(albums);
+            public void onGetAlbumSuccess(ArrayList<String> listOfAlbums) {
+                if (!listOfAlbums.isEmpty()) {
+                    for (int i = 0; i < listOfAlbums.size(); i++) {
+                        Album newAlbum = new Album();
+                        newAlbum.setName(listOfAlbums.get(i));
+                        albums.add(newAlbum);
+                        getThumbnail(i);
+                    }
                 } else {
                     updateUI();
                 }
@@ -106,26 +115,35 @@ public class UserFragment extends Fragment {
         });
     }
 
-    private void getThumbnail(final ArrayList<String> albums) {
-        for (int i = 0; i < albums.size(); i++) {
-            final int j = i;
-            firebaseCommands.getThumbnail(albums.get(i), "public", new OnGetThumbnailListener() {
-                @Override
-                public void onGetThumbnailSuccess(String string) {
-                    cloudImages.put(albums.get(j), string);
-                    updateUI();
-                }
-            });
-        }
+    //Private Functions
+    private void getThumbnail(final int position) {
+        firebaseCommands.getThumbnail(albums.get(position).getName(), "public", new OnGetThumbnailListener() {
+            @Override
+            public void onGetThumbnailSuccess(String string) {
+                albums.get(position).setThumbnail(string);
+                getIsFavorite(position);
+            }
+        });
+    }
+
+    private void getIsFavorite(final int position) {
+        firebaseCommands.getIfFavoritedPhotoCollection(albums.get(position).getName(), new OnGetIfFavoritedAlbumListener() {
+            @Override
+            public void getIfFavoritedAlbumListener(boolean isFavorite) {
+                Log.d("demo", "isFavorite: " + isFavorite);
+                albums.get(position).setFavorite(isFavorite);
+                updateUI();
+            }
+        });
     }
 
     private void updateUI() {
-        Log.d("demo", "Cloud images: " + cloudImages.toString());
+        Log.d("demo", "Albums: " + albums.toString());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(new RecyclerViewListAdapter(getContext(), cloudImages));
+        recyclerView.setAdapter(new RecyclerViewListAdapter(getContext(), albums));
         progressBar.setVisibility(View.GONE);
 
-        if (cloudImages.isEmpty()) {
+        if (albums.isEmpty()) {
             textView.setVisibility(View.VISIBLE);
         } else {
             textView.setVisibility(View.GONE);

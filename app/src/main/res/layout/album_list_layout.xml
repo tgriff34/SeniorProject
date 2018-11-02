@@ -17,7 +17,9 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true"
+            >
 
             <ImageView
                 android:id="@+id/thumbnail"
@@ -42,7 +44,6 @@
                 android:id="@+id/album_favorite_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Favorite"
                 android:layout_below="@id/thumbnail"
                 android:layout_toLeftOf="@id/album_delete_button"
                 />
@@ -56,6 +57,29 @@
                 android:text="Delete"
                 android:layout_below="@id/thumbnail"
                 android:layout_alignParentRight="true"
+                />
+
+            <Button
+                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                android:id="@+id/album_confirm_delete_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Yes"
+                android:visibility="gone"
+                android:textColor="?colorAccent"
+                android:layout_below="@id/thumbnail"
+                android:layout_toLeftOf="@id/album_cancel_delete_button"
+                />
+            <Button
+                style="@style/Base.Widget.AppCompat.Button.Borderless.Colored"
+                android:id="@+id/album_cancel_delete_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No"
+                android:visibility="gone"
+                android:textColor="?colorAccent"
+                android:layout_below="@id/thumbnail"
+                android:layout_alignParentEnd="true"
                 />
         </RelativeLayout>
 

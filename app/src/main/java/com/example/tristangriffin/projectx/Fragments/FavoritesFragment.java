@@ -16,7 +16,9 @@ import android.widget.Toolbar;
 
 import com.example.tristangriffin.projectx.Activities.MainActivity;
 import com.example.tristangriffin.projectx.Listeners.OnGetFavoritedAlbumListener;
+import com.example.tristangriffin.projectx.Listeners.OnGetIfFavoritedAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
+import com.example.tristangriffin.projectx.Models.Album;
 import com.example.tristangriffin.projectx.R;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Resources.RecyclerViewListAdapter;
@@ -26,7 +28,7 @@ import java.util.LinkedHashMap;
 
 public class FavoritesFragment extends Fragment {
 
-    private LinkedHashMap<String, String> favoritedImages;
+    private ArrayList<Album> favoritedAlbums;
     private RecyclerView recyclerView;
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar progressBar;
@@ -37,6 +39,7 @@ public class FavoritesFragment extends Fragment {
     public FavoritesFragment() {
         // Required empty public constructor
     }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,12 +84,17 @@ public class FavoritesFragment extends Fragment {
 
     private void getFavoriteAlbums() {
         progressBar.setVisibility(View.VISIBLE);
-        favoritedImages = new LinkedHashMap<>();
+        favoritedAlbums = new ArrayList<>();
         firebaseCommands.getFavoritedPhotoCollection(new OnGetFavoritedAlbumListener() {
             @Override
             public void getFavoritedAlbum(ArrayList<String> albums) {
                 if (!albums.isEmpty()) {
-                    getThumbnail(albums);
+                    for (int i = 0; i < albums.size(); i++) {
+                        Album newAlbum = new Album();
+                        newAlbum.setName(albums.get(i));
+                        favoritedAlbums.add(newAlbum);
+                        getThumbnail(i);
+                    }
                 } else {
                     updateUI();
                 }
@@ -94,26 +102,32 @@ public class FavoritesFragment extends Fragment {
         });
     }
 
-    private void getThumbnail(final ArrayList<String> albums) {
-        for (int i = 0; i < albums.size(); i++ ) {
-            final int j = i;
-            firebaseCommands.getThumbnail(albums.get(i), "public", new OnGetThumbnailListener() {
-                @Override
-                public void onGetThumbnailSuccess(String string) {
-                    favoritedImages.put(albums.get(j), string);
-                    updateUI();
-                }
-            });
-        }
+    private void getThumbnail(final int position) {
+        firebaseCommands.getThumbnail(favoritedAlbums.get(position).getName(), "public", new OnGetThumbnailListener() {
+            @Override
+            public void onGetThumbnailSuccess(String string) {
+                favoritedAlbums.get(position).setThumbnail(string);
+                getIsFavorite(position);
+            }
+        });
+    }
+
+    private void getIsFavorite(final int position) {
+        firebaseCommands.getIfFavoritedPhotoCollection(favoritedAlbums.get(position).getName(), new OnGetIfFavoritedAlbumListener() {
+            @Override
+            public void getIfFavoritedAlbumListener(boolean isFavorite) {
+                favoritedAlbums.get(position).setFavorite(isFavorite);
+                updateUI();
+            }
+        });
     }
 
     private void updateUI() {
-        Log.d("demo", "Favorite images: " + favoritedImages.toString());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(new RecyclerViewListAdapter(getContext(), favoritedImages));
+        recyclerView.setAdapter(new RecyclerViewListAdapter(getContext(), favoritedAlbums));
         progressBar.setVisibility(View.GONE);
 
-        if (favoritedImages.isEmpty()) {
+        if (favoritedAlbums.isEmpty()) {
             textView.setVisibility(View.VISIBLE);
         } else {
             textView.setVisibility(View.GONE);

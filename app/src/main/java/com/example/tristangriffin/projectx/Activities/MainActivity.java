@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
     //Private Functions
     private void setFragment(Fragment fragment, String FRAGMENT_TAG) {
         getSupportFragmentManager().beginTransaction()
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+                .setTransition(FragmentTransaction.TRANSIT_NONE)
                 .replace(R.id.fragment_container, fragment, FRAGMENT_TAG)
                 .commit();
     }
