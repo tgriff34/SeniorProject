@@ -206,8 +206,7 @@ public class UserImageFragment extends Fragment {
     }
 
     private void updateUI() {
-        gridView.setAdapter(new GridViewImageAdapter(getActivity(), DEFAULT_PHOTO_VIEW,
-                gridView, cloudImages, null));
+        gridView.setAdapter(new GridViewImageAdapter(getActivity(), cloudImages));
         progressBar.setVisibility(View.GONE);
         if (cloudImages.isEmpty()) {
             textInfo.setVisibility(View.VISIBLE);

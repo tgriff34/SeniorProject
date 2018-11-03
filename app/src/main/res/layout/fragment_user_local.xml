@@ -8,8 +8,6 @@
 
     <!-- TODO: Update blank fragment layout -->
 
-
-
     <GridView
         android:id="@+id/grid_local_view"
         android:layout_width="match_parent"

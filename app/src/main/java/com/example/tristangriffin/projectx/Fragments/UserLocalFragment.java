@@ -22,6 +22,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import com.example.tristangriffin.projectx.Adapters.CheckableGridViewImageAdapter;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Resources.GeoLocationConverter;
 import com.example.tristangriffin.projectx.Adapters.GridViewImageAdapter;
@@ -175,8 +176,7 @@ public class UserLocalFragment extends Fragment {
 
     private void updateUI(ArrayList<String> imageArray) {
         images = imageArray;
-        gridView.setAdapter(new GridViewImageAdapter(getActivity(), LOCAL_PHOTO_VIEW,
-                gridView, images));
+        gridView.setAdapter(new CheckableGridViewImageAdapter(getActivity(), gridView, images));
     }
 
     @Override
@@ -190,8 +190,7 @@ public class UserLocalFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-
-                GridViewImageAdapter adapter = (GridViewImageAdapter) gridView.getAdapter();
+                CheckableGridViewImageAdapter adapter = (CheckableGridViewImageAdapter) gridView.getAdapter();
                 adapter.notifyDataSetChanged();
 
                 Place place = PlaceAutocomplete.getPlace(getActivity(), data);
