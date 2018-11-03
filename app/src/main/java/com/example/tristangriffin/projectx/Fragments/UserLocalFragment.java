@@ -23,6 +23,8 @@ import android.widget.GridView;
 import android.widget.Toast;
 
 import com.example.tristangriffin.projectx.Adapters.CheckableGridViewImageAdapter;
+import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
+import com.example.tristangriffin.projectx.Models.Image;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Resources.GeoLocationConverter;
 import com.example.tristangriffin.projectx.Adapters.GridViewImageAdapter;
@@ -44,7 +46,9 @@ import static android.app.Activity.RESULT_OK;
 
 public class UserLocalFragment extends Fragment {
 
-    private ArrayList<String> images = new ArrayList<>();
+    private ArrayList<String> localImages = new ArrayList<>();
+    private ArrayList<Image> uploadedImages = new ArrayList<>();
+
     private GridView gridView;
     private String latitude = null, longitude = null,
             timeCreated = null, dateCreated = null, location = null;
@@ -83,7 +87,20 @@ public class UserLocalFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                uploadImage(images.get(position));
+                boolean flag = false;
+                for (Image image: uploadedImages) {
+                    Log.d("demo", "Image ID: " + image.getId() + " compared to: " + Uri.parse(localImages.get(position)).getLastPathSegment());
+                    if (image.getId().equals(Uri.parse(localImages.get(position)).getLastPathSegment())) {
+                        flag = true;
+                        break;
+                    }
+                }
+
+                if (!flag) {
+                    uploadImage(localImages.get(position));
+                } else {
+                    Toast.makeText(getContext(), "Already Added", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -91,16 +108,25 @@ public class UserLocalFragment extends Fragment {
     }
 
     public void getImages(Activity activity) {
-        ArrayList<String> allImages = new ArrayList<>();
         String[] columns = {MediaStore.MediaColumns.DATA, MediaStore.Images.Media.BUCKET_DISPLAY_NAME};
         Cursor cursor = activity.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 columns, null, null, null);
 
         while (cursor.moveToNext()) {
-            allImages.add(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA)));
+            localImages.add(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA)));
         }
         cursor.close();
-        updateUI(allImages);
+        getUploadedImages();
+    }
+
+    public void getUploadedImages() {
+        firebaseCommands.getPhotos(albumName, new OnGetPhotosListener() {
+            @Override
+            public void onGetPhotosSuccess(ArrayList<Image> images) {
+                uploadedImages = images;
+                updateUI();
+            }
+        });
     }
 
     private void uploadImage(String image) {
@@ -174,9 +200,8 @@ public class UserLocalFragment extends Fragment {
         }
     }
 
-    private void updateUI(ArrayList<String> imageArray) {
-        images = imageArray;
-        gridView.setAdapter(new CheckableGridViewImageAdapter(getActivity(), gridView, images));
+    private void updateUI() {
+        gridView.setAdapter(new CheckableGridViewImageAdapter(getActivity(), gridView, localImages, uploadedImages));
     }
 
     @Override
