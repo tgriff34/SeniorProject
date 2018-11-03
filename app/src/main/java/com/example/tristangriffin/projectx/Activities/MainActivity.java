@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String SEARCH_FRAGMENT = "SearchFrag";
     public static final String SETTINGS_FRAGMENT = "SettingsFrag";
 
-    private static final String EXTRAS = "EXTRAS";
+    private static final String BACK_STACK_ROOT_TAG = "root_fragment";
 
     private boolean isPublic = false;
 
@@ -77,7 +77,6 @@ public class MainActivity extends AppCompatActivity {
                 getSupportFragmentManager().popBackStack();
             }
         });
-        checkBackStackEntry();
 
 
         //Ask permission to access Photos Gallery
@@ -102,29 +101,25 @@ public class MainActivity extends AppCompatActivity {
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        item.setChecked(true);
                         switch (item.getItemId()) {
                             case R.id.action_user:
-                                item.setChecked(true);
                                 setFragment(userFragment, USER_FRAGMENT);
                                 break;
 
                             case R.id.action_favorites:
-                                item.setChecked(true);
                                 setFragment(favoritesFragment, FAVORITES_FRAGMENT);
                                 break;
 
                             case R.id.action_navi:
-                                item.setChecked(true);
                                 setFragment(navigationFragment, NAVIGATION_FRAGMENT);
                                 break;
 
                             case R.id.action_search:
-                                item.setChecked(true);
                                 setFragment(searchFragment, SEARCH_FRAGMENT);
                                 break;
 
                             case R.id.action_settings:
-                                item.setChecked(true);
                                 setFragment(settingsFragment, SETTINGS_FRAGMENT);
                                 break;
                         }
@@ -193,14 +188,18 @@ public class MainActivity extends AppCompatActivity {
 
     //Private Functions
     private void setFragment(Fragment fragment, String FRAGMENT_TAG) {
-        getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+        getSupportFragmentManager().popBackStackImmediate(BACK_STACK_ROOT_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+        Log.d("demo", "Number in Backback: " + getSupportFragmentManager().getBackStackEntryCount());
 
         getSupportFragmentManager().beginTransaction()
-                .addToBackStack(null)
                 .setTransition(FragmentTransaction.TRANSIT_NONE)
                 .replace(R.id.fragment_container, fragment, FRAGMENT_TAG)
+                .addToBackStack(BACK_STACK_ROOT_TAG)
                 .commit();
 
+        checkBackStackEntry();
     }
 
     private void checkBackStackEntry() {
