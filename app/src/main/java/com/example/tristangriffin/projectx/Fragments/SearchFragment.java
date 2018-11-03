@@ -3,6 +3,7 @@ package com.example.tristangriffin.projectx.Fragments;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -63,6 +64,7 @@ public class SearchFragment extends Fragment {
         searchText = view.findViewById(R.id.search_editText);
         progressBar.setVisibility(View.GONE);
         progressBar.setIndeterminate(true);
+
 
         searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -144,4 +146,5 @@ public class SearchFragment extends Fragment {
         recyclerView.setAdapter(new RecyclerViewListAdapter(getContext(), searchedAlbums));
         progressBar.setVisibility(View.GONE);
     }
+
 }

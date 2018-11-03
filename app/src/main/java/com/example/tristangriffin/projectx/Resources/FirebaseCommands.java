@@ -294,6 +294,7 @@ public class FirebaseCommands {
             favorite.put("isFavorite", true);
         }
         favorite.put("isPublic", album.isPublic());
+        favorite.put("id", user.getUid());
         db.collection(USER_TAG)
                 .document(user.getUid())
                 .collection(ALBUM_TAG)

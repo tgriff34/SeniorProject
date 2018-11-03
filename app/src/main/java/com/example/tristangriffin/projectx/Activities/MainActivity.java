@@ -71,6 +71,12 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getSupportFragmentManager().popBackStack();
+            }
+        });
         checkBackStackEntry();
 
 
@@ -188,17 +194,20 @@ public class MainActivity extends AppCompatActivity {
     //Private Functions
     private void setFragment(Fragment fragment, String FRAGMENT_TAG) {
         getSupportFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
         getSupportFragmentManager().beginTransaction()
+                .addToBackStack(null)
                 .setTransition(FragmentTransaction.TRANSIT_NONE)
                 .replace(R.id.fragment_container, fragment, FRAGMENT_TAG)
                 .commit();
+
     }
 
     private void checkBackStackEntry() {
         getSupportFragmentManager().addOnBackStackChangedListener(new FragmentManager.OnBackStackChangedListener() {
             @Override
             public void onBackStackChanged() {
-                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
                     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
                 } else {
                     getSupportActionBar().setDisplayHomeAsUpEnabled(false);

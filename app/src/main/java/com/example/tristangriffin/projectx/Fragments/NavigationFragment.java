@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -126,10 +127,12 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
     private void getAlbums() {
         //progressBar.setVisibility(View.VISIBLE);
         albums = new ArrayList<>();
+        Log.d("demo", "Navigation Fragment getAlbums: " + albums.toString());
         firebaseCommands.getAlbums(new OnGetAlbumListener() {
             @Override
             public void onGetAlbumSuccess(ArrayList<String> listOfAlbums) {
                 if (!listOfAlbums.isEmpty()) {
+                    Log.d("demo", listOfAlbums.toString());
                     for (int i = 0; i < listOfAlbums.size(); i++) {
                         Album album = new Album();
                         album.setName(listOfAlbums.get(i));

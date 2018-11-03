@@ -37,7 +37,7 @@ import static com.example.tristangriffin.projectx.Adapters.RecyclerViewListAdapt
 
 public class UserImageFragment extends Fragment {
 
-    private ArrayList<Image> cloudImages = new ArrayList<>();
+    private ArrayList<Image> cloudImages;
     private GridView gridView;
     private SwipeRefreshLayout swipeContainer;
     private ProgressBar progressBar;
@@ -69,18 +69,8 @@ public class UserImageFragment extends Fragment {
 
         albumName = getArguments().getString(ALBUM_NAME);
 
-        //getActivity().setTitle(albumName);
-        Toolbar toolbar = (Toolbar) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar);
         TextView toolbarTextView = (TextView) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar_title);
         toolbarTextView.setText(albumName);
-
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getActivity().onBackPressed();
-            }
-        });
-
 
         textInfo = view.findViewById(R.id.text_noImages);
         gridView = view.findViewById(R.id.grid_album_view);
@@ -196,6 +186,7 @@ public class UserImageFragment extends Fragment {
 
     //Private Functions
     private void getImages() {
+        cloudImages = new ArrayList<>();
         firebaseCommands.getPhotos(albumName, new OnGetPhotosListener() {
             @Override
             public void onGetPhotosSuccess(ArrayList<Image> images) {
