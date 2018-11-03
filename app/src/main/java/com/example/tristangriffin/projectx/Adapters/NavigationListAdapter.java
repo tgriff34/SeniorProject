@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,11 +25,16 @@ public class NavigationListAdapter extends RecyclerView.Adapter<NavigationListAd
 
     private ArrayList<Album> albums;
     private Context context;
+    private RecyclerView recyclerView;
+
+    private int lastCheckPos = -1;
+
     public static final String NAVIGATION_FRAGMENT_TAG = "NaviFrag";
 
-    public NavigationListAdapter(Context context, ArrayList<Album> albums) {
+    public NavigationListAdapter(Context context, ArrayList<Album> albums, RecyclerView recyclerView) {
         this.albums = albums;
         this.context = context;
+        this.recyclerView = recyclerView;
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -57,21 +63,36 @@ public class NavigationListAdapter extends RecyclerView.Adapter<NavigationListAd
     }
 
     @Override
-    public void onBindViewHolder(@NonNull NavigationListAdapter.MyViewHolder myViewHolder, int i) {
-        final String albumName = albums.get(i).getName();
+    public void onBindViewHolder(@NonNull final NavigationListAdapter.MyViewHolder myViewHolder, int position) {
+        final Album album = albums.get(position);
+        final String albumName = albums.get(position).getName();
         final TextView textView = myViewHolder.nameTextView;
-        ImageView imageView = myViewHolder.holderImageView;
+        final ImageView imageView = myViewHolder.holderImageView;
 
         textView.setText(albumName);
-        Glide.with(context).load(albums.get(i).getThumbnail()).apply(RequestOptions.centerCropTransform()).into(imageView);
-        
-        
-        myViewHolder.holderImageView.setOnClickListener(new View.OnClickListener() {
+        Glide.with(context).load(albums.get(position).getThumbnail()).apply(RequestOptions.circleCropTransform()).into(imageView);
+
+        imageView.setBackgroundResource(album.isSelected() ? R.drawable.navigation_image_view_selected_border : R.drawable.navigation_image_view_border);
+
+        imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                NavigationFragment navigationFragment = (NavigationFragment)((FragmentActivity)context).getSupportFragmentManager().findFragmentByTag(NAVIGATION_FRAGMENT_TAG);
+
+                if (lastCheckPos >= 0) {
+                    albums.get(lastCheckPos).setSelected(false);
+                }
+
+                album.setSelected(!album.isSelected());
+
+                imageView.setBackgroundResource(album.isSelected() ? R.drawable.navigation_image_view_selected_border : R.drawable.navigation_image_view_border);
+
+                lastCheckPos = myViewHolder.getAdapterPosition();
+
+                NavigationFragment navigationFragment = (NavigationFragment) ((FragmentActivity) context).getSupportFragmentManager().findFragmentByTag(NAVIGATION_FRAGMENT_TAG);
                 navigationFragment.getAlbumLocations(albumName);
                 Toast.makeText(context, albumName, Toast.LENGTH_SHORT).show();
+
+                notifyDataSetChanged();
             }
         });
     }

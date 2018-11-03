@@ -3,7 +3,6 @@ package com.example.tristangriffin.projectx.Adapters;
 import android.app.Activity;
 import android.net.Uri;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,11 +62,7 @@ public class CheckableGridViewImageAdapter extends BaseAdapter {
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         int screenWidth = metrics.widthPixels;
 
-        Log.d("demo", uploadedImages.toString());
-        Log.d("demo", localImages.toString());
-
         for (Image image: uploadedImages) {
-            Log.d("demo", "Image ID: " + image.getId() + " compared to: " + Uri.parse(localImages.get(position)).getLastPathSegment());
             if (image.getId().equals(Uri.parse(localImages.get(position)).getLastPathSegment())) {
                 checkBox.setChecked(true);
                 break;

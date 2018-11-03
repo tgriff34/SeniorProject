@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.tristangriffin.projectx.Fragments.FavoritesFragment;
+import com.example.tristangriffin.projectx.Listeners.OnGetAlbumListener;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Fragments.NavigationFragment;
 import com.example.tristangriffin.projectx.R;
@@ -31,6 +32,8 @@ import com.example.tristangriffin.projectx.Fragments.SearchFragment;
 import com.example.tristangriffin.projectx.Fragments.SettingsFragment;
 import com.example.tristangriffin.projectx.Fragments.UserFragment;
 import com.example.tristangriffin.projectx.Fragments.UserImageFragment;
+
+import java.util.ArrayList;
 
 import static com.example.tristangriffin.projectx.Adapters.RecyclerViewListAdapter.ALBUM_NAME;
 import static com.example.tristangriffin.projectx.Adapters.RecyclerViewListAdapter.USER_IMAGE_FRAGMENT_TAG;

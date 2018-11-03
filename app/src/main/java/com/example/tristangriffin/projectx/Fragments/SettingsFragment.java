@@ -24,7 +24,6 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class SettingsFragment extends Fragment implements AdapterView.OnItemClickListener {
 
-    private ListView listView;
     private SharedPreferences sharedPreferences;
 
     public SettingsFragment() {
@@ -48,7 +47,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
         TextView toolbarTextView = (TextView) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar_title);
         toolbarTextView.setText(R.string.settings_name);
 
-        listView = (ListView) view.findViewById(R.id.list_settings);
+        ListView listView = (ListView) view.findViewById(R.id.list_settings);
         listView.setOnItemClickListener(this);
 
         return view;

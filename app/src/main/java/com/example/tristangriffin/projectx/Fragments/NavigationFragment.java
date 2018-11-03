@@ -130,7 +130,7 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onGetAlbumSuccess(ArrayList<String> listOfAlbums) {
                 if (!listOfAlbums.isEmpty()) {
-                    for (int i = 0; i < listOfAlbums.size(); i++){
+                    for (int i = 0; i < listOfAlbums.size(); i++) {
                         Album album = new Album();
                         album.setName(listOfAlbums.get(i));
                         albums.add(album);
@@ -144,19 +144,19 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void getThumbnail(final int position) {
-            firebaseCommands.getThumbnail(albums.get(position).getName(), new OnGetThumbnailListener() {
-                @Override
-                public void onGetThumbnailSuccess(String string) {
-                    albums.get(position).setThumbnail(string);
-                    updateUI();
-                }
-            });
+        firebaseCommands.getThumbnail(albums.get(position).getName(), new OnGetThumbnailListener() {
+            @Override
+            public void onGetThumbnailSuccess(String string) {
+                albums.get(position).setThumbnail(string);
+                updateUI();
+            }
+        });
     }
 
     private void updateUI() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        recyclerView.setAdapter(new NavigationListAdapter(getContext(), albums));
+        recyclerView.setAdapter(new NavigationListAdapter(getContext(), albums, recyclerView));
         recyclerView.setLayoutManager(linearLayoutManager);
     }
 
@@ -164,7 +164,7 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
         //Initializer
         map.clear();
 
-        for (Image image: images) {
+        for (Image image : images) {
             InfoWindowData info = new InfoWindowData();
             info.setName(image.getId());
             info.setImageRef(image.getRef());

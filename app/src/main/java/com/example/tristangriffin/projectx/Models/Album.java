@@ -2,7 +2,7 @@ package com.example.tristangriffin.projectx.Models;
 
 public class Album {
     String name, thumbnail, id;
-    boolean isFavorite, isPublic;
+    boolean isFavorite, isPublic, isSelected;
 
     public String getName() {
         return name;
@@ -42,6 +42,14 @@ public class Album {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 
     @Override

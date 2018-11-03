@@ -446,6 +446,20 @@ public class FirebaseCommands {
                     db.collection(USER_TAG)
                             .document(album.getId())
                             .collection(ALBUM_TAG)
+                            .orderBy("name").startAt(searchString).endAt(searchString + "\uf8ff").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
+                                    searchedAlbums.add(queryDocumentSnapshot.getId());
+                                }
+                            }
+                        }
+                    });
+
+                    db.collection(USER_TAG)
+                            .document(album.getId())
+                            .collection(ALBUM_TAG)
                             .document(album.getName())
                             .collection(IMAGES_TAG)
                             .orderBy("location").startAt(searchString).endAt(searchString + "\uf8ff").get()
