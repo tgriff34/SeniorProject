@@ -9,6 +9,7 @@
     android:paddingBottom="@dimen/bottom_sheet_layout_margin"
     android:paddingTop="@dimen/bottom_sheet_layout_margin">
 
+
     <android.support.v7.widget.CardView
         android:id="@+id/album_action_add_photos_bottom_sheet"
         android:layout_width="match_parent"
@@ -22,8 +23,8 @@
         android:orientation="horizontal"
         android:layout_marginLeft="@dimen/bottom_sheet_left_right_margin"
         android:layout_marginRight="@dimen/bottom_sheet_left_right_margin"
-        android:layout_marginTop="@dimen/bottom_sheet_top_down_margin"
-        android:layout_marginBottom="@dimen/bottom_sheet_top_down_margin">
+        android:layout_marginBottom="@dimen/bottom_sheet_top_down_margin"
+        android:layout_marginTop="@dimen/bottom_sheet_top_down_margin" >
 
         <TextView
             android:layout_width="wrap_content"
@@ -33,6 +34,7 @@
             android:padding="@dimen/bottom_sheet_text_padding"
             android:textColor="@color/colorAccent"
             android:textSize="@dimen/bottom_sheet_text_size" />
+
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
@@ -46,9 +48,9 @@
         android:backgroundTint="?colorPrimaryDark"
         android:foreground="?attr/selectableItemBackground"
         android:orientation="horizontal"
+        android:layout_marginTop="@dimen/bottom_sheet_cancel_top_margin"
         android:layout_marginLeft="@dimen/bottom_sheet_left_right_margin"
         android:layout_marginRight="@dimen/bottom_sheet_left_right_margin"
-        android:layout_marginTop="@dimen/bottom_sheet_cancel_top_margin"
         android:layout_marginBottom="@dimen/bottom_sheet_top_down_margin">
 
         <TextView

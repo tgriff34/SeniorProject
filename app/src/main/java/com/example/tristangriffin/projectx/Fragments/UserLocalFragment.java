@@ -20,8 +20,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.tristangriffin.projectx.Activities.MainActivity;
 import com.example.tristangriffin.projectx.Adapters.CheckableGridViewImageAdapter;
 import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
 import com.example.tristangriffin.projectx.Models.Image;
@@ -76,7 +78,8 @@ public class UserLocalFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_user_local, container, false);
 
-        getActivity().setTitle(R.string.local_photos_name);
+        TextView toolbarTextView = (TextView) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar_title);
+        toolbarTextView.setText(R.string.local_photos_name);
 
         gridView = view.findViewById(R.id.grid_local_view);
         gridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE);

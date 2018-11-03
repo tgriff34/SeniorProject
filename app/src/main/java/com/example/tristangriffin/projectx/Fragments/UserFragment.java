@@ -3,6 +3,7 @@ package com.example.tristangriffin.projectx.Fragments;
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -14,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -134,7 +136,7 @@ public class UserFragment extends Fragment {
     private void updateUI() {
         Log.d("demo", "Albums: " + albums.toString());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(new RecyclerViewListAdapter(getContext(), albums));
+        recyclerView.setAdapter(new RecyclerViewListAdapter(getActivity(), albums));
         progressBar.setVisibility(View.GONE);
 
         if (albums.isEmpty()) {

@@ -122,7 +122,7 @@ public class FavoritesFragment extends Fragment {
 
     private void updateUI() {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(new RecyclerViewListAdapter(getContext(), favoritedAlbums));
+        recyclerView.setAdapter(new RecyclerViewListAdapter(getActivity(), favoritedAlbums));
         progressBar.setVisibility(View.GONE);
 
         if (favoritedAlbums.isEmpty()) {

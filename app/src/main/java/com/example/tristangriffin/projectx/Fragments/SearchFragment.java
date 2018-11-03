@@ -143,7 +143,7 @@ public class SearchFragment extends Fragment {
     private void updateUI() {
         Log.d("demo", "Searched images: " + searchedAlbums.toString());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(new RecyclerViewListAdapter(getContext(), searchedAlbums));
+        recyclerView.setAdapter(new RecyclerViewListAdapter(getActivity(), searchedAlbums));
         progressBar.setVisibility(View.GONE);
     }
 

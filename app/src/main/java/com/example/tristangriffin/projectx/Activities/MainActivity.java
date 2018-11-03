@@ -191,8 +191,6 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportFragmentManager().popBackStackImmediate(BACK_STACK_ROOT_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
-        Log.d("demo", "Number in Backback: " + getSupportFragmentManager().getBackStackEntryCount());
-
         getSupportFragmentManager().beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_NONE)
                 .replace(R.id.fragment_container, fragment, FRAGMENT_TAG)

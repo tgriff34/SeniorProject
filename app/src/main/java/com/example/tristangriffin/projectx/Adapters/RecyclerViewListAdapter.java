@@ -1,9 +1,15 @@
 package com.example.tristangriffin.projectx.Adapters;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetDialog;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,8 +21,10 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.example.tristangriffin.projectx.Activities.ImageViewerActivity;
 import com.example.tristangriffin.projectx.Fragments.UserFragment;
 import com.example.tristangriffin.projectx.Fragments.UserImageFragment;
+import com.example.tristangriffin.projectx.Fragments.UserLocalFragment;
 import com.example.tristangriffin.projectx.Listeners.OnDeleteAlbumListener;
 import com.example.tristangriffin.projectx.Models.Album;
 import com.example.tristangriffin.projectx.R;
@@ -29,14 +37,15 @@ import static com.example.tristangriffin.projectx.Activities.MainActivity.USER_F
 public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewListAdapter.MyViewHolder> {
 
     private ArrayList<Album> albums;
-    private Context context;
+    private Activity context;
 
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
     public static final String USER_IMAGE_FRAGMENT_TAG = "UserImageFrag";
+    public static final String USER_LOCAL_FRAGMENT_TAG = "UserLocalFrag";
     public static final String ALBUM_NAME = "album_name";
 
-    public RecyclerViewListAdapter(Context context, ArrayList<Album> albums) {
+    public RecyclerViewListAdapter(Activity context, ArrayList<Album> albums) {
         this.context = context;
         this.albums = albums;
     }
@@ -178,6 +187,88 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
                 setFragment(albumName);
             }
         });
+
+        // LONG CLICK
+
+        holder.holderImageView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(context, R.style.SheetDialog);
+                View sheetView = context.getLayoutInflater().inflate(R.layout.bottom_sheet_album_longpress_layout, null);
+                mBottomSheetDialog.setContentView(sheetView);
+
+                CardView cancel = (CardView) mBottomSheetDialog.findViewById(R.id.album_view_cancel_bottom_sheet);
+                CardView delete = (CardView) mBottomSheetDialog.findViewById(R.id.album_view_delete_bottom_sheet);
+                CardView addPhotos = (CardView) mBottomSheetDialog.findViewById(R.id.album_view_addPhotos_bottom_sheet);
+                CardView showMap = (CardView) mBottomSheetDialog.findViewById(R.id.album_view_viewOnMap_bottom_sheet);
+                CardView favorite = (CardView) mBottomSheetDialog.findViewById(R.id.album_view_favorite_bottom_sheet);
+                TextView favoriteText = favorite.findViewById(R.id.album_view_favorite_text_bottom_sheet);
+
+                if (favoriteButton.getText().equals("Favorite")) {
+                    favoriteText.setText("Favorite");
+                } else {
+                    favoriteText.setText("Unfavorite");
+                }
+
+                mBottomSheetDialog.show();
+
+                addPhotos.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Bundle bundle = new Bundle();
+                        bundle.putString("album_name", albumName);
+                        UserLocalFragment userLocalFragment = new UserLocalFragment();
+                        userLocalFragment.setArguments(bundle);
+                        setFragment(userLocalFragment, USER_LOCAL_FRAGMENT_TAG);
+                        mBottomSheetDialog.dismiss();
+                    }
+                });
+
+                favorite.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (favoriteButton.getText().equals("Favorite")) {
+                            firebaseCommands.favoritePhotoCollection(albums.get(position));
+                            albums.get(position).setFavorite(true);
+                            favoriteButton.setText("Unfavorite");
+                        } else {
+                            firebaseCommands.favoritePhotoCollection(albums.get(position));
+                            albums.get(position).setFavorite(false);
+                            favoriteButton.setText("Favorite");
+                        }
+                        mBottomSheetDialog.dismiss();
+                    }
+                });
+
+                delete.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        firebaseCommands.deletePhotoCollection(textView.getText().toString(), new OnDeleteAlbumListener() {
+                            @Override
+                            public void onDeleteAlbum(boolean isDeleted) {
+                                if (isDeleted) {
+                                    UserFragment userFragment = (UserFragment) ((FragmentActivity) context).getSupportFragmentManager().findFragmentByTag(USER_FRAGMENT);
+                                    userFragment.getAlbums();
+                                    Toast.makeText(context, "Album deleted", Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(context, "Error deleting album", Toast.LENGTH_SHORT).show();
+                                }
+                                mBottomSheetDialog.dismiss();
+                            }
+                        });
+                    }
+                });
+
+                cancel.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        mBottomSheetDialog.dismiss();
+                    }
+                });
+
+                return true;
+            }
+        });
     }
 
     //Private Functions
@@ -191,6 +282,14 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
                 .setCustomAnimations(R.anim.fragment_enter_from_right, R.anim.fragment_exit_to_left, R.anim.fragment_enter_from_left, R.anim.fragment_exit_to_right)
                 .addToBackStack(USER_IMAGE_FRAGMENT_TAG)
                 .replace(R.id.fragment_container, userImageFragment, USER_IMAGE_FRAGMENT_TAG)
+                .commit();
+    }
+    private void setFragment(Fragment fragment, String TAG) {
+        ((FragmentActivity) context).getSupportFragmentManager().beginTransaction()
+                .addToBackStack(TAG)
+                .setCustomAnimations(R.anim.fragment_enter_from_right, R.anim.fragment_exit_to_left, R.anim.fragment_enter_from_left, R.anim.fragment_exit_to_right)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .replace(R.id.fragment_container, fragment, TAG)
                 .commit();
     }
 
