@@ -104,23 +104,35 @@ public class MainActivity extends AppCompatActivity {
                         item.setChecked(true);
                         switch (item.getItemId()) {
                             case R.id.action_user:
-                                setFragment(userFragment, USER_FRAGMENT);
+                                if (getSupportFragmentManager().findFragmentByTag(USER_FRAGMENT) == null) {
+                                    setFragment(userFragment, USER_FRAGMENT);
+                                } else {
+                                    popToRootFragment();
+                                }
                                 break;
 
                             case R.id.action_favorites:
-                                setFragment(favoritesFragment, FAVORITES_FRAGMENT);
+                                if (getSupportFragmentManager().findFragmentByTag(FAVORITES_FRAGMENT) == null) {
+                                    setFragment(favoritesFragment, FAVORITES_FRAGMENT);
+                                }
                                 break;
 
                             case R.id.action_navi:
-                                setFragment(navigationFragment, NAVIGATION_FRAGMENT);
+                                if (getSupportFragmentManager().findFragmentByTag(NAVIGATION_FRAGMENT) == null) {
+                                    setFragment(navigationFragment, NAVIGATION_FRAGMENT);
+                                }
                                 break;
 
                             case R.id.action_search:
-                                setFragment(searchFragment, SEARCH_FRAGMENT);
+                                if (getSupportFragmentManager().findFragmentByTag(SEARCH_FRAGMENT) == null) {
+                                    setFragment(searchFragment, SEARCH_FRAGMENT);
+                                }
                                 break;
 
                             case R.id.action_settings:
-                                setFragment(settingsFragment, SETTINGS_FRAGMENT);
+                                if (getSupportFragmentManager().findFragmentByTag(SETTINGS_FRAGMENT) == null) {
+                                    setFragment(settingsFragment, SETTINGS_FRAGMENT);
+                                }
                                 break;
                         }
                         return false;
@@ -186,8 +198,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    //Private Functions
-    private void setFragment(Fragment fragment, String FRAGMENT_TAG) {
+    public void setFragment(Fragment fragment, String FRAGMENT_TAG) {
 
         getSupportFragmentManager().popBackStackImmediate(BACK_STACK_ROOT_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
@@ -198,6 +209,13 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
 
         checkBackStackEntry();
+    }
+
+    //Private Functions
+    private void popToRootFragment() {
+        for (int i = 1; i < getSupportFragmentManager().getBackStackEntryCount(); i++) {
+            getSupportFragmentManager().popBackStack();
+        }
     }
 
     private void checkBackStackEntry() {

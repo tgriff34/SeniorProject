@@ -2,6 +2,7 @@ package com.example.tristangriffin.projectx.Adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -25,16 +26,16 @@ public class NavigationListAdapter extends RecyclerView.Adapter<NavigationListAd
 
     private ArrayList<Album> albums;
     private Context context;
-    private RecyclerView recyclerView;
+    private String selectedAlbum;
 
     private int lastCheckPos = -1;
 
     public static final String NAVIGATION_FRAGMENT_TAG = "NaviFrag";
 
-    public NavigationListAdapter(Context context, ArrayList<Album> albums, RecyclerView recyclerView) {
+    public NavigationListAdapter(Context context, ArrayList<Album> albums, @Nullable String selectedAlbum) {
         this.albums = albums;
         this.context = context;
-        this.recyclerView = recyclerView;
+        this.selectedAlbum = selectedAlbum;
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -71,6 +72,12 @@ public class NavigationListAdapter extends RecyclerView.Adapter<NavigationListAd
 
         textView.setText(albumName);
         Glide.with(context).load(albums.get(position).getThumbnail()).apply(RequestOptions.circleCropTransform()).into(imageView);
+
+        if (album.getName().equals(selectedAlbum)) {
+            album.setSelected(true);
+            NavigationFragment navigationFragment = (NavigationFragment) ((FragmentActivity) context).getSupportFragmentManager().findFragmentByTag(NAVIGATION_FRAGMENT_TAG);
+            navigationFragment.getAlbumLocations(albumName);
+        }
 
         imageView.setBackgroundResource(album.isSelected() ? R.drawable.navigation_image_view_selected_border : R.drawable.navigation_image_view_border);
 

@@ -2,9 +2,9 @@ package com.example.tristangriffin.projectx.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -21,7 +21,8 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.example.tristangriffin.projectx.Activities.ImageViewerActivity;
+import com.example.tristangriffin.projectx.Activities.MainActivity;
+import com.example.tristangriffin.projectx.Fragments.NavigationFragment;
 import com.example.tristangriffin.projectx.Fragments.UserFragment;
 import com.example.tristangriffin.projectx.Fragments.UserImageFragment;
 import com.example.tristangriffin.projectx.Fragments.UserLocalFragment;
@@ -32,6 +33,7 @@ import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 
 import java.util.ArrayList;
 
+import static com.example.tristangriffin.projectx.Activities.MainActivity.NAVIGATION_FRAGMENT;
 import static com.example.tristangriffin.projectx.Activities.MainActivity.USER_FRAGMENT;
 
 public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewListAdapter.MyViewHolder> {
@@ -81,7 +83,8 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final RecyclerViewListAdapter.MyViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final RecyclerViewListAdapter.MyViewHolder holder, int position) {
+        final int i = holder.getAdapterPosition();
         final String albumName = albums.get(position).getName();
         final TextView textView = holder.nameTextView;
         ImageView imageView = holder.holderImageView;
@@ -89,6 +92,8 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
 
         textView.setText(albumName);
         Glide.with(context).load(albums.get(position).getThumbnail()).apply(RequestOptions.centerCropTransform()).into(imageView);
+
+        final BottomNavigationView bottomNavigationView = ((MainActivity) context).findViewById(R.id.bottom_navigation);
 
         /**
          * Is the album favorited?
@@ -110,8 +115,6 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
                 animation.setDuration(500);
                 animation.setFillAfter(true);
                 holder.confirmDeleteAlbumButton.startAnimation(animation);
-                */
-                /*
                 TranslateAnimation animation1 = new TranslateAnimation(0, -holder.cancelDeleteAlbumButton.getWidth(), 0, 0);
                 animation.setDuration(500);
                 animation.setFillAfter(true);
@@ -161,12 +164,12 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
             @Override
             public void onClick(View v) {
                 if (favoriteButton.getText().equals("Favorite")) {
-                    firebaseCommands.favoritePhotoCollection(albums.get(position));
-                    albums.get(position).setFavorite(true);
+                    firebaseCommands.favoritePhotoCollection(albums.get(i));
+                    albums.get(i).setFavorite(true);
                     favoriteButton.setText("Unfavorite");
                 } else {
-                    firebaseCommands.favoritePhotoCollection(albums.get(position));
-                    albums.get(position).setFavorite(false);
+                    firebaseCommands.favoritePhotoCollection(albums.get(i));
+                    albums.get(i).setFavorite(false);
                     favoriteButton.setText("Favorite");
                 }
             }
@@ -188,8 +191,7 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
             }
         });
 
-        // LONG CLICK
-
+        // LONG CLICK / BOTTOM SHEET
         holder.holderImageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -228,14 +230,27 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
                     @Override
                     public void onClick(View v) {
                         if (favoriteButton.getText().equals("Favorite")) {
-                            firebaseCommands.favoritePhotoCollection(albums.get(position));
-                            albums.get(position).setFavorite(true);
+                            firebaseCommands.favoritePhotoCollection(albums.get(i));
+                            albums.get(i).setFavorite(true);
                             favoriteButton.setText("Unfavorite");
                         } else {
-                            firebaseCommands.favoritePhotoCollection(albums.get(position));
-                            albums.get(position).setFavorite(false);
+                            firebaseCommands.favoritePhotoCollection(albums.get(i));
+                            albums.get(i).setFavorite(false);
                             favoriteButton.setText("Favorite");
                         }
+                        mBottomSheetDialog.dismiss();
+                    }
+                });
+
+                showMap.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Bundle bundle = new Bundle();
+                        bundle.putString("selectedAlbum", albumName);
+                        NavigationFragment navigationFragment = new NavigationFragment();
+                        navigationFragment.setArguments(bundle);
+                        bottomNavigationView.getMenu().getItem(2).setChecked(true);
+                        ((MainActivity) context).setFragment(navigationFragment, NAVIGATION_FRAGMENT);
                         mBottomSheetDialog.dismiss();
                     }
                 });
@@ -284,6 +299,7 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
                 .replace(R.id.fragment_container, userImageFragment, USER_IMAGE_FRAGMENT_TAG)
                 .commit();
     }
+
     private void setFragment(Fragment fragment, String TAG) {
         ((FragmentActivity) context).getSupportFragmentManager().beginTransaction()
                 .addToBackStack(TAG)

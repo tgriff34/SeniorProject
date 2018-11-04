@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -44,11 +45,12 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
     FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
     SupportMapFragment supportMapFragment;
 
-    private GoogleMap map;
+    private static GoogleMap map;
 
     private String albumName;
     private ArrayList<Album> albums;
     private RecyclerView recyclerView;
+    private String selectedAlbum = null;
 
     public static final String PICTURE_SELECT_NAME = "selected-picture";
     public static final String ALBUM_SELECT_NAME = "selected-album";
@@ -73,6 +75,11 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
         //getActivity().setTitle(R.string.navigation_name);
         TextView toolbarTextView = (TextView) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar_title);
         toolbarTextView.setText(R.string.navigation_name);
+
+        Bundle arguments = getArguments();
+        if (arguments != null) {
+            selectedAlbum = getArguments().getString("selectedAlbum");
+        }
 
         //Album List
         recyclerView = view.findViewById(R.id.navigation_list);
@@ -159,7 +166,7 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
     private void updateUI() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        recyclerView.setAdapter(new NavigationListAdapter(getContext(), albums, recyclerView));
+        recyclerView.setAdapter(new NavigationListAdapter(getContext(), albums, selectedAlbum));
         recyclerView.setLayoutManager(linearLayoutManager);
     }
 
@@ -182,7 +189,7 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    private class DownloadImageAndMakeMarker extends AsyncTask<InfoWindowData, Void, InfoWindowData> {
+    private static class DownloadImageAndMakeMarker extends AsyncTask<InfoWindowData, Void, InfoWindowData> {
 
         Bitmap smallBitmap;
 
