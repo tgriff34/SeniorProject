@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,8 @@ import com.google.firebase.auth.FirebaseAuth;
 public class SettingsFragment extends Fragment implements AdapterView.OnItemClickListener {
 
     private SharedPreferences sharedPreferences;
+
+    private static final String ABOUT_FRAGMENT_TAG = "AboutFragment";
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -58,6 +61,11 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         switch (i) {
             case 0:
+                AboutFragment aboutFragment = new AboutFragment();
+                setFragment(aboutFragment, ABOUT_FRAGMENT_TAG);
+                break;
+
+            case 1:
                 String currentTheme = sharedPreferences.getString("current_theme", "Light");
                 if (currentTheme.equals("Light")) {
                     sharedPreferences.edit().putString("current_theme", "Dark").apply();
@@ -70,7 +78,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
                 getActivity().finish();
                 break;
 
-            case 1:
+            case 2:
                 String privacySetting = sharedPreferences.getString("current_privacy", "Public");
                 if (privacySetting.equals("Public")) {
                     sharedPreferences.edit().putString("current_privacy", "Private").apply();
@@ -82,7 +90,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
 
                 break;
 
-            case 2:
+            case 3:
                 Toast.makeText(getActivity(), "Signed Out", Toast.LENGTH_SHORT).show();
                 FirebaseCommands.getInstance().signOut();
                 Intent intent = new Intent(getActivity(), SignInActivity.class);
@@ -90,5 +98,14 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
                 startActivity(intent);
                 break;
         }
+    }
+
+    private void setFragment(Fragment fragment, String TAG) {
+        getActivity().getSupportFragmentManager().beginTransaction()
+                .addToBackStack(TAG)
+                .setCustomAnimations(R.anim.fragment_enter_from_right, R.anim.fragment_exit_to_left, R.anim.fragment_enter_from_left, R.anim.fragment_exit_to_right)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .replace(R.id.fragment_container, fragment, TAG)
+                .commit();
     }
 }

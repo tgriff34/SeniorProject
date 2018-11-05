@@ -23,14 +23,28 @@
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:padding="@dimen/bottom_sheet_text_padding"
-            android:text="Add Photos"
-            android:textColor="?colorAccent"
-            android:textSize="@dimen/bottom_sheet_text_size" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingStart="@dimen/bottom_sheet_image_start_margin"
+                android:paddingEnd="0dp"
+                android:src="@drawable/ic_plus" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="@dimen/bottom_sheet_text_padding"
+                android:text="Add Photos"
+                android:textColor="?colorAccent"
+                android:textSize="@dimen/bottom_sheet_text_size" />
+        </LinearLayout>
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
@@ -48,15 +62,30 @@
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp">
 
-        <TextView
-            android:id="@+id/album_view_favorite_text_bottom_sheet"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:padding="@dimen/bottom_sheet_text_padding"
-            android:text="Favorite"
-            android:textColor="?colorAccent"
-            android:textSize="@dimen/bottom_sheet_text_size" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/album_view_favorite_image_bottom_sheet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingStart="@dimen/bottom_sheet_image_start_margin"
+                android:paddingEnd="0dp"
+                android:src="@drawable/ic_heart" />
+
+            <TextView
+                android:id="@+id/album_view_favorite_text_bottom_sheet"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="@dimen/bottom_sheet_text_padding"
+                android:text="Favorite"
+                android:textColor="?colorAccent"
+                android:textSize="@dimen/bottom_sheet_text_size" />
+        </LinearLayout>
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
@@ -74,14 +103,28 @@
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:padding="@dimen/bottom_sheet_text_padding"
-            android:text="View On Map"
-            android:textColor="?colorAccent"
-            android:textSize="@dimen/bottom_sheet_text_size" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingStart="@dimen/bottom_sheet_image_start_margin"
+                android:paddingEnd="0dp"
+                android:src="@drawable/ic_cursor" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="@dimen/bottom_sheet_text_padding"
+                android:text="View On Map"
+                android:textColor="?colorAccent"
+                android:textSize="@dimen/bottom_sheet_text_size" />
+        </LinearLayout>
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
@@ -99,14 +142,29 @@
         app:cardCornerRadius="8dp"
         app:cardElevation="4dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:padding="@dimen/bottom_sheet_text_padding"
-            android:text="Delete"
-            android:textColor="?colorDanger"
-            android:textSize="@dimen/bottom_sheet_text_size" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/album_action_main_add_imageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingStart="@dimen/bottom_sheet_image_start_margin"
+                android:paddingEnd="0dp"
+                android:src="@drawable/ic_cancel" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="@dimen/bottom_sheet_text_padding"
+                android:text="Delete"
+                android:textColor="?colorDanger"
+                android:textSize="@dimen/bottom_sheet_text_size" />
+        </LinearLayout>
     </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView

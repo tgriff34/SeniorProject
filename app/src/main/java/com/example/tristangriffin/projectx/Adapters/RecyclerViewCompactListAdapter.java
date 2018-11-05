@@ -106,11 +106,6 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
         /**
          * Is the album favorited?
          */
-        if (albums.get(position).isFavorite()) {
-            favoriteButton.setImageResource(R.drawable.outline_favorite_blue_18dp);
-        } else {
-            favoriteButton.setImageResource(R.drawable.outline_favorite_border_blue_18dp);
-        }
 
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,11 +120,9 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
                 if (albums.get(position).isFavorite()) {
                     firebaseCommands.favoritePhotoCollection(albums.get(position));
                     albums.get(position).setFavorite(false);
-                    favoriteButton.setImageResource(R.drawable.outline_favorite_border_blue_18dp);
                 } else {
                     firebaseCommands.favoritePhotoCollection(albums.get(position));
                     albums.get(position).setFavorite(true);
-                    favoriteButton.setImageResource(R.drawable.outline_favorite_blue_18dp);
                 }
             }
         });
@@ -165,11 +158,14 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
                 CardView showMap = (CardView) mBottomSheetDialog.findViewById(R.id.album_view_viewOnMap_bottom_sheet);
                 CardView favorite = (CardView) mBottomSheetDialog.findViewById(R.id.album_view_favorite_bottom_sheet);
                 TextView favoriteText = favorite.findViewById(R.id.album_view_favorite_text_bottom_sheet);
+                ImageView favoriteImage = favorite.findViewById(R.id.album_view_favorite_image_bottom_sheet);
 
                 if (!albums.get(position).isFavorite()) {
                     favoriteText.setText("Favorite");
+                    favoriteImage.setImageResource(R.drawable.ic_heart);
                 } else {
                     favoriteText.setText("Unfavorite");
+                    favoriteImage.setImageResource(R.drawable.ic_heart_closed);
                 }
 
                 mBottomSheetDialog.show();
@@ -191,12 +187,10 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
                     public void onClick(View v) {
                         if (albums.get(position).isFavorite()) {
                             firebaseCommands.favoritePhotoCollection(albums.get(position));
-                            albums.get(position).setFavorite(true);
-                            favoriteButton.setImageResource(R.drawable.outline_favorite_border_blue_18dp);
+                            albums.get(position).setFavorite(false);
                         } else {
                             firebaseCommands.favoritePhotoCollection(albums.get(position));
-                            albums.get(position).setFavorite(false);
-                            favoriteButton.setImageResource(R.drawable.outline_favorite_blue_18dp);
+                            albums.get(position).setFavorite(true);
                         }
                         mBottomSheetDialog.dismiss();
                     }

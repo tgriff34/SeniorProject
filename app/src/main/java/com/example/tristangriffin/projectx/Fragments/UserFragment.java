@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,6 +32,7 @@ import com.example.tristangriffin.projectx.Activities.MainActivity;
 import com.example.tristangriffin.projectx.Adapters.RecyclerViewCompactListAdapter;
 import com.example.tristangriffin.projectx.Listeners.OnGetIfFavoritedAlbumListener;
 import com.example.tristangriffin.projectx.Models.Album;
+import com.example.tristangriffin.projectx.Models.Image;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Listeners.OnGetAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
@@ -77,8 +79,6 @@ public class UserFragment extends Fragment {
         final Toolbar toolbar = (Toolbar) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar);
         TextView toolbarTextView = (TextView) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar_title);
         toolbarTextView.setText(R.string.album_name);
-
-
 
         preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
@@ -199,6 +199,7 @@ public class UserFragment extends Fragment {
 
         CardView ascending = (CardView) mBottomSheetDialog.findViewById(R.id.sort_by_ascending_bottom_sheet);
         CardView descending = (CardView) mBottomSheetDialog.findViewById(R.id.sort_by_descending_bottom_sheet);
+        CardView cancel = (CardView) mBottomSheetDialog.findViewById(R.id.sort_by_cancel_bottom_sheet);
 
         mBottomSheetDialog.show();
 
@@ -214,6 +215,13 @@ public class UserFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 sortBy("Descending");
+                mBottomSheetDialog.dismiss();
+            }
+        });
+
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 mBottomSheetDialog.dismiss();
             }
         });
@@ -239,9 +247,11 @@ public class UserFragment extends Fragment {
                 CardView viewSize = (CardView) mBottomSheetDialog.findViewById(R.id.album_action_main_thumbnail_bottom_sheet);
                 CardView cancel = (CardView) mBottomSheetDialog.findViewById(R.id.album_action_main_options_cancel_bottom_sheet);
                 TextView textView = (TextView) viewSize.findViewById(R.id.album_action_main_thumbnail_text_bottom_sheet);
+                ImageView imageView = (ImageView) viewSize.findViewById(R.id.album_action_main_thumbnail_image_bottom_sheet);
 
                 privacySetting = preferences.getString("view_size", "Large");
                 textView.setText(privacySetting.equals("Large") ? "Small Thumbnails" : "Large Thumbnails");
+                imageView.setImageResource(privacySetting.equals("Large") ? R.drawable.ic_list: R.drawable.ic_picture);
 
                 mBottomSheetDialog.show();
 

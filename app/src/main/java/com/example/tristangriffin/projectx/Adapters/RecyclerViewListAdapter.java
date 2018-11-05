@@ -205,11 +205,14 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
                 CardView showMap = (CardView) mBottomSheetDialog.findViewById(R.id.album_view_viewOnMap_bottom_sheet);
                 CardView favorite = (CardView) mBottomSheetDialog.findViewById(R.id.album_view_favorite_bottom_sheet);
                 TextView favoriteText = favorite.findViewById(R.id.album_view_favorite_text_bottom_sheet);
+                ImageView favoriteImage=  favorite.findViewById(R.id.album_view_favorite_image_bottom_sheet);
 
                 if (favoriteButton.getText().equals("Favorite")) {
                     favoriteText.setText("Favorite");
+                    favoriteImage.setImageResource(R.drawable.ic_heart);
                 } else {
                     favoriteText.setText("Unfavorite");
+                    favoriteImage.setImageResource(R.drawable.ic_heart_closed);
                 }
 
                 mBottomSheetDialog.show();

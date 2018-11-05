@@ -30,9 +30,15 @@
     <string name="user_text_info">Click the options menu to add photos</string>
     <string name="user_text_addphotos">CONFIRM</string>
 
+    <!-- About Page -->
+    <string name="about_name">About</string>
+    <string name="about_title">Thanks To:</string>
+    <string name="iconCredit"><a href="https://www.flaticon.com/authors/gregor-cresnar">Icons made by Gregor Cresnar from www.flaticon.com</a></string>
+
 
     <!-- Settings ListView Resources -->
     <string-array name="settings_array">
+        <item>About</item>
         <item>Change Theme</item>
         <item>Change Default Privacy</item>
         <item>Sign Out</item>

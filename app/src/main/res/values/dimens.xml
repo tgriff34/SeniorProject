@@ -10,10 +10,13 @@
 
     <!-- Bottom sheet -->
     <dimen name="bottom_sheet_layout_margin">16dp</dimen>
-    <dimen name="bottom_sheet_text_size">20dp</dimen>
+    <dimen name="bottom_sheet_text_size">20sp</dimen>
     <dimen name="bottom_sheet_text_padding">10dp</dimen>
     <dimen name="bottom_sheet_left_right_margin">16dp</dimen>
     <dimen name="bottom_sheet_top_down_margin">1dp</dimen>
     <dimen name="bottom_sheet_cancel_top_margin">6dp</dimen>
+
+    <dimen name="bottom_sheet_image_start_margin">25dp</dimen>
+    <dimen name="bottom_sheet_text_start_margin">65dp</dimen>
 
 </resources>
