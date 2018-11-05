@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingTop="@dimen/bottom_sheet_layout_margin"
+    android:paddingBottom="@dimen/bottom_sheet_layout_margin"
+    app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/album_action_main_add_album_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/bottom_sheet_left_right_margin"
+        android:layout_marginTop="@dimen/bottom_sheet_top_down_margin"
+        android:layout_marginRight="@dimen/bottom_sheet_left_right_margin"
+        android:layout_marginBottom="@dimen/bottom_sheet_top_down_margin"
+        android:backgroundTint="?colorPrimaryDark"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:orientation="horizontal"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="@dimen/bottom_sheet_text_padding"
+            android:text="Add Album"
+            android:textColor="?colorAccent"
+            android:textSize="@dimen/bottom_sheet_text_size" />
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/album_action_main_sort_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/bottom_sheet_left_right_margin"
+        android:layout_marginTop="@dimen/bottom_sheet_top_down_margin"
+        android:layout_marginRight="@dimen/bottom_sheet_left_right_margin"
+        android:layout_marginBottom="@dimen/bottom_sheet_top_down_margin"
+        android:backgroundTint="?colorPrimaryDark"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:orientation="horizontal"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="@dimen/bottom_sheet_text_padding"
+            android:text="Sort by..."
+            android:textColor="?colorAccent"
+            android:textSize="@dimen/bottom_sheet_text_size" />
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/album_action_main_thumbnail_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/bottom_sheet_left_right_margin"
+        android:layout_marginTop="@dimen/bottom_sheet_top_down_margin"
+        android:layout_marginRight="@dimen/bottom_sheet_left_right_margin"
+        android:layout_marginBottom="@dimen/bottom_sheet_top_down_margin"
+        android:backgroundTint="?colorPrimaryDark"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:orientation="horizontal"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp">
+
+        <TextView
+            android:id="@+id/album_action_main_thumbnail_text_bottom_sheet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="@dimen/bottom_sheet_text_padding"
+            android:text=""
+            android:textColor="?colorAccent"
+            android:textSize="@dimen/bottom_sheet_text_size" />
+    </android.support.v7.widget.CardView>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/album_action_main_options_cancel_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/bottom_sheet_left_right_margin"
+        android:layout_marginTop="@dimen/bottom_sheet_cancel_top_margin"
+        android:layout_marginRight="@dimen/bottom_sheet_left_right_margin"
+        android:layout_marginBottom="@dimen/bottom_sheet_top_down_margin"
+        android:backgroundTint="?colorPrimaryDark"
+        android:clickable="true"
+        android:foreground="?attr/selectableItemBackground"
+        android:orientation="horizontal"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:padding="@dimen/bottom_sheet_text_padding"
+            android:text="Cancel"
+            android:textColor="?colorAccent"
+            android:textSize="@dimen/bottom_sheet_text_size" />
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

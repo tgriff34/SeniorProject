@@ -11,12 +11,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.example.tristangriffin.projectx.Fragments.FavoritesFragment;
-import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Fragments.NavigationFragment;
 import com.example.tristangriffin.projectx.R;
 import com.example.tristangriffin.projectx.Fragments.SearchFragment;
@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String SETTINGS_FRAGMENT = "SettingsFrag";
 
     private static final String BACK_STACK_ROOT_TAG = "root_fragment";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +93,8 @@ public class MainActivity extends AppCompatActivity {
                             case R.id.action_favorites:
                                 if (getSupportFragmentManager().findFragmentByTag(FAVORITES_FRAGMENT) == null) {
                                     setFragment(favoritesFragment, FAVORITES_FRAGMENT);
+                                } else {
+                                    popToRootFragment();
                                 }
                                 break;
 
@@ -104,6 +107,8 @@ public class MainActivity extends AppCompatActivity {
                             case R.id.action_search:
                                 if (getSupportFragmentManager().findFragmentByTag(SEARCH_FRAGMENT) == null) {
                                     setFragment(searchFragment, SEARCH_FRAGMENT);
+                                } else {
+                                    popToRootFragment();
                                 }
                                 break;
 
@@ -120,7 +125,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void setFragment(Fragment fragment, String FRAGMENT_TAG) {
-
         getSupportFragmentManager().popBackStackImmediate(BACK_STACK_ROOT_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         getSupportFragmentManager().beginTransaction()
