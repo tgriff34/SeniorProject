@@ -57,7 +57,6 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/album_compact_cardView"
         android:layout_toStartOf="@id/album_compact_delete_button"
-        android:src="@drawable/outline_favorite_border_blue_18dp"
         android:background="@null"
         />
 
