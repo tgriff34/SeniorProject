@@ -8,4 +8,10 @@
         android:icon="@drawable/baseline_add_blue_24dp"
         app:showAsAction="always"
         />
+
+    <item
+        android:title="Options"
+        android:id="@+id/action_user_options"
+        android:icon="@drawable/baseline_more_horiz_blueempty_24dp"
+        app:showAsAction="always" />
 </menu>

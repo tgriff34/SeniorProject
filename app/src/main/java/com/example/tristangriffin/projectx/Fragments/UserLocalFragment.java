@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -212,6 +213,15 @@ public class UserLocalFragment extends Fragment {
         menu.clear();
         inflater.inflate(R.menu.done_toolbar, menu);
         super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_done:
+                getActivity().getSupportFragmentManager().popBackStackImmediate();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override

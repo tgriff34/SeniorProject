@@ -75,8 +75,10 @@ public class NavigationListAdapter extends RecyclerView.Adapter<NavigationListAd
 
         if (album.getName().equals(selectedAlbum)) {
             album.setSelected(true);
+            lastCheckPos = myViewHolder.getAdapterPosition();
             NavigationFragment navigationFragment = (NavigationFragment) ((FragmentActivity) context).getSupportFragmentManager().findFragmentByTag(NAVIGATION_FRAGMENT_TAG);
             navigationFragment.getAlbumLocations(albumName);
+            selectedAlbum = null;
         }
 
         imageView.setBackgroundResource(album.isSelected() ? R.drawable.navigation_image_view_selected_border : R.drawable.navigation_image_view_border);
