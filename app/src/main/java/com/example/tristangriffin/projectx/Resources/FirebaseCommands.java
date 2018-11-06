@@ -286,6 +286,7 @@ public class FirebaseCommands {
 
     /* PASS ENTIRE ALBUM */
     public void favoritePhotoCollection(Album album) {
+        Log.d("demo", "Favoriting");
         Map<String, Object> favorite = new HashMap<>();
         favorite.put("name", album.getName());
         if (album.isFavorite()) {

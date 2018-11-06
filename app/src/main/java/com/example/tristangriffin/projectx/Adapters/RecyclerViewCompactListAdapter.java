@@ -2,7 +2,10 @@ package com.example.tristangriffin.projectx.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
@@ -12,7 +15,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,34 +43,51 @@ import static com.example.tristangriffin.projectx.Activities.MainActivity.USER_F
 
 public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<RecyclerViewCompactListAdapter.MyViewHolder> {
 
-    ArrayList<Album> albums;
-    Activity activity;
+    //Parameters
+    private ArrayList<Album> albums;
+    private Activity activity;
+    private RecyclerView recyclerView;
 
+    //CardView views
+    private TextView favoriteText;
+    private ImageView favoriteImage;
+
+    //Firebase commands
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
-    public static final String USER_IMAGE_FRAGMENT_TAG = "UserImageFrag";
-    public static final String USER_LOCAL_FRAGMENT_TAG = "UserLocalFrag";
-    public static final String ALBUM_NAME = "album_name";
 
-    public RecyclerViewCompactListAdapter(Activity activity, ArrayList<Album> albums) {
+    //TAGS
+    private static final String USER_IMAGE_FRAGMENT_TAG = "UserImageFrag";
+    private static final String USER_LOCAL_FRAGMENT_TAG = "UserLocalFrag";
+    private static final String ALBUM_NAME = "album_name";
+
+    public RecyclerViewCompactListAdapter(Activity activity, ArrayList<Album> albums, RecyclerView recyclerView) {
         Log.d("demo", "Album size: " + albums.toString());
         this.activity = activity;
         this.albums = albums;
+        this.recyclerView = recyclerView;
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder {
+    public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         private TextView nameTextView;
         private ImageView imageView;
-        private ImageButton optionsButton, deleteButton, favoriteButton;
+        private ImageButton optionsButton, favoriteButton;
 
-        public MyViewHolder(@Nullable View itemView) {
+        private MyViewHolder(@Nullable View itemView) {
             super(itemView);
+
+            itemView.setOnClickListener(this);
+
             nameTextView = (TextView) itemView.findViewById(R.id.album_compact_textView);
             imageView = (ImageView) itemView.findViewById(R.id.album_compact_imageView);
             optionsButton = (ImageButton) itemView.findViewById(R.id.album_compact_options_button);
-            deleteButton = (ImageButton) itemView.findViewById(R.id.album_compact_delete_button);
             favoriteButton = (ImageButton) itemView.findViewById(R.id.album_compact_favorite_button);
+        }
+
+        @Override
+        public void onClick(View v) {
+            setFragment(albums.get(getAdapterPosition()).getName());
         }
     }
 
@@ -91,8 +110,7 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
         final int position = myViewHolder.getAdapterPosition();
         final TextView textView = (TextView) myViewHolder.nameTextView;
         ImageView imageView = (ImageView) myViewHolder.imageView;
-        final ImageButton optionsButton = (ImageButton) myViewHolder.optionsButton;
-        final ImageButton deleteButton = (ImageButton) myViewHolder.deleteButton;
+        ImageButton optionsButton = (ImageButton) myViewHolder.optionsButton;
         final ImageButton favoriteButton = (ImageButton) myViewHolder.favoriteButton;
 
         final String albumName = albums.get(position).getName();
@@ -103,9 +121,19 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
 
         final BottomNavigationView bottomNavigationView = ((MainActivity) activity).findViewById(R.id.bottom_navigation);
 
-        /**
-         * Is the album favorited?
-         */
+        //Change color of buttons depending on theme
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(activity);
+        String theme = preferences.getString("current_theme", "Light");
+        if (theme.equals("Light")) {
+            optionsButton.setColorFilter(activity.getResources().getColor(R.color.colorPrimary, null), PorterDuff.Mode.SRC_IN);
+            favoriteButton.setColorFilter(activity.getResources().getColor(R.color.colorPrimary, null), PorterDuff.Mode.SRC_IN);
+        } else {
+            optionsButton.setColorFilter(activity.getResources().getColor(R.color.offWhite, null), PorterDuff.Mode.SRC_IN);
+            favoriteButton.setColorFilter(activity.getResources().getColor(R.color.offWhite, null), PorterDuff.Mode.SRC_IN);
+        }
+
+        //Set favorite Resources
+        getFavoriteResourcesForRecyclerView(favoriteButton, position);
 
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -117,31 +145,8 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
         favoriteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (albums.get(position).isFavorite()) {
-                    firebaseCommands.favoritePhotoCollection(albums.get(position));
-                    albums.get(position).setFavorite(false);
-                } else {
-                    firebaseCommands.favoritePhotoCollection(albums.get(position));
-                    albums.get(position).setFavorite(true);
-                }
-            }
-        });
-
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                firebaseCommands.deletePhotoCollection(textView.getText().toString(), new OnDeleteAlbumListener() {
-                    @Override
-                    public void onDeleteAlbum(boolean isDeleted) {
-                        if (isDeleted) {
-                            UserFragment userFragment = (UserFragment) ((FragmentActivity) activity).getSupportFragmentManager().findFragmentByTag(USER_FRAGMENT);
-                            userFragment.getAlbums();
-                            Toast.makeText(activity, "Album deleted", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(activity, "Error deleting album", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
+                setFavorite(position);
+                getFavoriteResourcesForRecyclerView(favoriteButton, position);
             }
         });
 
@@ -157,16 +162,10 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
                 CardView addPhotos = (CardView) mBottomSheetDialog.findViewById(R.id.album_view_addPhotos_bottom_sheet);
                 CardView showMap = (CardView) mBottomSheetDialog.findViewById(R.id.album_view_viewOnMap_bottom_sheet);
                 CardView favorite = (CardView) mBottomSheetDialog.findViewById(R.id.album_view_favorite_bottom_sheet);
-                TextView favoriteText = favorite.findViewById(R.id.album_view_favorite_text_bottom_sheet);
-                ImageView favoriteImage = favorite.findViewById(R.id.album_view_favorite_image_bottom_sheet);
+                favoriteText = favorite.findViewById(R.id.album_view_favorite_text_bottom_sheet);
+                favoriteImage = favorite.findViewById(R.id.album_view_favorite_image_bottom_sheet);
 
-                if (!albums.get(position).isFavorite()) {
-                    favoriteText.setText("Favorite");
-                    favoriteImage.setImageResource(R.drawable.ic_heart);
-                } else {
-                    favoriteText.setText("Unfavorite");
-                    favoriteImage.setImageResource(R.drawable.ic_heart_closed);
-                }
+                getFavoriteResourcesForCardView(position);
 
                 mBottomSheetDialog.show();
 
@@ -185,13 +184,7 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
                 favorite.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (albums.get(position).isFavorite()) {
-                            firebaseCommands.favoritePhotoCollection(albums.get(position));
-                            albums.get(position).setFavorite(false);
-                        } else {
-                            firebaseCommands.favoritePhotoCollection(albums.get(position));
-                            albums.get(position).setFavorite(true);
-                        }
+                        setFavorite(position);
                         mBottomSheetDialog.dismiss();
                     }
                 });
@@ -259,6 +252,31 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .replace(R.id.fragment_container, fragment, TAG)
                 .commit();
+    }
+
+    private void getFavoriteResourcesForRecyclerView(ImageButton imageButton, int position) {
+        if (albums.get(position).isFavorite()) {
+            imageButton.setImageResource(R.drawable.ic_heart_closed);
+        } else {
+            imageButton.setImageResource(R.drawable.ic_heart);
+        }
+    }
+
+    private void getFavoriteResourcesForCardView(int position) {
+        if (albums.get(position).isFavorite()) {
+            //CardView
+            favoriteText.setText("Favorite");
+            favoriteImage.setImageResource(R.drawable.ic_heart);
+        } else {
+            //CardView
+            favoriteText.setText("Unfavorite");
+            favoriteImage.setImageResource(R.drawable.ic_heart_closed);
+        }
+    }
+
+    private void setFavorite(int position) {
+        firebaseCommands.favoritePhotoCollection(albums.get(position));
+        albums.get(position).setFavorite(!albums.get(position).isFavorite());
     }
 
     @Override

@@ -35,27 +35,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/album_compact_cardView"
-        android:layout_alignParentRight="true"
-        android:src="@drawable/ic_more"
-        android:background="@null"
-        />
-
-    <ImageButton
-        android:id="@+id/album_compact_delete_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_alignBottom="@id/album_compact_cardView"
-        android:layout_toStartOf="@id/album_compact_options_button"
+        android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_more_filled"
         android:background="@null"
         />
     <ImageButton
         android:id="@+id/album_compact_favorite_button"
+        android:layout_marginEnd="15dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/album_compact_cardView"
-        android:layout_toStartOf="@id/album_compact_delete_button"
+        android:layout_toStartOf="@id/album_compact_options_button"
+        android:src="@drawable/ic_heart"
         android:background="@null"
         />
 

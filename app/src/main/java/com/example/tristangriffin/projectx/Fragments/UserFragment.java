@@ -164,7 +164,7 @@ public class UserFragment extends Fragment {
         if (currentView.equals("Large")) {
             recyclerView.setAdapter(new RecyclerViewListAdapter(getActivity(), albums));
         } else {
-            recyclerView.setAdapter(new RecyclerViewCompactListAdapter(getActivity(), albums));
+            recyclerView.setAdapter(new RecyclerViewCompactListAdapter(getActivity(), albums, recyclerView));
         }
 
 
