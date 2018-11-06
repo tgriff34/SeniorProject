@@ -117,7 +117,9 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
 
         textView.setText(albumName);
 
-        Glide.with(activity).load(albums.get(position).getThumbnail()).apply(RequestOptions.centerCropTransform()).into(imageView);
+        if (albums.get(position).getThumbnail() != null) {
+            Glide.with(activity).load(albums.get(position).getThumbnail()).apply(RequestOptions.centerCropTransform()).into(imageView);
+        }
 
         final BottomNavigationView bottomNavigationView = ((MainActivity) activity).findViewById(R.id.bottom_navigation);
 

@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,7 +92,9 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
         final Button favoriteButton = holder.favoriteAlbumButton;
 
         textView.setText(albumName);
-        Glide.with(context).load(albums.get(position).getThumbnail()).apply(RequestOptions.centerCropTransform()).into(imageView);
+        if (albums.get(position).getThumbnail() != null) {
+            Glide.with(context).load(albums.get(position).getThumbnail()).apply(RequestOptions.centerCropTransform()).into(imageView);
+        }
 
         final BottomNavigationView bottomNavigationView = ((MainActivity) context).findViewById(R.id.bottom_navigation);
 

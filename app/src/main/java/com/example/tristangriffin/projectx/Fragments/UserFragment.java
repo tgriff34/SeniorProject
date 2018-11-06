@@ -141,7 +141,11 @@ public class UserFragment extends Fragment {
         firebaseCommands.getThumbnail(albums.get(position).getName(), new OnGetThumbnailListener() {
             @Override
             public void onGetThumbnailSuccess(String string) {
-                albums.get(position).setThumbnail(string);
+                if (string != null) {
+                    albums.get(position).setThumbnail(string);
+                } else {
+                    albums.get(position).setThumbnail(null);
+                }
                 getIsFavorite(position);
             }
         });

@@ -54,7 +54,6 @@ public class FirebaseCommands {
     private ArrayList<Image> allImages;
     private ArrayList<User> users;
     private ArrayList<String> allAlbums;
-    private String thumbnailRef;
 
     private static final String USER_TAG = "users";
     private static final String ALBUM_TAG = "albums";
@@ -416,10 +415,14 @@ public class FirebaseCommands {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+                            String thumbnailRef = null;
                             for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+
                                 thumbnailRef = documentSnapshot.getString("ref");
                             }
                             listener.onGetThumbnailSuccess(thumbnailRef);
+                        } else {
+                            listener.onGetThumbnailSuccess(null);
                         }
                     }
                 });
