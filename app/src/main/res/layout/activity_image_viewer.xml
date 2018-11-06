@@ -2,6 +2,7 @@
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/black"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activities.ImageViewerActivity">
@@ -31,7 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:src="@drawable/baseline_clear_white_24dp"
+        android:src="@drawable/ic_close_white"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         />
@@ -40,10 +41,22 @@
         android:id="@+id/imageViewer_favorite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:src="@drawable/baseline_favorite_border_white_24dp"
-        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="50dp"
+        android:src="@drawable/ic_heart_white"
+        app:layout_constraintRight_toLeftOf="@id/imageViewer_options"
         app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+    <ImageView
+        android:id="@+id/imageViewer_options"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_marginEnd="30dp"
+        android:src="@drawable/ic_more_white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
         />
 
 </android.support.constraint.ConstraintLayout>

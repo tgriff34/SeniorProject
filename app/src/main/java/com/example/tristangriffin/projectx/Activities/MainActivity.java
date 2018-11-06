@@ -136,6 +136,15 @@ public class MainActivity extends AppCompatActivity {
         checkBackStackEntry();
     }
 
+    @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() == 1) {
+            super.finish();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     //Private Functions
     private void popToRootFragment() {
         for (int i = 1; i < getSupportFragmentManager().getBackStackEntryCount(); i++) {

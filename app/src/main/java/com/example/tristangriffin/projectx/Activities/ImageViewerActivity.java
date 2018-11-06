@@ -25,6 +25,7 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.tristangriffin.projectx.Listeners.OnGetIfFavoritedAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
+import com.example.tristangriffin.projectx.Models.Album;
 import com.example.tristangriffin.projectx.Models.Image;
 import com.example.tristangriffin.projectx.R;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
@@ -95,10 +96,10 @@ public class ImageViewerActivity extends AppCompatActivity {
             public void getIfFavoritedAlbumListener(boolean isFavorite) {
                 if (isFavorite) {
                     checkIfIsFavorite = true;
-                    favoriteButton.setImageResource(R.drawable.baseline_favorite_white_24dp);
+                    favoriteButton.setImageResource(R.drawable.ic_heart_closed_white);
                 } else {
                     checkIfIsFavorite = false;
-                    favoriteButton.setImageResource(R.drawable.baseline_favorite_border_white_24dp);
+                    favoriteButton.setImageResource(R.drawable.ic_heart_white);
                 }
             }
         });
@@ -118,12 +119,12 @@ public class ImageViewerActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (checkIfIsFavorite) {
                     checkIfIsFavorite = false;
-                    //firebaseCommands.unfavoritePhotoCollection(albumName);
-                    favoriteButton.setImageResource(R.drawable.baseline_favorite_border_white_24dp);
+                    //firebaseCommands.favoritePhotoCollection(new Album().setName(albumName));
+                    favoriteButton.setImageResource(R.drawable.ic_heart_white);
                 } else {
                     checkIfIsFavorite = true;
                     //firebaseCommands.favoritePhotoCollection(albumName);
-                    favoriteButton.setImageResource(R.drawable.baseline_favorite_white_24dp);
+                    favoriteButton.setImageResource(R.drawable.ic_heart_closed_white);
                 }
             }
         });

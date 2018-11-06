@@ -8,9 +8,11 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -90,6 +92,10 @@ public class UserFragment extends Fragment {
         progressBar.setIndeterminate(true);
         textView.setVisibility(View.GONE);
 
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
+        dividerItemDecoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.recycler_view_divider));
+        recyclerView.addItemDecoration(dividerItemDecoration);
+
         getAlbums();
         setHasOptionsMenu(true);
 
@@ -145,7 +151,6 @@ public class UserFragment extends Fragment {
         firebaseCommands.getIfFavoritedPhotoCollection(albums.get(position).getName(), new OnGetIfFavoritedAlbumListener() {
             @Override
             public void getIfFavoritedAlbumListener(boolean isFavorite) {
-                Log.d("demo", "isFavorite: " + isFavorite);
                 albums.get(position).setFavorite(isFavorite);
                 updateUI();
             }
@@ -153,7 +158,6 @@ public class UserFragment extends Fragment {
     }
 
     private void updateUI() {
-        Log.d("demo", "Albums: " + albums.toString());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         String currentView = preferences.getString("view_size", "Large");
@@ -162,6 +166,7 @@ public class UserFragment extends Fragment {
         } else {
             recyclerView.setAdapter(new RecyclerViewCompactListAdapter(getActivity(), albums));
         }
+
 
         progressBar.setVisibility(View.GONE);
 
@@ -278,7 +283,7 @@ public class UserFragment extends Fragment {
                                 firebaseCommands.createPhotoCollection(input.getText().toString(), isPublic);
 
                                 Bundle bundle = new Bundle();
-                                bundle.putString(ALBUM_NAME, input.getText().toString());
+                                bundle.putSerializable(ALBUM_NAME, input.getText().toString());
                                 UserImageFragment userImageFragment = new UserImageFragment();
                                 userImageFragment.setArguments(bundle);
                                 ((MainActivity) getActivity()).getSupportFragmentManager()
@@ -315,11 +320,9 @@ public class UserFragment extends Fragment {
 
                         if (privacySetting.equals("Large")) {
                             preferences.edit().putString("view_size", "Small").apply();
-                            Toast.makeText(getContext(), "Small Thumbnails", Toast.LENGTH_SHORT).show();
                             updateUI();
                         } else {
                             preferences.edit().putString("view_size", "Large").apply();
-                            Toast.makeText(getContext(), "Large Thumbnails", Toast.LENGTH_SHORT).show();
                             updateUI();
                         }
                         mBottomSheetDialog.dismiss();
