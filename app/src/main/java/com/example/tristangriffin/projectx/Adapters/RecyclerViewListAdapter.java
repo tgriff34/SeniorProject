@@ -6,9 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.BottomSheetDialog;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -33,8 +31,11 @@ import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 
 import java.util.ArrayList;
 
+import static com.example.tristangriffin.projectx.Activities.MainActivity.ALBUM_NAME;
 import static com.example.tristangriffin.projectx.Activities.MainActivity.NAVIGATION_FRAGMENT;
 import static com.example.tristangriffin.projectx.Activities.MainActivity.USER_FRAGMENT;
+import static com.example.tristangriffin.projectx.Activities.MainActivity.USER_IMAGE_FRAGMENT_TAG;
+import static com.example.tristangriffin.projectx.Activities.MainActivity.USER_LOCAL_FRAGMENT_TAG;
 
 public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewListAdapter.MyViewHolder> {
 
@@ -44,9 +45,7 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
 
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
-    public static final String USER_IMAGE_FRAGMENT_TAG = "UserImageFrag";
-    public static final String USER_LOCAL_FRAGMENT_TAG = "UserLocalFrag";
-    public static final String ALBUM_NAME = "album_name";
+
 
     public RecyclerViewListAdapter(Activity activity, ArrayList<Album> albums) {
         this.albums = albums;

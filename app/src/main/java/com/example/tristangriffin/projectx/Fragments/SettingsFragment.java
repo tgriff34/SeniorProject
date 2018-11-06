@@ -21,13 +21,13 @@ import com.example.tristangriffin.projectx.Activities.SignInActivity;
 import com.example.tristangriffin.projectx.R;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 
+import static com.example.tristangriffin.projectx.Activities.MainActivity.ABOUT_FRAGMENT_TAG;
+
 
 public class SettingsFragment extends Fragment implements AdapterView.OnItemClickListener {
 
     private SharedPreferences sharedPreferences;
     private Activity activity;
-
-    private static final String ABOUT_FRAGMENT_TAG = "AboutFragment";
 
     public SettingsFragment() {
         // Required empty public constructor

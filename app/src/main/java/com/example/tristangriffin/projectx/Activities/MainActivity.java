@@ -11,11 +11,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.FrameLayout;
 
 import com.example.tristangriffin.projectx.Fragments.FavoritesFragment;
 import com.example.tristangriffin.projectx.Fragments.NavigationFragment;
@@ -26,12 +24,20 @@ import com.example.tristangriffin.projectx.Fragments.UserFragment;
 
 public class MainActivity extends AppCompatActivity {
 
+    //Public TAGS
     public static final String USER_FRAGMENT = "UserFrag";
     public static final String FAVORITES_FRAGMENT = "FavFrag";
     public static final String NAVIGATION_FRAGMENT = "NaviFrag";
     public static final String SEARCH_FRAGMENT = "SearchFrag";
     public static final String SETTINGS_FRAGMENT = "SettingsFrag";
+    public static final String USER_IMAGE_FRAGMENT_TAG = "UserImageFrag";
+    public static final String USER_LOCAL_FRAGMENT_TAG = "UserLocalFrag";
+    public static final String ABOUT_FRAGMENT_TAG = "AboutFragment";
+    public static final String ALBUM_NAME = "album_name";
+    public static final String PICTURE_SELECT_NAME = "selected-picture";
+    public static final String ALBUM_SELECT_NAME = "selected-album";
 
+    //Private TAGS
     private static final String BACK_STACK_ROOT_TAG = "root_fragment";
 
 

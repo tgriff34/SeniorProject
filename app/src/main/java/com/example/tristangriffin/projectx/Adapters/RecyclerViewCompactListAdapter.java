@@ -38,8 +38,11 @@ import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 
 import java.util.ArrayList;
 
+import static com.example.tristangriffin.projectx.Activities.MainActivity.ALBUM_NAME;
 import static com.example.tristangriffin.projectx.Activities.MainActivity.NAVIGATION_FRAGMENT;
 import static com.example.tristangriffin.projectx.Activities.MainActivity.USER_FRAGMENT;
+import static com.example.tristangriffin.projectx.Activities.MainActivity.USER_IMAGE_FRAGMENT_TAG;
+import static com.example.tristangriffin.projectx.Activities.MainActivity.USER_LOCAL_FRAGMENT_TAG;
 
 public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<RecyclerViewCompactListAdapter.MyViewHolder> {
 
@@ -55,12 +58,6 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
 
     //Firebase commands
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
-
-
-    //TAGS
-    private static final String USER_IMAGE_FRAGMENT_TAG = "UserImageFrag";
-    private static final String USER_LOCAL_FRAGMENT_TAG = "UserLocalFrag";
-    private static final String ALBUM_NAME = "album_name";
 
     public RecyclerViewCompactListAdapter(Activity activity, ArrayList<Album> albums) {
         this.activity = activity;

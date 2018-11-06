@@ -64,7 +64,6 @@ public class UserLocalFragment extends Fragment {
 
     private Activity activity;
 
-    public static final String LOCAL_PHOTO_VIEW = "local";
     private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 353;
 
     public UserLocalFragment() {

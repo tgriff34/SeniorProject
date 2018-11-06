@@ -8,10 +8,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -33,10 +31,11 @@ import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
 import com.example.tristangriffin.projectx.R;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
-import static com.example.tristangriffin.projectx.Adapters.RecyclerViewListAdapter.ALBUM_NAME;
-
+import static com.example.tristangriffin.projectx.Activities.MainActivity.ALBUM_NAME;
+import static com.example.tristangriffin.projectx.Activities.MainActivity.ALBUM_SELECT_NAME;
+import static com.example.tristangriffin.projectx.Activities.MainActivity.PICTURE_SELECT_NAME;
+import static com.example.tristangriffin.projectx.Activities.MainActivity.USER_LOCAL_FRAGMENT_TAG;
 
 public class UserImageFragment extends Fragment {
 
@@ -51,10 +50,6 @@ public class UserImageFragment extends Fragment {
 
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
-    //public static final String DEFAULT_PHOTO_VIEW = "default";
-    public static final String PICTURE_SELECT_NAME = "selected-picture";
-    public static final String ALBUM_SELECT_NAME = "selected-album";
-    public static final String USER_LOCAL_FRAGMENT_TAG = "UserLocalFrag";
     private static final int REQUEST_IMAGE_VIEW_CODE = 22;
 
     public UserImageFragment() {

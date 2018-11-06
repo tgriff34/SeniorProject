@@ -32,8 +32,8 @@ import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 
 import java.util.ArrayList;
 
-import static com.example.tristangriffin.projectx.Fragments.UserImageFragment.ALBUM_SELECT_NAME;
-import static com.example.tristangriffin.projectx.Fragments.UserImageFragment.PICTURE_SELECT_NAME;
+import static com.example.tristangriffin.projectx.Activities.MainActivity.ALBUM_SELECT_NAME;
+import static com.example.tristangriffin.projectx.Activities.MainActivity.PICTURE_SELECT_NAME;
 
 public class ImageViewerActivity extends AppCompatActivity {
 

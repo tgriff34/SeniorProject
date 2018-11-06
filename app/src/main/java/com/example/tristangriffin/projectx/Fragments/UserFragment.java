@@ -43,8 +43,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import static com.example.tristangriffin.projectx.Adapters.RecyclerViewListAdapter.ALBUM_NAME;
-import static com.example.tristangriffin.projectx.Adapters.RecyclerViewListAdapter.USER_IMAGE_FRAGMENT_TAG;
+import static com.example.tristangriffin.projectx.Activities.MainActivity.ALBUM_NAME;
+import static com.example.tristangriffin.projectx.Activities.MainActivity.USER_IMAGE_FRAGMENT_TAG;
 
 public class UserFragment extends Fragment {
 

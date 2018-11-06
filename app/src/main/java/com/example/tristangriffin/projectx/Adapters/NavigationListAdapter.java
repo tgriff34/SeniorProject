@@ -22,6 +22,8 @@ import com.example.tristangriffin.projectx.R;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
+import static com.example.tristangriffin.projectx.Activities.MainActivity.NAVIGATION_FRAGMENT;
+
 public class NavigationListAdapter extends RecyclerView.Adapter<NavigationListAdapter.MyViewHolder> {
 
     private ArrayList<Album> albums;
@@ -29,8 +31,6 @@ public class NavigationListAdapter extends RecyclerView.Adapter<NavigationListAd
     private String selectedAlbum;
 
     private int lastCheckPos = -1;
-
-    public static final String NAVIGATION_FRAGMENT_TAG = "NaviFrag";
 
     public NavigationListAdapter(Context context, ArrayList<Album> albums, @Nullable String selectedAlbum) {
         this.albums = albums;
@@ -76,7 +76,7 @@ public class NavigationListAdapter extends RecyclerView.Adapter<NavigationListAd
         if (album.getName().equals(selectedAlbum)) {
             album.setSelected(true);
             lastCheckPos = myViewHolder.getAdapterPosition();
-            NavigationFragment navigationFragment = (NavigationFragment) ((FragmentActivity) context).getSupportFragmentManager().findFragmentByTag(NAVIGATION_FRAGMENT_TAG);
+            NavigationFragment navigationFragment = (NavigationFragment) ((FragmentActivity) context).getSupportFragmentManager().findFragmentByTag(NAVIGATION_FRAGMENT);
             navigationFragment.getAlbumLocations(albumName);
             selectedAlbum = null;
         }
@@ -97,7 +97,7 @@ public class NavigationListAdapter extends RecyclerView.Adapter<NavigationListAd
 
                 lastCheckPos = myViewHolder.getAdapterPosition();
 
-                NavigationFragment navigationFragment = (NavigationFragment) ((FragmentActivity) context).getSupportFragmentManager().findFragmentByTag(NAVIGATION_FRAGMENT_TAG);
+                NavigationFragment navigationFragment = (NavigationFragment) ((FragmentActivity) context).getSupportFragmentManager().findFragmentByTag(NAVIGATION_FRAGMENT);
                 navigationFragment.getAlbumLocations(albumName);
                 Toast.makeText(context, albumName, Toast.LENGTH_SHORT).show();
 

@@ -22,7 +22,6 @@ public class SignInActivity extends AppCompatActivity {
     private ProgressBar progressBar;
 
     private static final int REQUEST_SIGNUP = 0;
-    private static final int REQUEST_LOGIN = 2;
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
 

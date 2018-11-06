@@ -39,6 +39,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 
+import static com.example.tristangriffin.projectx.Activities.MainActivity.ALBUM_SELECT_NAME;
+import static com.example.tristangriffin.projectx.Activities.MainActivity.PICTURE_SELECT_NAME;
+
 public class NavigationFragment extends Fragment implements OnMapReadyCallback {
 
 
@@ -54,8 +57,7 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
 
     private Activity activity;
 
-    public static final String PICTURE_SELECT_NAME = "selected-picture";
-    public static final String ALBUM_SELECT_NAME = "selected-album";
+
 
     private static final int REQUEST_IMAGE_VIEW_CODE = 22;
 
