@@ -27,6 +27,17 @@
         app:layout_constraintTop_toTopOf="parent"
         />
 
+    <TextView
+        android:id="@+id/imageViewer_text"
+        style="@style/TextAppearance.AppCompat.Caption"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:textColor="?white"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/imageViewer_favorite"
+        />
+
     <ImageView
         android:id="@+id/imageViewer_exit"
         android:layout_width="wrap_content"

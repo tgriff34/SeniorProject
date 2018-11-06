@@ -11,12 +11,12 @@
     <color name="red">#FF0000</color>
 
 
+    <color name="logInPrimary">#1565C0</color>
+    <color name="logInPrimaryDark">#0D47A1</color>
+    <color name="logInAccent">#1E88E5</color>
+
     <!--
-    <color name="colorPrimary">#344955</color>
-    <color name="colorPrimaryDark">#232f34</color>
-    <color name="colorAccent">#4a6572</color>
-    <color name="colorSecondary">#f9aa33</color>
     <color name="white">#FFFFFF</color>
     -->
-
 </resources>
+

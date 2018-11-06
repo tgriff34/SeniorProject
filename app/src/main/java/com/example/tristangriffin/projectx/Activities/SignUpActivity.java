@@ -48,7 +48,7 @@ public class SignUpActivity extends AppCompatActivity {
         });
     }
 
-    public boolean validate() {
+    private boolean validate() {
         boolean valid = true;
 
         String email = mEmail.getText().toString();

@@ -1,56 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:theme="@style/SignInUpTheme"
     tools:context=".Activities.SignUpActivity">
 
-    <Button
-        android:id="@+id/button_signup"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Button"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        />
+        android:paddingTop="100dp"
+        android:paddingBottom="100dp"
+        android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/edit_createpassword"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textPassword"
-        android:hint="@string/text_password"
-        android:layout_margin="@dimen/sign_in_sign_up_margin"
-        app:layout_constraintBottom_toTopOf="@id/button_signup"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        />
+        <TextView
+            android:id="@+id/view_signUpInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/sign_in_sign_up_margin"
+            android:layout_gravity="center"
+            android:text="@string/text_signupInfo" />
 
-    <EditText
-        android:id="@+id/edit_createemail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:ems="10"
-        android:inputType="textEmailAddress"
-        android:hint="@string/text_email"
-        android:layout_margin="@dimen/sign_in_sign_up_margin"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/edit_createpassword"
-        />
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/sign_in_sign_up_margin"
+            >
 
-    <TextView
-        android:id="@+id/view_signUpInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/text_signupInfo"
-        android:layout_margin="@dimen/sign_in_sign_up_margin"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/edit_createemail"
-        />
-</android.support.constraint.ConstraintLayout>
+            <EditText
+                android:id="@+id/edit_createpassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/text_password"
+                android:inputType="textPassword" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/sign_in_sign_up_margin">
+
+            <EditText
+                android:id="@+id/edit_createemail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/text_email"
+                android:inputType="textEmailAddress" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/button_signup"
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/sign_in_sign_up_margin"
+            android:text="Sign Up" />
+    </LinearLayout>
+</ScrollView>

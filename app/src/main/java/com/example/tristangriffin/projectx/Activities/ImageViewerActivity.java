@@ -16,6 +16,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.ViewSwitcher;
 
 import com.bumptech.glide.Glide;
@@ -25,13 +26,11 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.tristangriffin.projectx.Listeners.OnGetIfFavoritedAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
-import com.example.tristangriffin.projectx.Models.Album;
 import com.example.tristangriffin.projectx.Models.Image;
 import com.example.tristangriffin.projectx.R;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 import static com.example.tristangriffin.projectx.Fragments.UserImageFragment.ALBUM_SELECT_NAME;
 import static com.example.tristangriffin.projectx.Fragments.UserImageFragment.PICTURE_SELECT_NAME;
@@ -44,9 +43,12 @@ public class ImageViewerActivity extends AppCompatActivity {
     private String currentImage;
     private String albumName;
     private boolean checkIfIsFavorite;
+
     private ProgressBar progressBar;
     private ImageSwitcher imageView;
     private ImageView cancelButton, favoriteButton;
+    private TextView imageText;
+
     private int currentPosition;
 
     private Animation mSlideInLeft;
@@ -70,6 +72,7 @@ public class ImageViewerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_image_viewer);
 
         imageView = findViewById(R.id.imageViewer_imageView);
+        imageText = findViewById(R.id.imageViewer_text);
         cancelButton = findViewById(R.id.imageViewer_exit);
         favoriteButton = findViewById(R.id.imageViewer_favorite);
         progressBar = findViewById(R.id.imageViewer_progressBar);
@@ -162,7 +165,7 @@ public class ImageViewerActivity extends AppCompatActivity {
             public void onGetPhotosSuccess(ArrayList<Image> images) {
                 cloudImages = images;
                 for (int i = 0; i < cloudImages.size(); i++) {
-                    if (cloudImages.get(i).getId() == currentImage) {
+                    if (cloudImages.get(i).getId().equals(currentImage)) {
                         currentPosition = i;
                     }
                 }
@@ -190,6 +193,9 @@ public class ImageViewerActivity extends AppCompatActivity {
                         return true;
                     }
                 }).into((ImageView) imageView.getCurrentView());
+
+        imageText.setText(cloudImages.get(currentPosition).getLocation());
+
         progressBar.setVisibility(View.GONE);
     }
 
