@@ -1,7 +1,9 @@
 package com.example.tristangriffin.projectx.Fragments;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -18,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.tristangriffin.projectx.Activities.MainActivity;
+import com.example.tristangriffin.projectx.Adapters.RecyclerViewCompactListAdapter;
 import com.example.tristangriffin.projectx.Listeners.OnGetIfFavoritedAlbumListener;
 import com.example.tristangriffin.projectx.Models.Album;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
@@ -38,6 +41,8 @@ public class SearchFragment extends Fragment {
 
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
+    private SharedPreferences preferences;
+
     public SearchFragment() {
         // Required empty public constructor
     }
@@ -57,6 +62,8 @@ public class SearchFragment extends Fragment {
         //getActivity().setTitle(R.string.search_name);
         TextView toolbarTextView = (TextView) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar_title);
         toolbarTextView.setText(R.string.search_name);
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
         recyclerView = view.findViewById(R.id.search_recyclerView);
         swipeContainer = view.findViewById(R.id.search_swipeContainer);
@@ -143,7 +150,14 @@ public class SearchFragment extends Fragment {
     private void updateUI() {
         Log.d("demo", "Searched images: " + searchedAlbums.toString());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(new RecyclerViewListAdapter(getActivity(), searchedAlbums));
+
+        String currentView = preferences.getString("view_size", "Large");
+        if (currentView.equals("Large")) {
+            recyclerView.setAdapter(new RecyclerViewListAdapter(getActivity(), searchedAlbums));
+        } else {
+            recyclerView.setAdapter(new RecyclerViewCompactListAdapter(getActivity(), searchedAlbums, recyclerView));
+        }
+
         progressBar.setVisibility(View.GONE);
     }
 

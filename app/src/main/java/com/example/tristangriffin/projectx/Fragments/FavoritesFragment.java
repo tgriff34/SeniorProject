@@ -1,7 +1,9 @@
 package com.example.tristangriffin.projectx.Fragments;
 
 import android.annotation.SuppressLint;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -14,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.tristangriffin.projectx.Activities.MainActivity;
+import com.example.tristangriffin.projectx.Adapters.RecyclerViewCompactListAdapter;
 import com.example.tristangriffin.projectx.Listeners.OnGetFavoritedAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetIfFavoritedAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
@@ -34,6 +37,8 @@ public class FavoritesFragment extends Fragment {
 
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
+    private SharedPreferences preferences;
+
     public FavoritesFragment() {
         // Required empty public constructor
     }
@@ -53,6 +58,8 @@ public class FavoritesFragment extends Fragment {
         //getActivity().setTitle(R.string.favorites_name);
         TextView toolbarTextView = (TextView) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar_title);
         toolbarTextView.setText(R.string.favorites_name);
+
+        preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
 
         recyclerView = view.findViewById(R.id.favorites_recyclerView);
         swipeRefreshLayout = view.findViewById(R.id.favorites_swipeContainer);
@@ -122,7 +129,14 @@ public class FavoritesFragment extends Fragment {
 
     private void updateUI() {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(new RecyclerViewListAdapter(getActivity(), favoritedAlbums));
+
+        String currentView = preferences.getString("view_size", "Large");
+        if (currentView.equals("Large")) {
+            recyclerView.setAdapter(new RecyclerViewListAdapter(getActivity(), favoritedAlbums));
+        } else {
+            recyclerView.setAdapter(new RecyclerViewCompactListAdapter(getActivity(), favoritedAlbums, recyclerView));
+        }
+
         progressBar.setVisibility(View.GONE);
 
         if (favoritedAlbums.isEmpty()) {
