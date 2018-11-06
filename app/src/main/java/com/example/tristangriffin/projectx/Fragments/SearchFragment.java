@@ -1,11 +1,13 @@
 package com.example.tristangriffin.projectx.Fragments;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,7 +21,6 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.example.tristangriffin.projectx.Activities.MainActivity;
 import com.example.tristangriffin.projectx.Adapters.RecyclerViewCompactListAdapter;
 import com.example.tristangriffin.projectx.Listeners.OnGetIfFavoritedAlbumListener;
 import com.example.tristangriffin.projectx.Models.Album;
@@ -41,10 +42,19 @@ public class SearchFragment extends Fragment {
 
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
+    private Activity activity;
+
     private SharedPreferences preferences;
 
     public SearchFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        this.activity = getActivity();
     }
 
     @Override
@@ -54,13 +64,13 @@ public class SearchFragment extends Fragment {
 
     @SuppressLint("ResourceAsColor")
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_search, container, false);
 
         //getActivity().setTitle(R.string.search_name);
-        TextView toolbarTextView = (TextView) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar_title);
+        TextView toolbarTextView = activity.findViewById(R.id.toolbar_title);
         toolbarTextView.setText(R.string.search_name);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -125,9 +135,6 @@ public class SearchFragment extends Fragment {
     }
 
     private void getThumbnail(final int position) {
-        /**
-         * Fix for public and private
-         */
         firebaseCommands.getThumbnail(searchedAlbums.get(position).getName(), new OnGetThumbnailListener() {
             @Override
             public void onGetThumbnailSuccess(String string) {
@@ -153,9 +160,9 @@ public class SearchFragment extends Fragment {
 
         String currentView = preferences.getString("view_size", "Large");
         if (currentView.equals("Large")) {
-            recyclerView.setAdapter(new RecyclerViewListAdapter(getActivity(), searchedAlbums));
+            recyclerView.setAdapter(new RecyclerViewListAdapter(activity, searchedAlbums));
         } else {
-            recyclerView.setAdapter(new RecyclerViewCompactListAdapter(getActivity(), searchedAlbums, recyclerView));
+            recyclerView.setAdapter(new RecyclerViewCompactListAdapter(activity, searchedAlbums));
         }
 
         progressBar.setVisibility(View.GONE);

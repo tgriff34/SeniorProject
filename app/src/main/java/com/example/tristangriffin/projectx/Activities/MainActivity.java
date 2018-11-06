@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import com.example.tristangriffin.projectx.Fragments.FavoritesFragment;
 import com.example.tristangriffin.projectx.Fragments.NavigationFragment;
@@ -74,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
         final BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
 
-        setFragment(userFragment, USER_FRAGMENT);
+        setNavigationBarFragment(userFragment, USER_FRAGMENT);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
                         switch (item.getItemId()) {
                             case R.id.action_user:
                                 if (getSupportFragmentManager().findFragmentByTag(USER_FRAGMENT) == null) {
-                                    setFragment(userFragment, USER_FRAGMENT);
+                                    setNavigationBarFragment(userFragment, USER_FRAGMENT);
                                 } else {
                                     popToRootFragment();
                                 }
@@ -92,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
                             case R.id.action_favorites:
                                 if (getSupportFragmentManager().findFragmentByTag(FAVORITES_FRAGMENT) == null) {
-                                    setFragment(favoritesFragment, FAVORITES_FRAGMENT);
+                                    setNavigationBarFragment(favoritesFragment, FAVORITES_FRAGMENT);
                                 } else {
                                     popToRootFragment();
                                 }
@@ -100,13 +101,13 @@ public class MainActivity extends AppCompatActivity {
 
                             case R.id.action_navi:
                                 if (getSupportFragmentManager().findFragmentByTag(NAVIGATION_FRAGMENT) == null) {
-                                    setFragment(navigationFragment, NAVIGATION_FRAGMENT);
+                                    setNavigationBarFragment(navigationFragment, NAVIGATION_FRAGMENT);
                                 }
                                 break;
 
                             case R.id.action_search:
                                 if (getSupportFragmentManager().findFragmentByTag(SEARCH_FRAGMENT) == null) {
-                                    setFragment(searchFragment, SEARCH_FRAGMENT);
+                                    setNavigationBarFragment(searchFragment, SEARCH_FRAGMENT);
                                 } else {
                                     popToRootFragment();
                                 }
@@ -114,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
                             case R.id.action_settings:
                                 if (getSupportFragmentManager().findFragmentByTag(SETTINGS_FRAGMENT) == null) {
-                                    setFragment(settingsFragment, SETTINGS_FRAGMENT);
+                                    setNavigationBarFragment(settingsFragment, SETTINGS_FRAGMENT);
                                 }
                                 break;
                         }
@@ -124,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
-    public void setFragment(Fragment fragment, String FRAGMENT_TAG) {
+    public void setNavigationBarFragment(Fragment fragment, String FRAGMENT_TAG) {
         getSupportFragmentManager().popBackStackImmediate(BACK_STACK_ROOT_TAG, FragmentManager.POP_BACK_STACK_INCLUSIVE);
 
         getSupportFragmentManager().beginTransaction()
@@ -134,6 +135,23 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
 
         checkBackStackEntry();
+    }
+
+    public void setFragmentAndTransition(Fragment fragment, String TAG) {
+        getSupportFragmentManager().beginTransaction()
+                .addToBackStack(TAG)
+                .setCustomAnimations(R.anim.fragment_enter_from_right, R.anim.fragment_exit_to_left, R.anim.fragment_enter_from_left, R.anim.fragment_exit_to_right)
+                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .replace(R.id.fragment_container, fragment, TAG)
+                .commit();
+    }
+
+    public void setFragmentNoTransition(Fragment fragment, String TAG) {
+        getSupportFragmentManager()
+                .beginTransaction()
+                .addToBackStack(TAG)
+                .replace(R.id.fragment_container, fragment, TAG)
+                .commit();
     }
 
     @Override

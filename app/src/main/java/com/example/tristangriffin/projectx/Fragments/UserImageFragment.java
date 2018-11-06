@@ -1,8 +1,11 @@
 package com.example.tristangriffin.projectx.Fragments;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -44,9 +47,11 @@ public class UserImageFragment extends Fragment {
     private TextView textInfo;
     private String albumName;
 
+    private Activity activity;
+
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
-    public static final String DEFAULT_PHOTO_VIEW = "default";
+    //public static final String DEFAULT_PHOTO_VIEW = "default";
     public static final String PICTURE_SELECT_NAME = "selected-picture";
     public static final String ALBUM_SELECT_NAME = "selected-album";
     public static final String USER_LOCAL_FRAGMENT_TAG = "UserLocalFrag";
@@ -57,19 +62,27 @@ public class UserImageFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.activity = getActivity();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
     @SuppressLint("ResourceAsColor")
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_user_image, container, false);
 
-        albumName = getArguments().getString(ALBUM_NAME);
+        if (getArguments() != null) {
+            albumName = getArguments().getString(ALBUM_NAME);
+        }
 
-        TextView toolbarTextView = (TextView) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar_title);
+        TextView toolbarTextView = activity.findViewById(R.id.toolbar_title);
         toolbarTextView.setText(albumName);
 
         textInfo = view.findViewById(R.id.text_noImages);
@@ -88,8 +101,8 @@ public class UserImageFragment extends Fragment {
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 final String value = cloudImages.get(i).getId();
                 Log.d("demo", value);
-                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(getActivity(), R.style.SheetDialog);
-                View sheetView = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_album_list_longpress_layout, null);
+                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(activity, R.style.SheetDialog);
+                View sheetView = activity.getLayoutInflater().inflate(R.layout.bottom_sheet_album_list_longpress_layout, null);
                 mBottomSheetDialog.setContentView(sheetView);
                 mBottomSheetDialog.show();
 
@@ -149,8 +162,8 @@ public class UserImageFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_options:
-                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(getActivity(), R.style.SheetDialog);
-                View sheetView = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_album_list_options_layout, null);
+                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(activity, R.style.SheetDialog);
+                View sheetView = activity.getLayoutInflater().inflate(R.layout.bottom_sheet_album_list_options_layout, null);
                 mBottomSheetDialog.setContentView(sheetView);
                 mBottomSheetDialog.show();
 
@@ -162,7 +175,7 @@ public class UserImageFragment extends Fragment {
                         bundle.putString("album_name", albumName);
                         UserLocalFragment userLocalFragment = new UserLocalFragment();
                         userLocalFragment.setArguments(bundle);
-                        setFragment(userLocalFragment, USER_LOCAL_FRAGMENT_TAG);
+                        ((MainActivity)activity).setFragmentAndTransition(userLocalFragment, USER_LOCAL_FRAGMENT_TAG);
                         mBottomSheetDialog.dismiss();
                     }
                 });
@@ -206,6 +219,7 @@ public class UserImageFragment extends Fragment {
         }
     }
 
+    /*
     private void setFragment(Fragment fragment, String TAG) {
         getActivity().getSupportFragmentManager().beginTransaction()
                 .addToBackStack(TAG)
@@ -214,4 +228,5 @@ public class UserImageFragment extends Fragment {
                 .replace(R.id.fragment_container, fragment, TAG)
                 .commit();
     }
+    */
 }

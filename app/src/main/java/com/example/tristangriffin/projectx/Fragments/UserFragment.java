@@ -1,6 +1,8 @@
 package com.example.tristangriffin.projectx.Fragments;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -14,7 +16,6 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -53,6 +54,9 @@ public class UserFragment extends Fragment {
     private ProgressBar progressBar;
     private TextView textView;
 
+    private Context context;
+    private Activity activity;
+
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
     private SharedPreferences preferences;
@@ -63,20 +67,27 @@ public class UserFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.context = context;
+        this.activity = getActivity();
+    }
+
+    @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
     }
 
     @SuppressLint("ResourceAsColor")
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         //Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_user, container, false);
 
         //getActivity().setTitle(R.string.album_name);
-        final Toolbar toolbar = (Toolbar) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar);
-        TextView toolbarTextView = (TextView) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar_title);
+        //final Toolbar toolbar = (Toolbar) activity.findViewById(R.id.toolbar);
+        TextView toolbarTextView = activity.findViewById(R.id.toolbar_title);
         toolbarTextView.setText(R.string.album_name);
 
         preferences = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -89,8 +100,8 @@ public class UserFragment extends Fragment {
         progressBar.setIndeterminate(true);
         textView.setVisibility(View.GONE);
 
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
-        dividerItemDecoration.setDrawable(ContextCompat.getDrawable(getContext(), R.drawable.recycler_view_divider));
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(context, DividerItemDecoration.VERTICAL);
+        dividerItemDecoration.setDrawable(ContextCompat.getDrawable(context, R.drawable.recycler_view_divider));
         recyclerView.addItemDecoration(dividerItemDecoration);
 
         getAlbums();
@@ -163,9 +174,9 @@ public class UserFragment extends Fragment {
 
         String currentView = preferences.getString("view_size", "Large");
         if (currentView.equals("Large")) {
-            recyclerView.setAdapter(new RecyclerViewListAdapter(getActivity(), albums));
+            recyclerView.setAdapter(new RecyclerViewListAdapter(activity, albums));
         } else {
-            recyclerView.setAdapter(new RecyclerViewCompactListAdapter(getActivity(), albums, recyclerView));
+            recyclerView.setAdapter(new RecyclerViewCompactListAdapter(activity, albums));
         }
 
 
@@ -199,8 +210,8 @@ public class UserFragment extends Fragment {
     }
 
     private void createSortByBottomSheet() {
-        final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(getContext(), R.style.SheetDialog);
-        View sheetView = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_sort_by_options_layout, null);
+        final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(context, R.style.SheetDialog);
+        View sheetView = activity.getLayoutInflater().inflate(R.layout.bottom_sheet_sort_by_options_layout, null);
         mBottomSheetDialog.setContentView(sheetView);
 
         CardView ascending = (CardView) mBottomSheetDialog.findViewById(R.id.sort_by_ascending_bottom_sheet);
@@ -244,8 +255,8 @@ public class UserFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.action_user_options:
-                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(getContext(), R.style.SheetDialog);
-                View sheetView = getActivity().getLayoutInflater().inflate(R.layout.bottom_sheet_album_main_options_layout, null);
+                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(context, R.style.SheetDialog);
+                View sheetView = activity.getLayoutInflater().inflate(R.layout.bottom_sheet_album_main_options_layout, null);
                 mBottomSheetDialog.setContentView(sheetView);
 
                 CardView add = (CardView) mBottomSheetDialog.findViewById(R.id.album_action_main_add_album_bottom_sheet);
@@ -265,7 +276,7 @@ public class UserFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         Log.d("demo", "Clicked");
-                        final AlertDialog builder = new AlertDialog.Builder(getActivity()).create();
+                        final AlertDialog builder = new AlertDialog.Builder(activity).create();
                         View viewInflated = LayoutInflater.from(getActivity()).inflate(R.layout.text_input_add_album, null);
                         final EditText input = (EditText) viewInflated.findViewById(R.id.album_input);
 
@@ -287,11 +298,7 @@ public class UserFragment extends Fragment {
                                 bundle.putSerializable(ALBUM_NAME, input.getText().toString());
                                 UserImageFragment userImageFragment = new UserImageFragment();
                                 userImageFragment.setArguments(bundle);
-                                ((MainActivity) getActivity()).getSupportFragmentManager()
-                                        .beginTransaction()
-                                        .addToBackStack(USER_IMAGE_FRAGMENT_TAG)
-                                        .replace(R.id.fragment_container, userImageFragment, USER_IMAGE_FRAGMENT_TAG)
-                                        .commit();
+                                ((MainActivity) activity).setFragmentNoTransition(userImageFragment, USER_IMAGE_FRAGMENT_TAG);
 
                                 builder.dismiss();
                             }

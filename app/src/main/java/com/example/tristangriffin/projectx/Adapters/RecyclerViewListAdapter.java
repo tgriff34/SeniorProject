@@ -11,7 +11,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +39,8 @@ import static com.example.tristangriffin.projectx.Activities.MainActivity.USER_F
 public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewListAdapter.MyViewHolder> {
 
     private ArrayList<Album> albums;
-    private Activity context;
+
+    private Activity activity;
 
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
@@ -48,9 +48,9 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
     public static final String USER_LOCAL_FRAGMENT_TAG = "UserLocalFrag";
     public static final String ALBUM_NAME = "album_name";
 
-    public RecyclerViewListAdapter(Activity context, ArrayList<Album> albums) {
-        this.context = context;
+    public RecyclerViewListAdapter(Activity activity, ArrayList<Album> albums) {
         this.albums = albums;
+        this.activity = activity;
     }
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
@@ -93,10 +93,10 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
 
         textView.setText(albumName);
         if (albums.get(position).getThumbnail() != null) {
-            Glide.with(context).load(albums.get(position).getThumbnail()).apply(RequestOptions.centerCropTransform()).into(imageView);
+            Glide.with(activity).load(albums.get(position).getThumbnail()).apply(RequestOptions.centerCropTransform()).into(imageView);
         }
 
-        final BottomNavigationView bottomNavigationView = ((MainActivity) context).findViewById(R.id.bottom_navigation);
+        final BottomNavigationView bottomNavigationView = activity.findViewById(R.id.bottom_navigation);
 
         /**
          * Is the album favorited?
@@ -139,11 +139,11 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
                     @Override
                     public void onDeleteAlbum(boolean isDeleted) {
                         if (isDeleted) {
-                            UserFragment userFragment = (UserFragment) ((FragmentActivity) context).getSupportFragmentManager().findFragmentByTag(USER_FRAGMENT);
+                            UserFragment userFragment = (UserFragment) ((FragmentActivity) activity).getSupportFragmentManager().findFragmentByTag(USER_FRAGMENT);
                             userFragment.getAlbums();
-                            Toast.makeText(context, "Album deleted", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, "Album deleted", Toast.LENGTH_SHORT).show();
                         } else {
-                            Toast.makeText(context, "Error deleting album", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, "Error deleting album", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -198,8 +198,8 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
         holder.holderImageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(context, R.style.SheetDialog);
-                View sheetView = context.getLayoutInflater().inflate(R.layout.bottom_sheet_album_longpress_layout, null);
+                final BottomSheetDialog mBottomSheetDialog = new BottomSheetDialog(activity, R.style.SheetDialog);
+                View sheetView = activity.getLayoutInflater().inflate(R.layout.bottom_sheet_album_longpress_layout, null);
                 mBottomSheetDialog.setContentView(sheetView);
 
                 CardView cancel = (CardView) mBottomSheetDialog.findViewById(R.id.album_view_cancel_bottom_sheet);
@@ -227,7 +227,7 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
                         bundle.putString("album_name", albumName);
                         UserLocalFragment userLocalFragment = new UserLocalFragment();
                         userLocalFragment.setArguments(bundle);
-                        setFragment(userLocalFragment, USER_LOCAL_FRAGMENT_TAG);
+                        ((MainActivity) activity).setFragmentAndTransition(userLocalFragment, USER_LOCAL_FRAGMENT_TAG);
                         mBottomSheetDialog.dismiss();
                     }
                 });
@@ -256,7 +256,8 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
                         NavigationFragment navigationFragment = new NavigationFragment();
                         navigationFragment.setArguments(bundle);
                         bottomNavigationView.getMenu().getItem(2).setChecked(true);
-                        ((MainActivity) context).setFragment(navigationFragment, NAVIGATION_FRAGMENT);
+                        ((MainActivity) activity).setNavigationBarFragment(navigationFragment, NAVIGATION_FRAGMENT);
+                        //((MainActivity) context).setFragment(navigationFragment, NAVIGATION_FRAGMENT);
                         mBottomSheetDialog.dismiss();
                     }
                 });
@@ -268,11 +269,11 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
                             @Override
                             public void onDeleteAlbum(boolean isDeleted) {
                                 if (isDeleted) {
-                                    UserFragment userFragment = (UserFragment) ((FragmentActivity) context).getSupportFragmentManager().findFragmentByTag(USER_FRAGMENT);
+                                    UserFragment userFragment = (UserFragment) ((FragmentActivity) activity).getSupportFragmentManager().findFragmentByTag(USER_FRAGMENT);
                                     userFragment.getAlbums();
-                                    Toast.makeText(context, "Album deleted", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(activity, "Album deleted", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    Toast.makeText(context, "Error deleting album", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(activity, "Error deleting album", Toast.LENGTH_SHORT).show();
                                 }
                                 mBottomSheetDialog.dismiss();
                             }
@@ -298,23 +299,8 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
         bundle.putString(ALBUM_NAME, albumName);
         UserImageFragment userImageFragment = new UserImageFragment();
         userImageFragment.setArguments(bundle);
-        ((FragmentActivity) context).getSupportFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.anim.fragment_enter_from_right, R.anim.fragment_exit_to_left, R.anim.fragment_enter_from_left, R.anim.fragment_exit_to_right)
-                .addToBackStack(USER_IMAGE_FRAGMENT_TAG)
-                .replace(R.id.fragment_container, userImageFragment, USER_IMAGE_FRAGMENT_TAG)
-                .commit();
+        ((MainActivity) activity).setFragmentAndTransition(userImageFragment, USER_IMAGE_FRAGMENT_TAG);
     }
-
-    private void setFragment(Fragment fragment, String TAG) {
-        ((FragmentActivity) context).getSupportFragmentManager().beginTransaction()
-                .addToBackStack(TAG)
-                .setCustomAnimations(R.anim.fragment_enter_from_right, R.anim.fragment_exit_to_left, R.anim.fragment_enter_from_left, R.anim.fragment_exit_to_right)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .replace(R.id.fragment_container, fragment, TAG)
-                .commit();
-    }
-
 
     // Required Functions
     @Override

@@ -2,6 +2,7 @@ package com.example.tristangriffin.projectx.Fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -10,6 +11,7 @@ import android.location.Geocoder;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -57,9 +59,10 @@ public class UserLocalFragment extends Fragment {
             timeCreated = null, dateCreated = null, location = null;
     private Uri file;
     private String albumName;
-    private Geocoder geocoder;
 
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
+
+    private Activity activity;
 
     public static final String LOCAL_PHOTO_VIEW = "local";
     private static final int PLACE_AUTOCOMPLETE_REQUEST_CODE = 353;
@@ -69,22 +72,32 @@ public class UserLocalFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.activity = getActivity();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_user_local, container, false);
 
-        TextView toolbarTextView = (TextView) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar_title);
+        TextView toolbarTextView = activity.findViewById(R.id.toolbar_title);
         toolbarTextView.setText(R.string.local_photos_name);
 
         gridView = view.findViewById(R.id.grid_local_view);
         gridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE);
-        albumName = getArguments().getString("album_name");
+
+        if (getArguments() != null) {
+            albumName = getArguments().getString("album_name");
+        }
+
         setHasOptionsMenu(true);
         getImages(getActivity());
 
@@ -116,10 +129,12 @@ public class UserLocalFragment extends Fragment {
         Cursor cursor = activity.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 columns, null, null, null);
 
-        while (cursor.moveToNext()) {
-            localImages.add(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA)));
+        if (cursor != null) {
+            while (cursor.moveToNext()) {
+                localImages.add(cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.MediaColumns.DATA)));
+            }
+            cursor.close();
         }
-        cursor.close();
         getUploadedImages();
     }
 
@@ -161,7 +176,7 @@ public class UserLocalFragment extends Fragment {
                         try {
                             Intent intent =
                                     new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
-                                            .build(getActivity());
+                                            .build(activity);
 
                             startActivityForResult(intent, PLACE_AUTOCOMPLETE_REQUEST_CODE);
                         } catch (GooglePlayServicesNotAvailableException e) {
@@ -192,14 +207,14 @@ public class UserLocalFragment extends Fragment {
         //End of Exif
         if (!GET_LOCATION_FLAG) {
             Toast.makeText(getContext(), "Success", Toast.LENGTH_SHORT).show();
-            geocoder = new Geocoder(getActivity(), Locale.getDefault());
-            List<Address> addresses = null;
+            Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
+            List<Address> addresses;
             try {
                 addresses = geocoder.getFromLocation(Double.parseDouble(latitude), Double.parseDouble(longitude), 1);
+                location = addresses.get(0).getAddressLine(0);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            location = addresses.get(0).getAddressLine(0);
             firebaseCommands.uploadPhotos(file, albumName, location, longitude, latitude, timeCreated, dateCreated);
         }
     }

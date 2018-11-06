@@ -46,11 +46,12 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
     //Parameters
     private ArrayList<Album> albums;
     private Activity activity;
-    private RecyclerView recyclerView;
 
     //CardView views
     private TextView favoriteText;
     private ImageView favoriteImage;
+
+    private BottomNavigationView bottomNavigationView;
 
     //Firebase commands
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
@@ -61,11 +62,9 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
     private static final String USER_LOCAL_FRAGMENT_TAG = "UserLocalFrag";
     private static final String ALBUM_NAME = "album_name";
 
-    public RecyclerViewCompactListAdapter(Activity activity, ArrayList<Album> albums, RecyclerView recyclerView) {
-        Log.d("demo", "Album size: " + albums.toString());
+    public RecyclerViewCompactListAdapter(Activity activity, ArrayList<Album> albums) {
         this.activity = activity;
         this.albums = albums;
-        this.recyclerView = recyclerView;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
@@ -87,7 +86,11 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
 
         @Override
         public void onClick(View v) {
-            setFragment(albums.get(getAdapterPosition()).getName());
+            Bundle bundle = new Bundle();
+            bundle.putString(ALBUM_NAME, albums.get(getAdapterPosition()).getName());
+            UserImageFragment userImageFragment = new UserImageFragment();
+            userImageFragment.setArguments(bundle);
+            ((MainActivity) activity).setFragmentAndTransition(userImageFragment, USER_IMAGE_FRAGMENT_TAG);
         }
     }
 
@@ -100,9 +103,9 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
 
         View albumView = layoutInflater.inflate(R.layout.album_compact_list_layout, viewGroup, false);
 
-        MyViewHolder viewHolder = new MyViewHolder(albumView);
+        //MyViewHolder viewHolder = new MyViewHolder(albumView);
 
-        return viewHolder;
+        return new MyViewHolder(albumView);
     }
 
     @Override
@@ -121,7 +124,7 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
             Glide.with(activity).load(albums.get(position).getThumbnail()).apply(RequestOptions.centerCropTransform()).into(imageView);
         }
 
-        final BottomNavigationView bottomNavigationView = ((MainActivity) activity).findViewById(R.id.bottom_navigation);
+        bottomNavigationView = ((MainActivity) activity).findViewById(R.id.bottom_navigation);
 
         //Change color of buttons depending on theme
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(activity);
@@ -140,7 +143,11 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setFragment(albumName);
+                Bundle bundle = new Bundle();
+                bundle.putString(ALBUM_NAME, albumName);
+                UserImageFragment userImageFragment = new UserImageFragment();
+                userImageFragment.setArguments(bundle);
+                ((MainActivity) activity).setFragmentAndTransition(userImageFragment, USER_IMAGE_FRAGMENT_TAG);
             }
         });
 
@@ -178,7 +185,7 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
                         bundle.putString("album_name", albumName);
                         UserLocalFragment userLocalFragment = new UserLocalFragment();
                         userLocalFragment.setArguments(bundle);
-                        setFragment(userLocalFragment, USER_LOCAL_FRAGMENT_TAG);
+                        ((MainActivity) activity).setFragmentAndTransition(userLocalFragment, USER_LOCAL_FRAGMENT_TAG);
                         mBottomSheetDialog.dismiss();
                     }
                 });
@@ -199,7 +206,7 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
                         NavigationFragment navigationFragment = new NavigationFragment();
                         navigationFragment.setArguments(bundle);
                         bottomNavigationView.getMenu().getItem(2).setChecked(true);
-                        ((MainActivity) activity).setFragment(navigationFragment, NAVIGATION_FRAGMENT);
+                        ((MainActivity) activity).setNavigationBarFragment(navigationFragment, NAVIGATION_FRAGMENT);
                         mBottomSheetDialog.dismiss();
                     }
                 });
@@ -234,28 +241,6 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
     }
 
     //Private Functions
-    private void setFragment(String albumName) {
-        Bundle bundle = new Bundle();
-        bundle.putString(ALBUM_NAME, albumName);
-        UserImageFragment userImageFragment = new UserImageFragment();
-        userImageFragment.setArguments(bundle);
-        ((FragmentActivity) activity).getSupportFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.anim.fragment_enter_from_right, R.anim.fragment_exit_to_left, R.anim.fragment_enter_from_left, R.anim.fragment_exit_to_right)
-                .addToBackStack(USER_IMAGE_FRAGMENT_TAG)
-                .replace(R.id.fragment_container, userImageFragment, USER_IMAGE_FRAGMENT_TAG)
-                .commit();
-    }
-
-    private void setFragment(Fragment fragment, String TAG) {
-        ((FragmentActivity) activity).getSupportFragmentManager().beginTransaction()
-                .addToBackStack(TAG)
-                .setCustomAnimations(R.anim.fragment_enter_from_right, R.anim.fragment_exit_to_left, R.anim.fragment_enter_from_left, R.anim.fragment_exit_to_right)
-                .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .replace(R.id.fragment_container, fragment, TAG)
-                .commit();
-    }
-
     private void getFavoriteResourcesForRecyclerView(ImageButton imageButton, int position) {
         if (albums.get(position).isFavorite()) {
             imageButton.setImageResource(R.drawable.ic_heart_closed);

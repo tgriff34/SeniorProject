@@ -1,13 +1,14 @@
 package com.example.tristangriffin.projectx.Fragments;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.BottomNavigationView;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,7 +18,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.example.tristangriffin.projectx.Activities.ImageViewerActivity;
-import com.example.tristangriffin.projectx.Activities.MainActivity;
 import com.example.tristangriffin.projectx.Listeners.OnGetAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
@@ -52,6 +52,8 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
     private RecyclerView recyclerView;
     private String selectedAlbum = null;
 
+    private Activity activity;
+
     public static final String PICTURE_SELECT_NAME = "selected-picture";
     public static final String ALBUM_SELECT_NAME = "selected-album";
 
@@ -62,18 +64,25 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        this.activity = getActivity();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_navigation, container, false);
 
         //getActivity().setTitle(R.string.navigation_name);
-        TextView toolbarTextView = (TextView) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar_title);
+        TextView toolbarTextView = activity.findViewById(R.id.toolbar_title);
         toolbarTextView.setText(R.string.navigation_name);
 
         Bundle arguments = getArguments();
@@ -90,7 +99,9 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
         supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map_layout);
         if (supportMapFragment == null) {
             supportMapFragment = SupportMapFragment.newInstance();
-            getFragmentManager().beginTransaction().replace(R.id.map_layout, supportMapFragment).commit();
+            if (getFragmentManager() != null) {
+                getFragmentManager().beginTransaction().replace(R.id.map_layout, supportMapFragment).commit();
+            }
         }
         supportMapFragment.getMapAsync(this);
 

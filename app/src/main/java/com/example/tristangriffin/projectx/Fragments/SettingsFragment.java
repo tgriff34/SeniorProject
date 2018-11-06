@@ -1,13 +1,13 @@
 package com.example.tristangriffin.projectx.Fragments;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,18 +15,17 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.example.tristangriffin.projectx.Activities.MainActivity;
 import com.example.tristangriffin.projectx.Activities.SignInActivity;
 import com.example.tristangriffin.projectx.R;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
-import com.google.firebase.auth.FirebaseAuth;
 
 
 public class SettingsFragment extends Fragment implements AdapterView.OnItemClickListener {
 
     private SharedPreferences sharedPreferences;
+    private Activity activity;
 
     private static final String ABOUT_FRAGMENT_TAG = "AboutFragment";
 
@@ -35,12 +34,18 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.activity = getActivity();
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
@@ -48,10 +53,10 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         //getActivity().setTitle(R.string.settings_name);
-        TextView toolbarTextView = (TextView) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar_title);
+        TextView toolbarTextView = activity.findViewById(R.id.toolbar_title);
         toolbarTextView.setText(R.string.settings_name);
 
-        ListView listView = (ListView) view.findViewById(R.id.list_settings);
+        ListView listView = view.findViewById(R.id.list_settings);
         listView.setOnItemClickListener(this);
 
         return view;
@@ -62,7 +67,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
         switch (i) {
             case 0:
                 AboutFragment aboutFragment = new AboutFragment();
-                setFragment(aboutFragment, ABOUT_FRAGMENT_TAG);
+                ((MainActivity)activity).setFragmentAndTransition(aboutFragment, ABOUT_FRAGMENT_TAG);
                 break;
 
             case 1:
@@ -75,7 +80,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
 
                 Intent mainIntent = new Intent(getActivity(), MainActivity.class);
                 startActivity(mainIntent);
-                getActivity().finish();
+                activity.finish();
                 break;
 
             case 2:
@@ -100,6 +105,7 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
         }
     }
 
+    /*
     private void setFragment(Fragment fragment, String TAG) {
         getActivity().getSupportFragmentManager().beginTransaction()
                 .addToBackStack(TAG)
@@ -108,4 +114,5 @@ public class SettingsFragment extends Fragment implements AdapterView.OnItemClic
                 .replace(R.id.fragment_container, fragment, TAG)
                 .commit();
     }
+    */
 }

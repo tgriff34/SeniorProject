@@ -363,7 +363,7 @@ public class FirebaseCommands {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                allAlbums.add(documentSnapshot.get("name").toString());
+                                allAlbums.add(documentSnapshot.getString("name"));
                             }
                             listener.onGetAlbumSuccess(allAlbums);
                         } else {
@@ -448,36 +448,38 @@ public class FirebaseCommands {
             @Override
             public void getPublicAlbums(ArrayList<Album> albums) {
                 for (Album album : albums) {
-                    db.collection(USER_TAG)
-                            .document(album.getId())
-                            .collection(ALBUM_TAG)
-                            .orderBy("name").startAt(searchString).endAt(searchString + "\uf8ff").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
-                                    searchedAlbums.add(queryDocumentSnapshot.getId());
-                                }
-                            }
-                        }
-                    });
-
-                    db.collection(USER_TAG)
-                            .document(album.getId())
-                            .collection(ALBUM_TAG)
-                            .document(album.getName())
-                            .collection(IMAGES_TAG)
-                            .orderBy("location").startAt(searchString).endAt(searchString + "\uf8ff").get()
-                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                    if (task.isSuccessful()) {
-                                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                            searchedAlbums.add(documentSnapshot.get("album").toString());
-                                        }
+                    if (!user.getUid().equals(album.getId())) {
+                        db.collection(USER_TAG)
+                                .document(album.getId())
+                                .collection(ALBUM_TAG)
+                                .orderBy("name").startAt(searchString).endAt(searchString + "\uf8ff").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()) {
+                                    for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
+                                        searchedAlbums.add(queryDocumentSnapshot.getId());
                                     }
                                 }
-                            });
+                            }
+                        });
+
+                        db.collection(USER_TAG)
+                                .document(album.getId())
+                                .collection(ALBUM_TAG)
+                                .document(album.getName())
+                                .collection(IMAGES_TAG)
+                                .orderBy("location").startAt(searchString).endAt(searchString + "\uf8ff").get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
+                                                searchedAlbums.add(documentSnapshot.getString("album"));
+                                            }
+                                        }
+                                    }
+                                });
+                    }
                 }
                 listener.searchedAlbums(searchedAlbums);
             }
@@ -498,7 +500,7 @@ public class FirebaseCommands {
                                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                     if (task.isSuccessful()) {
                                         for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                            searchedAlbums.add(documentSnapshot.get("album").toString());
+                                            searchedAlbums.add(documentSnapshot.getString("album"));
                                         }
                                     }
                                 }

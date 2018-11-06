@@ -1,8 +1,10 @@
 package com.example.tristangriffin.projectx.Fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
@@ -15,6 +17,8 @@ import com.example.tristangriffin.projectx.R;
 
 public class AboutFragment extends Fragment {
 
+    private Activity activity;
+
     public AboutFragment() {
         // Required empty public constructor
     }
@@ -25,12 +29,19 @@ public class AboutFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        this.activity = getActivity();
+    }
+
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_about, container, false);
 
-        TextView toolbarTextView = (TextView) ((MainActivity) this.getActivity()).findViewById(R.id.toolbar_title);
+        TextView toolbarTextView = activity.findViewById(R.id.toolbar_title);
         toolbarTextView.setText(R.string.about_name);
 
 
