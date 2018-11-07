@@ -253,7 +253,6 @@ public class UserFragment extends Fragment {
         } else {
             editText.setError(null);
         }
-
         return isValid;
     }
 

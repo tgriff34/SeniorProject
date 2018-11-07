@@ -70,7 +70,6 @@ public class MainActivity extends AppCompatActivity {
             if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
             }
             requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 123);
-            return;
         }
 
         final UserFragment userFragment = new UserFragment();
