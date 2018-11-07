@@ -16,6 +16,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -244,6 +245,18 @@ public class UserFragment extends Fragment {
         });
     }
 
+    private boolean validate(EditText editText) {
+        boolean isValid = true;
+        if (TextUtils.isEmpty(editText.getText().toString())) {
+            isValid = false;
+            editText.setError("Cannot be empty.");
+        } else {
+            editText.setError(null);
+        }
+
+        return isValid;
+    }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         menu.clear();
@@ -289,18 +302,20 @@ public class UserFragment extends Fragment {
                         okButton.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                String isPublicString = preferences.getString("current_privacy", "Public");
-                                boolean isPublic = (isPublicString.equals("Public"));
+                                if (validate(input)) {
+                                    String isPublicString = preferences.getString("current_privacy", "Public");
+                                    boolean isPublic = (isPublicString.equals("Public"));
 
-                                firebaseCommands.createPhotoCollection(input.getText().toString(), isPublic);
+                                    firebaseCommands.createPhotoCollection(input.getText().toString(), isPublic);
 
-                                Bundle bundle = new Bundle();
-                                bundle.putSerializable(ALBUM_NAME, input.getText().toString());
-                                UserImageFragment userImageFragment = new UserImageFragment();
-                                userImageFragment.setArguments(bundle);
-                                ((MainActivity) activity).setFragmentNoTransition(userImageFragment, USER_IMAGE_FRAGMENT_TAG);
+                                    Bundle bundle = new Bundle();
+                                    bundle.putSerializable(ALBUM_NAME, input.getText().toString());
+                                    UserImageFragment userImageFragment = new UserImageFragment();
+                                    userImageFragment.setArguments(bundle);
+                                    ((MainActivity) activity).setFragmentNoTransition(userImageFragment, USER_IMAGE_FRAGMENT_TAG);
 
-                                builder.dismiss();
+                                    builder.dismiss();
+                                }
                             }
                         });
                         noButton.setOnClickListener(new View.OnClickListener() {
