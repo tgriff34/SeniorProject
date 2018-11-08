@@ -1,6 +1,8 @@
 package com.example.tristangriffin.projectx.Activities;
 
 import android.Manifest;
+import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
@@ -157,6 +159,11 @@ public class MainActivity extends AppCompatActivity {
                 .addToBackStack(TAG)
                 .replace(R.id.fragment_container, fragment, TAG)
                 .commit();
+    }
+
+    public void createNewActivity (Intent intent) {
+        startActivity(intent);
+        finish();
     }
 
     @Override

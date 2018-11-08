@@ -249,12 +249,12 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
     private void getFavoriteResourcesForCardView(int position) {
         if (albums.get(position).isFavorite()) {
             //CardView
-            favoriteText.setText("Favorite");
-            favoriteImage.setImageResource(R.drawable.ic_heart);
-        } else {
-            //CardView
             favoriteText.setText("Unfavorite");
             favoriteImage.setImageResource(R.drawable.ic_heart_closed);
+        } else {
+            //CardView
+            favoriteText.setText("Favorite");
+            favoriteImage.setImageResource(R.drawable.ic_heart);
         }
     }
 

@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 
 import com.example.tristangriffin.projectx.Activities.ImageViewerActivity;
 import com.example.tristangriffin.projectx.Listeners.OnGetAlbumListener;
+import com.example.tristangriffin.projectx.Listeners.OnGetMapMarkerListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
 import com.example.tristangriffin.projectx.Models.Album;
@@ -28,10 +30,13 @@ import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Adapters.InfoWindowAdapter;
 import com.example.tristangriffin.projectx.Models.InfoWindowData;
 import com.example.tristangriffin.projectx.Adapters.NavigationListAdapter;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -55,9 +60,9 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
     private RecyclerView recyclerView;
     private String selectedAlbum = null;
 
+    private LatLngBounds.Builder builder;
+
     private Activity activity;
-
-
 
     private static final int REQUEST_IMAGE_VIEW_CODE = 22;
 
@@ -187,7 +192,12 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
         //Initializer
         map.clear();
 
-        for (Image image : images) {
+        builder = new LatLngBounds.Builder();
+
+        for (int i = 0; i < images.size(); i++) {
+            final int position = i;
+            final int finalPositon = images.size();
+            final Image image = images.get(i);
             InfoWindowData info = new InfoWindowData();
             info.setName(image.getId());
             info.setImageRef(image.getRef());
@@ -197,14 +207,29 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
             LatLng latLng = new LatLng(latitude, longitude);
             info.setLatLng(latLng);
 
-            DownloadImageAndMakeMarker downloadImageAndMakeMarker = new DownloadImageAndMakeMarker();
+            DownloadImageAndMakeMarker downloadImageAndMakeMarker = new DownloadImageAndMakeMarker(new OnGetMapMarkerListener() {
+                @Override
+                public void onGetMapMarker(Marker marker) {
+                    builder.include(marker.getPosition());
+                    if (position == finalPositon - 1) {
+                        map.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 200));
+                    }
+                }
+            });
             downloadImageAndMakeMarker.execute(info);
         }
+
     }
 
     private static class DownloadImageAndMakeMarker extends AsyncTask<InfoWindowData, Void, InfoWindowData> {
 
         Bitmap smallBitmap;
+
+        private OnGetMapMarkerListener delegate;
+
+        private DownloadImageAndMakeMarker(OnGetMapMarkerListener delegate) {
+            this.delegate = delegate;
+        }
 
         @Override
         protected InfoWindowData doInBackground(InfoWindowData... infoWindowData) {
@@ -224,8 +249,8 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
             MarkerOptions options = new MarkerOptions();
             options.position(infoWindowData.getLatLng()).title(infoWindowData.getName());
             Marker m = map.addMarker(options);
+            delegate.onGetMapMarker(m);
             m.setTag(infoWindowData);
         }
     }
-
 }

@@ -7,11 +7,12 @@
     tools:context=".Fragments.SettingsFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <ListView
-        android:id="@+id/list_settings"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/setting_recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:entries="@array/settings_array">
-    </ListView>
+        >
+
+    </android.support.v7.widget.RecyclerView>
 
 </FrameLayout>
