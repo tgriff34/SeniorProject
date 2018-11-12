@@ -37,6 +37,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -501,7 +502,6 @@ public class FirebaseCommands {
         }
     }
 
-    private ArrayList<Album> getPublicAlbums;
     public void searchPublicAlbums(final User user, final String searchString, final OnGetSearchAlbumsListener listener) {
         if (!user.getId().equals(firebaseAuth.getUid())) {
             Log.d("demo", "Searching user: " + user.getId());
@@ -509,8 +509,7 @@ public class FirebaseCommands {
                 @Override
                 public void getPublicAlbums(ArrayList<Album> albums) {
                     Log.d("demo", "User albums: " + user.getId() + " : " + albums.toString());
-                    getPublicAlbums = new ArrayList<>();
-                    getPublicAlbums = albums;
+                    ArrayList<Album> getPublicAlbums = albums;
                     for (Album album : albums) {
                         if (album.getName().contains(searchString)) {
                             searchedAlbums.add(album);
@@ -518,13 +517,13 @@ public class FirebaseCommands {
                             position++;
                         }
                     }
-                    searchPublicImages(searchString, listener);
+                    searchPublicImages(getPublicAlbums, searchString, listener);
                 }
             });
         }
     }
 
-    private void searchPublicImages(final String searchString, final OnGetSearchAlbumsListener listener) {
+    private void searchPublicImages(final ArrayList<Album> getPublicAlbums, final String searchString, final OnGetSearchAlbumsListener listener) {
         for (final Album album : getPublicAlbums) {
             if (!isAlbumAlreadyAdded(album)) {
                 getPhotos(album.getName(), new OnGetPhotosListener() {
