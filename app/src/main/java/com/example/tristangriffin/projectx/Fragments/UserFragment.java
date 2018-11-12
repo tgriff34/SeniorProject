@@ -41,6 +41,7 @@ import com.example.tristangriffin.projectx.R;
 import com.example.tristangriffin.projectx.Adapters.RecyclerViewListAdapter;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 
@@ -130,12 +131,10 @@ public class UserFragment extends Fragment {
         albums = new ArrayList<>();
         firebaseCommands.getAlbums(new OnGetAlbumListener() {
             @Override
-            public void onGetAlbumSuccess(ArrayList<String> listOfAlbums) {
+            public void onGetAlbumSuccess(ArrayList<Album> listOfAlbums) {
                 if (!listOfAlbums.isEmpty()) {
                     for (int i = 0; i < listOfAlbums.size(); i++) {
-                        Album newAlbum = new Album();
-                        newAlbum.setName(listOfAlbums.get(i));
-                        albums.add(newAlbum);
+                        albums.add(listOfAlbums.get(i));
                         getThumbnail(i);
                     }
                 } else {
@@ -155,11 +154,13 @@ public class UserFragment extends Fragment {
                 } else {
                     albums.get(position).setThumbnail(null);
                 }
-                getIsFavorite(position);
+                updateUI();
+                //getIsFavorite(position);
             }
         });
     }
 
+    /*
     private void getIsFavorite(final int position) {
         firebaseCommands.getIfFavoritedPhotoCollection(albums.get(position).getName(), new OnGetIfFavoritedAlbumListener() {
             @Override
@@ -169,6 +170,7 @@ public class UserFragment extends Fragment {
             }
         });
     }
+    */
 
     private void updateUI() {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -305,10 +307,17 @@ public class UserFragment extends Fragment {
                                     String isPublicString = preferences.getString("current_privacy", "Public");
                                     boolean isPublic = (isPublicString.equals("Public"));
 
-                                    firebaseCommands.createPhotoCollection(input.getText().toString(), isPublic);
+                                    Album newAlbum = new Album();
+                                    newAlbum.setName(input.getText().toString());
+                                    newAlbum.setFavorite(false);
+                                    newAlbum.setId(firebaseCommands.user.getUid());
+                                    newAlbum.setPublic(isPublic);
+                                    newAlbum.setDate(Calendar.getInstance().getTime());
+
+                                    firebaseCommands.createPhotoCollection(newAlbum);
 
                                     Bundle bundle = new Bundle();
-                                    bundle.putSerializable(ALBUM_NAME, input.getText().toString());
+                                    bundle.putSerializable(ALBUM_NAME, newAlbum.getName());
                                     UserImageFragment userImageFragment = new UserImageFragment();
                                     userImageFragment.setArguments(bundle);
                                     ((MainActivity) activity).setFragmentNoTransition(userImageFragment, USER_IMAGE_FRAGMENT_TAG);

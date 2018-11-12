@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,7 +29,6 @@ import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Adapters.InfoWindowAdapter;
 import com.example.tristangriffin.projectx.Models.InfoWindowData;
 import com.example.tristangriffin.projectx.Adapters.NavigationListAdapter;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -152,16 +150,12 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
     private void getAlbums() {
         //progressBar.setVisibility(View.VISIBLE);
         albums = new ArrayList<>();
-        Log.d("demo", "Navigation Fragment getAlbums: " + albums.toString());
         firebaseCommands.getAlbums(new OnGetAlbumListener() {
             @Override
-            public void onGetAlbumSuccess(ArrayList<String> listOfAlbums) {
+            public void onGetAlbumSuccess(ArrayList<Album> listOfAlbums) {
                 if (!listOfAlbums.isEmpty()) {
-                    Log.d("demo", listOfAlbums.toString());
                     for (int i = 0; i < listOfAlbums.size(); i++) {
-                        Album album = new Album();
-                        album.setName(listOfAlbums.get(i));
-                        albums.add(album);
+                        albums.add(listOfAlbums.get(i));
                         getThumbnail(i);
                     }
                 } else {

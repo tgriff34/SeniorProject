@@ -1,8 +1,11 @@
 package com.example.tristangriffin.projectx.Models;
 
+import java.util.Date;
+
 public class Album {
     String name, thumbnail, id;
     boolean isFavorite, isPublic, isSelected;
+    Date date;
 
     public String getName() {
         return name;
@@ -34,6 +37,14 @@ public class Album {
 
     public void setPublic(boolean aPublic) {
         isPublic = aPublic;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public String getId() {

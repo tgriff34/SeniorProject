@@ -101,12 +101,10 @@ public class FavoritesFragment extends Fragment {
         favoritedAlbums = new ArrayList<>();
         firebaseCommands.getFavoritedPhotoCollection(new OnGetFavoritedAlbumListener() {
             @Override
-            public void getFavoritedAlbum(ArrayList<String> albums) {
+            public void getFavoritedAlbum(ArrayList<Album> albums) {
                 if (!albums.isEmpty()) {
                     for (int i = 0; i < albums.size(); i++) {
-                        Album newAlbum = new Album();
-                        newAlbum.setName(albums.get(i));
-                        favoritedAlbums.add(newAlbum);
+                        favoritedAlbums.add(albums.get(i));
                         getThumbnail(i);
                     }
                 } else {
@@ -121,11 +119,12 @@ public class FavoritesFragment extends Fragment {
             @Override
             public void onGetThumbnailSuccess(String string) {
                 favoritedAlbums.get(position).setThumbnail(string);
-                getIsFavorite(position);
+                updateUI();
             }
         });
     }
 
+    /*
     private void getIsFavorite(final int position) {
         firebaseCommands.getIfFavoritedPhotoCollection(favoritedAlbums.get(position).getName(), new OnGetIfFavoritedAlbumListener() {
             @Override
@@ -135,6 +134,7 @@ public class FavoritesFragment extends Fragment {
             }
         });
     }
+    */
 
     private void updateUI() {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

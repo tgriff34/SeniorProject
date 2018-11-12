@@ -23,7 +23,9 @@ import android.widget.TextView;
 
 import com.example.tristangriffin.projectx.Adapters.RecyclerViewCompactListAdapter;
 import com.example.tristangriffin.projectx.Listeners.OnGetIfFavoritedAlbumListener;
+import com.example.tristangriffin.projectx.Listeners.OnGetUsersListener;
 import com.example.tristangriffin.projectx.Models.Album;
+import com.example.tristangriffin.projectx.Models.User;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Listeners.OnGetSearchAlbumsListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
@@ -112,50 +114,54 @@ public class SearchFragment extends Fragment {
         return view;
     }
 
-    private void searchAlbums(String searchString) {
+    private void searchAlbums(final String searchString) {
         Log.d("demo", "Searching...");
         progressBar.setVisibility(View.VISIBLE);
         searchedAlbums = new ArrayList<>();
-        firebaseCommands.searchAlbums(searchString, new OnGetSearchAlbumsListener() {
+        firebaseCommands.searchUserAlbums(searchString, new OnGetSearchAlbumsListener() {
             @Override
-            public void searchedAlbums(ArrayList<String> albums) {
-                Log.d("demo", "Searched Albums: " + albums.toString());
-                if (!albums.isEmpty()) {
-                    for (int i = 0; i < albums.size(); i++) {
-                        Album newAlbum = new Album();
-                        newAlbum.setName(albums.get(i));
-                        searchedAlbums.add(newAlbum);
-                        getThumbnail(i);
-                    }
+            public void searchedAlbums(Album album, int position) {
+                if (album != null) {
+                    searchedAlbums.add(position, album);
+                    getThumbnail(album, position);
                 } else {
                     updateUI();
                 }
             }
         });
-    }
 
-    private void getThumbnail(final int position) {
-        firebaseCommands.getThumbnail(searchedAlbums.get(position).getName(), new OnGetThumbnailListener() {
+        firebaseCommands.getUsers(new OnGetUsersListener() {
             @Override
-            public void onGetThumbnailSuccess(String string) {
-                searchedAlbums.get(position).setThumbnail(string);
-                getIsFavorite(position);
+            public void onGetUsers(ArrayList<User> users) {
+                Log.d("demo", "Users: " + users.toString());
+                for (int i = 0; i < users.size(); i++) {
+                    firebaseCommands.searchPublicAlbums(users.get(i), searchString, new OnGetSearchAlbumsListener() {
+                        @Override
+                        public void searchedAlbums(Album album, int position) {
+                            if (album != null) {
+                                searchedAlbums.add(position, album);
+                                getThumbnail(album, position);
+                            } else {
+                                updateUI();
+                            }
+                        }
+                    });
+                }
             }
         });
     }
 
-    private void getIsFavorite(final int position) {
-        firebaseCommands.getIfFavoritedPhotoCollection(searchedAlbums.get(position).getName(), new OnGetIfFavoritedAlbumListener() {
+    private void getThumbnail(final Album album, final int position) {
+        firebaseCommands.getThumbnail(album.getName(), new OnGetThumbnailListener() {
             @Override
-            public void getIfFavoritedAlbumListener(boolean isFavorite) {
-                searchedAlbums.get(position).setFavorite(isFavorite);
+            public void onGetThumbnailSuccess(String string) {
+                searchedAlbums.get(position).setThumbnail(string);
                 updateUI();
             }
         });
     }
 
     private void updateUI() {
-        Log.d("demo", "Searched images: " + searchedAlbums.toString());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         String currentView = preferences.getString("view_size", "Large");

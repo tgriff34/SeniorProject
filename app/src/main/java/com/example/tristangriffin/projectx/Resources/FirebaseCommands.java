@@ -38,6 +38,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -53,7 +54,8 @@ public class FirebaseCommands {
 
     private ArrayList<Image> allImages;
     private ArrayList<User> users;
-    private ArrayList<String> allAlbums;
+    private ArrayList<Album> allAlbums;
+    private ArrayList<Album> favoriteAlbums;
 
     private static final String USER_TAG = "users";
     private static final String ALBUM_TAG = "albums";
@@ -68,7 +70,7 @@ public class FirebaseCommands {
     }
 
     /**
-     *  USER METHODS
+     * USER METHODS
      */
     public void createUser(String email, String password, Activity activity, final OnSignUpListener listener) {
         firebaseAuth.createUserWithEmailAndPassword(email, password)
@@ -110,10 +112,9 @@ public class FirebaseCommands {
         firebaseAuth.signOut();
     }
 
-    private void getUsers(final OnGetUsersListener listener) {
+    public void getUsers(final OnGetUsersListener listener) {
         users = new ArrayList<>();
-        db.collection(USER_TAG).
-                get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        db.collection(USER_TAG).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
@@ -128,44 +129,37 @@ public class FirebaseCommands {
         });
     }
 
-    private void getPublicAlbums(final OnGetPublicAlbumsListener listener) {
-        final ArrayList<Album> publicAlbums = new ArrayList<>();
+    private ArrayList<Album> publicUserAlbum;
+    private void getPublicAlbums(User user, final OnGetPublicAlbumsListener listener) {
+        publicUserAlbum = new ArrayList<>();
+        db.collection(USER_TAG)
+                .document(user.getId())
+                .collection(ALBUM_TAG)
+                .whereEqualTo("isPublic", true)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (DocumentSnapshot documentSnapshot : task.getResult()) {
+                                Album getAlbum = new Album();
+                                getAlbum.setName(documentSnapshot.getString("name"));
+                                getAlbum.setFavorite(documentSnapshot.getBoolean("isFavorite"));
+                                getAlbum.setPublic(documentSnapshot.getBoolean("isPublic"));
+                                getAlbum.setId(documentSnapshot.getString("id"));
+                                getAlbum.setDate(documentSnapshot.getDate("date"));
 
-        getUsers(new OnGetUsersListener() {
-            @Override
-            public void onGetUsers(ArrayList<User> users) {
-                for (User user: users) {
-                    if (user.getId() != firebaseAuth.getUid()) {
-                        db.collection(USER_TAG)
-                                .document(user.getId())
-                                .collection(ALBUM_TAG)
-                                .whereEqualTo("isPublic", true)
-                                .get()
-                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                        if (task.isSuccessful()) {
-                                            for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                                Album album = new Album();
-                                                album.setName(documentSnapshot.getId());
-                                                album.setId(documentSnapshot.getString("id"));
-                                                album.setFavorite(documentSnapshot.getBoolean("isFavorite"));
-                                                album.setPublic(documentSnapshot.getBoolean("isPublic"));
+                                publicUserAlbum.add(getAlbum);
+                            }
+                            listener.getPublicAlbums(publicUserAlbum);
+                        }
 
-                                                publicAlbums.add(album);
-                                            }
-                                            listener.getPublicAlbums(publicAlbums);
-                                        }
-                                    }
-                                });
                     }
-                }
-            }
-        });
+                });
     }
 
     /**
-     *  DIVIDER
+     * DIVIDER
      */
     private void createNewUserCollection(FirebaseUser user, final OnSignUpListener listener) {
         Map<String, Object> newUser = new HashMap<>();
@@ -183,6 +177,9 @@ public class FirebaseCommands {
                 });
     }
 
+    // ******************************************//
+    //               Adding Photos               //
+    // ******************************************//
     public void uploadPhotos(Uri uri, final String collection, final String location, final String longitude, final String latitude,
                              final String timeCreated, final String dateCreated) {
         final StorageReference fileRef = storageReference.child("images/public/" + user.getUid() + "/" + uri.getLastPathSegment());
@@ -243,6 +240,9 @@ public class FirebaseCommands {
         }
     }
 
+    //******************************************//
+    //                Deleting                  //
+    //******************************************//
     public void deleteFromDatabase(final String TAG, final String collection) {
         db.collection(USER_TAG)
                 .document(user.getUid())
@@ -270,7 +270,7 @@ public class FirebaseCommands {
         getPhotos(name, new OnGetPhotosListener() {
             @Override
             public void onGetPhotosSuccess(ArrayList<Image> images) {
-                for (Image image: images) {
+                for (Image image : images) {
                     deleteFromDatabase(image.getId(), name);
                 }
                 db.collection("users")
@@ -283,7 +283,9 @@ public class FirebaseCommands {
         });
     }
 
-    /* PASS ENTIRE ALBUM */
+    // *******************************************//
+    //               Favorite Album               //
+    // *******************************************//
     public void favoritePhotoCollection(Album album) {
         Log.d("demo", "Favoriting");
         Map<String, Object> favorite = new HashMap<>();
@@ -294,7 +296,8 @@ public class FirebaseCommands {
             favorite.put("isFavorite", true);
         }
         favorite.put("isPublic", album.isPublic());
-        favorite.put("id", user.getUid());
+        favorite.put("id", album.getId());
+        favorite.put("date", album.getDate());
         db.collection(USER_TAG)
                 .document(user.getUid())
                 .collection(ALBUM_TAG)
@@ -320,7 +323,7 @@ public class FirebaseCommands {
     }
 
     public void getFavoritedPhotoCollection(final OnGetFavoritedAlbumListener listener) {
-        final ArrayList<String> favoritedAlbums = new ArrayList<>();
+        favoriteAlbums = new ArrayList<>();
         db.collection(USER_TAG)
                 .document(user.getUid())
                 .collection(ALBUM_TAG)
@@ -331,29 +334,44 @@ public class FirebaseCommands {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                favoritedAlbums.add(documentSnapshot.getId());
+                                Album getAlbum = new Album();
+                                getAlbum.setName(documentSnapshot.getString("name"));
+                                getAlbum.setFavorite(documentSnapshot.getBoolean("isFavorite"));
+                                getAlbum.setPublic(documentSnapshot.getBoolean("isPublic"));
+                                getAlbum.setId(documentSnapshot.getString("id"));
+                                getAlbum.setDate(documentSnapshot.getDate("date"));
+
+                                favoriteAlbums.add(getAlbum);
                             }
-                            listener.getFavoritedAlbum(favoritedAlbums);
+                            listener.getFavoritedAlbum(favoriteAlbums);
                         }
                     }
                 });
     }
 
-    public void createPhotoCollection(String name, boolean setting) {
+    // *******************************************//
+    //               Create new album             //
+    // *******************************************//
+    public void createPhotoCollection(Album album) {
         Map<String, Object> collectionName = new HashMap<>();
-        collectionName.put("name", name);
-        collectionName.put("isFavorite", false);
-        collectionName.put("isPublic", setting);
-        collectionName.put("id", user.getUid());
+        collectionName.put("name", album.getName());
+        collectionName.put("isFavorite", album.isFavorite());
+        collectionName.put("isPublic", album.isPublic());
+        collectionName.put("id", album.getId());
+        collectionName.put("date", album.getDate());
         db.collection(USER_TAG)
                 .document(user.getUid())
                 .collection(ALBUM_TAG)
-                .document(name)
+                .document(album.getName())
                 .set(collectionName);
     }
 
+    // *******************************************//
+    //                 get album                  //
+    // *******************************************//
     public void getAlbums(final OnGetAlbumListener listener) {
         allAlbums = new ArrayList<>();
+
         db.collection(USER_TAG)
                 .document(user.getUid())
                 .collection(ALBUM_TAG)
@@ -363,7 +381,14 @@ public class FirebaseCommands {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                allAlbums.add(documentSnapshot.getString("name"));
+                                Album getAlbum = new Album();
+                                getAlbum.setName(documentSnapshot.getString("name"));
+                                getAlbum.setFavorite(documentSnapshot.getBoolean("isFavorite"));
+                                getAlbum.setPublic(documentSnapshot.getBoolean("isPublic"));
+                                getAlbum.setId(documentSnapshot.getString("id"));
+                                getAlbum.setDate(documentSnapshot.getDate("date"));
+
+                                allAlbums.add(getAlbum);
                             }
                             listener.onGetAlbumSuccess(allAlbums);
                         } else {
@@ -373,6 +398,9 @@ public class FirebaseCommands {
                 });
     }
 
+    // *******************************************//
+    //               get photos                   //
+    // *******************************************//
     public void getPhotos(final String albumName, final OnGetPhotosListener listener) {
         allImages = new ArrayList<>();
         //TODO: Get images from album
@@ -428,86 +456,102 @@ public class FirebaseCommands {
                 });
     }
 
-    public void searchAlbums(final String searchString, final OnGetSearchAlbumsListener listener) {
-        final ArrayList<String> searchedAlbums = new ArrayList<>();
-
-        CollectionReference userRef = db.collection(USER_TAG).document(user.getUid()).collection(ALBUM_TAG);
-
-        userRef.orderBy("name").startAt(searchString).endAt(searchString + "\uf8ff").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                        searchedAlbums.add(documentSnapshot.getId());
-                    }
-                }
-            }
-        });
-
-        getPublicAlbums(new OnGetPublicAlbumsListener() {
-            @Override
-            public void getPublicAlbums(ArrayList<Album> albums) {
-                for (Album album : albums) {
-                    if (!user.getUid().equals(album.getId())) {
-                        db.collection(USER_TAG)
-                                .document(album.getId())
-                                .collection(ALBUM_TAG)
-                                .orderBy("name").startAt(searchString).endAt(searchString + "\uf8ff").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (task.isSuccessful()) {
-                                    for (QueryDocumentSnapshot queryDocumentSnapshot : task.getResult()) {
-                                        searchedAlbums.add(queryDocumentSnapshot.getId());
-                                    }
-                                }
-                            }
-                        });
-
-                        db.collection(USER_TAG)
-                                .document(album.getId())
-                                .collection(ALBUM_TAG)
-                                .document(album.getName())
-                                .collection(IMAGES_TAG)
-                                .orderBy("location").startAt(searchString).endAt(searchString + "\uf8ff").get()
-                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                        if (task.isSuccessful()) {
-                                            for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                                searchedAlbums.add(documentSnapshot.getString("album"));
-                                            }
-                                        }
-                                    }
-                                });
-                    }
-                }
-                listener.searchedAlbums(searchedAlbums);
-            }
-        });
-
+    // ************************************************* //
+    //                      SEARCH                       //
+    // ************************************************* //
+    private ArrayList<Album> searchedAlbums;
+    private ArrayList<Album> userAlbums;
+    private int position;
+    public void searchUserAlbums(final String searchString, final OnGetSearchAlbumsListener listener) {
+        position = 0;
+        searchedAlbums = new ArrayList<>();
         getAlbums(new OnGetAlbumListener() {
             @Override
-            public void onGetAlbumSuccess(ArrayList<String> albums) {
-                for (String album : albums) {
-                    db.collection(USER_TAG)
-                            .document(user.getUid())
-                            .collection(ALBUM_TAG)
-                            .document(album)
-                            .collection(IMAGES_TAG)
-                            .orderBy("location").startAt(searchString).endAt(searchString + "\uf8ff").get()
-                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                    if (task.isSuccessful()) {
-                                        for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-                                            searchedAlbums.add(documentSnapshot.getString("album"));
-                                        }
-                                    }
-                                }
-                            });
+            public void onGetAlbumSuccess(ArrayList<Album> albums) {
+                userAlbums = albums;
+                for (Album album : albums) {
+                    if (album.getName().contains(searchString)) {
+                        searchedAlbums.add(album);
+                        listener.searchedAlbums(album, position);
+                        position++;
+                    }
                 }
-                listener.searchedAlbums(searchedAlbums);
+                searchUserImages(searchString, listener);
             }
         });
+    }
+
+    private void searchUserImages(final String searchString, final OnGetSearchAlbumsListener listener) {
+        for (final Album album: userAlbums) {
+            if (!isAlbumAlreadyAdded(album)) {
+                getPhotos(album.getName(), new OnGetPhotosListener() {
+                    @Override
+                    public void onGetPhotosSuccess(ArrayList<Image> images) {
+                        for (Image image: images) {
+                            if (image.getLocation().contains(searchString)) {
+                                searchedAlbums.add(album);
+                                listener.searchedAlbums(album, position);
+                                position++;
+                                break;
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    }
+
+    private ArrayList<Album> getPublicAlbums;
+    public void searchPublicAlbums(final User user, final String searchString, final OnGetSearchAlbumsListener listener) {
+        if (!user.getId().equals(firebaseAuth.getUid())) {
+            Log.d("demo", "Searching user: " + user.getId());
+            getPublicAlbums(user, new OnGetPublicAlbumsListener() {
+                @Override
+                public void getPublicAlbums(ArrayList<Album> albums) {
+                    Log.d("demo", "User albums: " + user.getId() + " : " + albums.toString());
+                    getPublicAlbums = new ArrayList<>();
+                    getPublicAlbums = albums;
+                    for (Album album : albums) {
+                        if (album.getName().contains(searchString)) {
+                            searchedAlbums.add(album);
+                            listener.searchedAlbums(album, position);
+                            position++;
+                        }
+                    }
+                    searchPublicImages(searchString, listener);
+                }
+            });
+        }
+    }
+
+    private void searchPublicImages(final String searchString, final OnGetSearchAlbumsListener listener) {
+        for (final Album album : getPublicAlbums) {
+            if (!isAlbumAlreadyAdded(album)) {
+                getPhotos(album.getName(), new OnGetPhotosListener() {
+                    @Override
+                    public void onGetPhotosSuccess(ArrayList<Image> images) {
+                        for (Image image : images) {
+                            if (image.getLocation().contains(searchString)) {
+                                searchedAlbums.add(album);
+                                listener.searchedAlbums(album, position);
+                                position++;
+                                break;
+                            }
+                        }
+                        listener.searchedAlbums(null, 0);
+                    }
+                });
+            }
+        }
+    }
+
+    private boolean isAlbumAlreadyAdded(Album album) {
+        boolean alreadyAdded = false;
+        for (Album alreadyAddedAlbum : searchedAlbums) {
+            if (alreadyAddedAlbum.getName().equals(album.getName())) {
+                alreadyAdded = true;
+            }
+        }
+        return alreadyAdded;
     }
 }
