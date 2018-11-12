@@ -37,6 +37,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.net.URL;
@@ -54,6 +55,7 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
     private static GoogleMap map;
 
     private String albumName;
+    private Album albumFromSelect;
     private ArrayList<Album> albums;
     private RecyclerView recyclerView;
     private String selectedAlbum = null;
@@ -94,6 +96,8 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
         if (arguments != null) {
             selectedAlbum = getArguments().getString("selectedAlbum");
         }
+
+        albumFromSelect = new Gson().fromJson(selectedAlbum, Album.class);
 
         //Album List
         recyclerView = view.findViewById(R.id.navigation_list);
@@ -139,7 +143,7 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
     //Private Funcs
     public void getAlbumLocations(String album) {
         albumName = album;
-        firebaseCommands.getPhotos(albumName, new OnGetPhotosListener() {
+        firebaseCommands.getPhotos(albumFromSelect, new OnGetPhotosListener() {
             @Override
             public void onGetPhotosSuccess(ArrayList<Image> images) {
                 setUpMap(images);
@@ -190,7 +194,7 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
 
         for (int i = 0; i < images.size(); i++) {
             final int position = i;
-            final int finalPositon = images.size();
+            final int finalPosition = images.size();
             final Image image = images.get(i);
             InfoWindowData info = new InfoWindowData();
             info.setName(image.getId());
@@ -205,7 +209,7 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
                 @Override
                 public void onGetMapMarker(Marker marker) {
                     builder.include(marker.getPosition());
-                    if (position == finalPositon - 1) {
+                    if (position == finalPosition - 1) {
                         map.moveCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 200));
                     }
                 }

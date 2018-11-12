@@ -26,9 +26,11 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.tristangriffin.projectx.Listeners.OnGetIfFavoritedAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
+import com.example.tristangriffin.projectx.Models.Album;
 import com.example.tristangriffin.projectx.Models.Image;
 import com.example.tristangriffin.projectx.R;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -41,7 +43,8 @@ public class ImageViewerActivity extends AppCompatActivity {
 
     private ArrayList<Image> cloudImages;
     private String currentImage;
-    private String albumName;
+    private String myAlbum;
+    private Album album;
     private boolean checkIfIsFavorite;
 
     private ProgressBar progressBar;
@@ -88,13 +91,15 @@ public class ImageViewerActivity extends AppCompatActivity {
         Bundle bundle = this.getIntent().getExtras();
 
         if (bundle != null) {
-            albumName = bundle.getString(ALBUM_SELECT_NAME);
+            myAlbum = bundle.getString(ALBUM_SELECT_NAME);
             currentImage = bundle.getString(PICTURE_SELECT_NAME);
         }
 
+        album = new Gson().fromJson(myAlbum, Album.class);
+
         getImages();
 
-        firebaseCommands.getIfFavoritedPhotoCollection(albumName, new OnGetIfFavoritedAlbumListener() {
+        firebaseCommands.getIfFavoritedPhotoCollection(album.getName(), new OnGetIfFavoritedAlbumListener() {
             @Override
             public void getIfFavoritedAlbumListener(boolean isFavorite) {
                 if (isFavorite) {
@@ -160,7 +165,7 @@ public class ImageViewerActivity extends AppCompatActivity {
 
     //Private Funcs
     private void getImages() {
-        firebaseCommands.getPhotos(albumName, new OnGetPhotosListener() {
+        firebaseCommands.getPhotos(album, new OnGetPhotosListener() {
             @Override
             public void onGetPhotosSuccess(ArrayList<Image> images) {
                 cloudImages = images;

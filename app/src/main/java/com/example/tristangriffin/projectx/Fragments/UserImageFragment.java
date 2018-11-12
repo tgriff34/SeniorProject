@@ -24,11 +24,13 @@ import android.widget.TextView;
 
 import com.example.tristangriffin.projectx.Activities.ImageViewerActivity;
 import com.example.tristangriffin.projectx.Activities.MainActivity;
+import com.example.tristangriffin.projectx.Models.Album;
 import com.example.tristangriffin.projectx.Models.Image;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Adapters.GridViewImageAdapter;
 import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
 import com.example.tristangriffin.projectx.R;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -45,6 +47,7 @@ public class UserImageFragment extends Fragment {
     private ProgressBar progressBar;
     private TextView textInfo;
     private String albumName;
+    private Album album;
 
     private Activity activity;
 
@@ -77,8 +80,10 @@ public class UserImageFragment extends Fragment {
             albumName = getArguments().getString(ALBUM_NAME);
         }
 
+        album = new Gson().fromJson(albumName, Album.class);
+
         TextView toolbarTextView = activity.findViewById(R.id.toolbar_title);
-        toolbarTextView.setText(albumName);
+        toolbarTextView.setText(album.getName());
 
         textInfo = view.findViewById(R.id.text_noImages);
         gridView = view.findViewById(R.id.grid_album_view);
@@ -195,7 +200,7 @@ public class UserImageFragment extends Fragment {
     //Private Functions
     private void getImages() {
         cloudImages = new ArrayList<>();
-        firebaseCommands.getPhotos(albumName, new OnGetPhotosListener() {
+        firebaseCommands.getPhotos(album, new OnGetPhotosListener() {
             @Override
             public void onGetPhotosSuccess(ArrayList<Image> images) {
                 cloudImages = images;

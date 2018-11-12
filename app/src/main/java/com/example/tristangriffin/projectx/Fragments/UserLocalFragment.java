@@ -29,6 +29,7 @@ import android.widget.Toast;
 import com.example.tristangriffin.projectx.Activities.MainActivity;
 import com.example.tristangriffin.projectx.Adapters.CheckableGridViewImageAdapter;
 import com.example.tristangriffin.projectx.Listeners.OnGetPhotosListener;
+import com.example.tristangriffin.projectx.Models.Album;
 import com.example.tristangriffin.projectx.Models.Image;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Resources.GeoLocationConverter;
@@ -38,6 +39,7 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,6 +49,7 @@ import java.util.Locale;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import static com.example.tristangriffin.projectx.Activities.MainActivity.ALBUM_NAME;
 
 
 public class UserLocalFragment extends Fragment {
@@ -59,6 +62,7 @@ public class UserLocalFragment extends Fragment {
             timeCreated = null, dateCreated = null, location = null;
     private Uri file;
     private String albumName;
+    private Album album;
 
     private FirebaseCommands firebaseCommands = FirebaseCommands.getInstance();
 
@@ -94,8 +98,10 @@ public class UserLocalFragment extends Fragment {
         gridView.setChoiceMode(GridView.CHOICE_MODE_MULTIPLE);
 
         if (getArguments() != null) {
-            albumName = getArguments().getString("album_name");
+            albumName = getArguments().getString(ALBUM_NAME);
         }
+
+        album = new Gson().fromJson(albumName, Album.class);
 
         setHasOptionsMenu(true);
         getImages(getActivity());
@@ -138,7 +144,7 @@ public class UserLocalFragment extends Fragment {
     }
 
     public void getUploadedImages() {
-        firebaseCommands.getPhotos(albumName, new OnGetPhotosListener() {
+        firebaseCommands.getPhotos(album, new OnGetPhotosListener() {
             @Override
             public void onGetPhotosSuccess(ArrayList<Image> images) {
                 uploadedImages = images;

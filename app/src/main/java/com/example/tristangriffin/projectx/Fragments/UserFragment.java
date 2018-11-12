@@ -39,6 +39,7 @@ import com.example.tristangriffin.projectx.Listeners.OnGetAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
 import com.example.tristangriffin.projectx.R;
 import com.example.tristangriffin.projectx.Adapters.RecyclerViewListAdapter;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -155,22 +156,9 @@ public class UserFragment extends Fragment {
                     albums.get(position).setThumbnail(null);
                 }
                 updateUI();
-                //getIsFavorite(position);
             }
         });
     }
-
-    /*
-    private void getIsFavorite(final int position) {
-        firebaseCommands.getIfFavoritedPhotoCollection(albums.get(position).getName(), new OnGetIfFavoritedAlbumListener() {
-            @Override
-            public void getIfFavoritedAlbumListener(boolean isFavorite) {
-                albums.get(position).setFavorite(isFavorite);
-                updateUI();
-            }
-        });
-    }
-    */
 
     private void updateUI() {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -317,7 +305,7 @@ public class UserFragment extends Fragment {
                                     firebaseCommands.createPhotoCollection(newAlbum);
 
                                     Bundle bundle = new Bundle();
-                                    bundle.putSerializable(ALBUM_NAME, newAlbum.getName());
+                                    bundle.putSerializable(ALBUM_NAME, new Gson().toJson(newAlbum));
                                     UserImageFragment userImageFragment = new UserImageFragment();
                                     userImageFragment.setArguments(bundle);
                                     ((MainActivity) activity).setFragmentNoTransition(userImageFragment, USER_IMAGE_FRAGMENT_TAG);

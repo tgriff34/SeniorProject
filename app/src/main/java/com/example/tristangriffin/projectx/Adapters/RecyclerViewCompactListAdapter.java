@@ -35,6 +35,7 @@ import com.example.tristangriffin.projectx.Listeners.OnDeleteAlbumListener;
 import com.example.tristangriffin.projectx.Models.Album;
 import com.example.tristangriffin.projectx.R;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -84,7 +85,7 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
         @Override
         public void onClick(View v) {
             Bundle bundle = new Bundle();
-            bundle.putString(ALBUM_NAME, albums.get(getAdapterPosition()).getName());
+            bundle.putString(ALBUM_NAME, new Gson().toJson(albums.get(getAdapterPosition())));
             UserImageFragment userImageFragment = new UserImageFragment();
             userImageFragment.setArguments(bundle);
             ((MainActivity) activity).setFragmentAndTransition(userImageFragment, USER_IMAGE_FRAGMENT_TAG);
@@ -113,7 +114,7 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
         ImageButton optionsButton = (ImageButton) myViewHolder.optionsButton;
         final ImageButton favoriteButton = (ImageButton) myViewHolder.favoriteButton;
 
-        final String albumName = albums.get(position).getName();
+        String albumName = albums.get(position).getName();
 
         textView.setText(albumName);
 
@@ -141,7 +142,7 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
             @Override
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
-                bundle.putString(ALBUM_NAME, albumName);
+                bundle.putString(ALBUM_NAME, new Gson().toJson(albums.get(position)));
                 UserImageFragment userImageFragment = new UserImageFragment();
                 userImageFragment.setArguments(bundle);
                 ((MainActivity) activity).setFragmentAndTransition(userImageFragment, USER_IMAGE_FRAGMENT_TAG);
@@ -179,7 +180,7 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
                     @Override
                     public void onClick(View v) {
                         Bundle bundle = new Bundle();
-                        bundle.putString("album_name", albumName);
+                        bundle.putString(ALBUM_NAME, new Gson().toJson(albums.get(position)));
                         UserLocalFragment userLocalFragment = new UserLocalFragment();
                         userLocalFragment.setArguments(bundle);
                         ((MainActivity) activity).setFragmentAndTransition(userLocalFragment, USER_LOCAL_FRAGMENT_TAG);
@@ -199,7 +200,7 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
                     @Override
                     public void onClick(View v) {
                         Bundle bundle = new Bundle();
-                        bundle.putString("selectedAlbum", albumName);
+                        bundle.putString("selectedAlbum", new Gson().toJson(albums.get(position)));
                         NavigationFragment navigationFragment = new NavigationFragment();
                         navigationFragment.setArguments(bundle);
                         bottomNavigationView.getMenu().getItem(2).setChecked(true);
@@ -211,7 +212,7 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
                 delete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        firebaseCommands.deletePhotoCollection(textView.getText().toString(), new OnDeleteAlbumListener() {
+                        firebaseCommands.deletePhotoCollection(albums.get(position), new OnDeleteAlbumListener() {
                             @Override
                             public void onDeleteAlbum(boolean isDeleted) {
                                 if (isDeleted) {

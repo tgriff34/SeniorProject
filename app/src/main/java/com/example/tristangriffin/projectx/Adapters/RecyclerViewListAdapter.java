@@ -28,6 +28,7 @@ import com.example.tristangriffin.projectx.Listeners.OnDeleteAlbumListener;
 import com.example.tristangriffin.projectx.Models.Album;
 import com.example.tristangriffin.projectx.R;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -83,8 +84,8 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final RecyclerViewListAdapter.MyViewHolder holder, int position) {
-        final int i = holder.getAdapterPosition();
+    public void onBindViewHolder(@NonNull final RecyclerViewListAdapter.MyViewHolder holder, int i) {
+        final int position = holder.getAdapterPosition();
         final String albumName = albums.get(position).getName();
         final TextView textView = holder.nameTextView;
         ImageView imageView = holder.holderImageView;
@@ -134,7 +135,7 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
         holder.confirmDeleteAlbumButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                firebaseCommands.deletePhotoCollection(textView.getText().toString(), new OnDeleteAlbumListener() {
+                firebaseCommands.deletePhotoCollection(albums.get(position), new OnDeleteAlbumListener() {
                     @Override
                     public void onDeleteAlbum(boolean isDeleted) {
                         if (isDeleted) {
@@ -166,12 +167,12 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
             @Override
             public void onClick(View v) {
                 if (favoriteButton.getText().equals("Favorite")) {
-                    firebaseCommands.favoritePhotoCollection(albums.get(i));
-                    albums.get(i).setFavorite(true);
+                    firebaseCommands.favoritePhotoCollection(albums.get(position));
+                    albums.get(position).setFavorite(true);
                     favoriteButton.setText("Unfavorite");
                 } else {
-                    firebaseCommands.favoritePhotoCollection(albums.get(i));
-                    albums.get(i).setFavorite(false);
+                    firebaseCommands.favoritePhotoCollection(albums.get(position));
+                    albums.get(position).setFavorite(false);
                     favoriteButton.setText("Favorite");
                 }
             }
@@ -181,7 +182,7 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
         holder.holderImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setFragment(albumName);
+                setFragment(albums.get(position));
             }
         });
 
@@ -189,7 +190,7 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
         holder.nameTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setFragment(albumName);
+                setFragment(albums.get(position));
             }
         });
 
@@ -223,7 +224,7 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
                     @Override
                     public void onClick(View v) {
                         Bundle bundle = new Bundle();
-                        bundle.putString("album_name", albumName);
+                        bundle.putString(ALBUM_NAME, new Gson().toJson(albums.get(position)));
                         UserLocalFragment userLocalFragment = new UserLocalFragment();
                         userLocalFragment.setArguments(bundle);
                         ((MainActivity) activity).setFragmentAndTransition(userLocalFragment, USER_LOCAL_FRAGMENT_TAG);
@@ -235,12 +236,12 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
                     @Override
                     public void onClick(View v) {
                         if (favoriteButton.getText().equals("Favorite")) {
-                            firebaseCommands.favoritePhotoCollection(albums.get(i));
-                            albums.get(i).setFavorite(true);
+                            firebaseCommands.favoritePhotoCollection(albums.get(position));
+                            albums.get(position).setFavorite(true);
                             favoriteButton.setText("Unfavorite");
                         } else {
-                            firebaseCommands.favoritePhotoCollection(albums.get(i));
-                            albums.get(i).setFavorite(false);
+                            firebaseCommands.favoritePhotoCollection(albums.get(position));
+                            albums.get(position).setFavorite(false);
                             favoriteButton.setText("Favorite");
                         }
                         mBottomSheetDialog.dismiss();
@@ -251,7 +252,7 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
                     @Override
                     public void onClick(View v) {
                         Bundle bundle = new Bundle();
-                        bundle.putString("selectedAlbum", albumName);
+                        bundle.putString("selectedAlbum", new Gson().toJson(albums.get(position)));
                         NavigationFragment navigationFragment = new NavigationFragment();
                         navigationFragment.setArguments(bundle);
                         bottomNavigationView.getMenu().getItem(2).setChecked(true);
@@ -264,7 +265,7 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
                 delete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        firebaseCommands.deletePhotoCollection(textView.getText().toString(), new OnDeleteAlbumListener() {
+                        firebaseCommands.deletePhotoCollection(albums.get(position), new OnDeleteAlbumListener() {
                             @Override
                             public void onDeleteAlbum(boolean isDeleted) {
                                 if (isDeleted) {
@@ -293,9 +294,9 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
     }
 
     //Private Functions
-    private void setFragment(String albumName) {
+    private void setFragment(Album album) {
         Bundle bundle = new Bundle();
-        bundle.putString(ALBUM_NAME, albumName);
+        bundle.putString(ALBUM_NAME, new Gson().toJson(album));
         UserImageFragment userImageFragment = new UserImageFragment();
         userImageFragment.setArguments(bundle);
         ((MainActivity) activity).setFragmentAndTransition(userImageFragment, USER_IMAGE_FRAGMENT_TAG);

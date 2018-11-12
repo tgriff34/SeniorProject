@@ -130,9 +130,7 @@ public class FirebaseCommands {
         });
     }
 
-    private ArrayList<Album> publicUserAlbum;
     private void getPublicAlbums(User user, final OnGetPublicAlbumsListener listener) {
-        publicUserAlbum = new ArrayList<>();
         db.collection(USER_TAG)
                 .document(user.getId())
                 .collection(ALBUM_TAG)
@@ -142,6 +140,7 @@ public class FirebaseCommands {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
+                            ArrayList<Album> publicUserAlbum = new ArrayList<>();
                             for (DocumentSnapshot documentSnapshot : task.getResult()) {
                                 Album getAlbum = new Album();
                                 getAlbum.setName(documentSnapshot.getString("name"));
@@ -267,17 +266,17 @@ public class FirebaseCommands {
                 });
     }
 
-    public void deletePhotoCollection(final String name, final OnDeleteAlbumListener listener) {
-        getPhotos(name, new OnGetPhotosListener() {
+    public void deletePhotoCollection(final Album album, final OnDeleteAlbumListener listener) {
+        getPhotos(album, new OnGetPhotosListener() {
             @Override
             public void onGetPhotosSuccess(ArrayList<Image> images) {
                 for (Image image : images) {
-                    deleteFromDatabase(image.getId(), name);
+                    deleteFromDatabase(image.getId(), album.getName());
                 }
                 db.collection("users")
                         .document(user.getUid())
                         .collection(ALBUM_TAG)
-                        .document(name)
+                        .document(album.getName())
                         .delete();
                 listener.onDeleteAlbum(true);
             }
@@ -402,13 +401,13 @@ public class FirebaseCommands {
     // *******************************************//
     //               get photos                   //
     // *******************************************//
-    public void getPhotos(final String albumName, final OnGetPhotosListener listener) {
+    public void getPhotos(Album album, final OnGetPhotosListener listener) {
         allImages = new ArrayList<>();
         //TODO: Get images from album
         db.collection(USER_TAG)
-                .document(user.getUid())
+                .document(album.getId())
                 .collection(ALBUM_TAG)
-                .document(albumName)
+                .document(album.getName())
                 .collection(IMAGES_TAG)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -485,7 +484,7 @@ public class FirebaseCommands {
     private void searchUserImages(final String searchString, final OnGetSearchAlbumsListener listener) {
         for (final Album album: userAlbums) {
             if (!isAlbumAlreadyAdded(album)) {
-                getPhotos(album.getName(), new OnGetPhotosListener() {
+                getPhotos(album, new OnGetPhotosListener() {
                     @Override
                     public void onGetPhotosSuccess(ArrayList<Image> images) {
                         for (Image image: images) {
@@ -509,7 +508,6 @@ public class FirebaseCommands {
                 @Override
                 public void getPublicAlbums(ArrayList<Album> albums) {
                     Log.d("demo", "User albums: " + user.getId() + " : " + albums.toString());
-                    ArrayList<Album> getPublicAlbums = albums;
                     for (Album album : albums) {
                         if (album.getName().contains(searchString)) {
                             searchedAlbums.add(album);
@@ -517,7 +515,7 @@ public class FirebaseCommands {
                             position++;
                         }
                     }
-                    searchPublicImages(getPublicAlbums, searchString, listener);
+                    searchPublicImages(albums, searchString, listener);
                 }
             });
         }
@@ -526,7 +524,7 @@ public class FirebaseCommands {
     private void searchPublicImages(final ArrayList<Album> getPublicAlbums, final String searchString, final OnGetSearchAlbumsListener listener) {
         for (final Album album : getPublicAlbums) {
             if (!isAlbumAlreadyAdded(album)) {
-                getPhotos(album.getName(), new OnGetPhotosListener() {
+                getPhotos(album, new OnGetPhotosListener() {
                     @Override
                     public void onGetPhotosSuccess(ArrayList<Image> images) {
                         for (Image image : images) {
