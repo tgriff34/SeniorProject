@@ -19,7 +19,6 @@ import android.widget.TextView;
 
 import com.example.tristangriffin.projectx.Adapters.RecyclerViewCompactListAdapter;
 import com.example.tristangriffin.projectx.Listeners.OnGetFavoritedAlbumListener;
-import com.example.tristangriffin.projectx.Listeners.OnGetIfFavoritedAlbumListener;
 import com.example.tristangriffin.projectx.Listeners.OnGetThumbnailListener;
 import com.example.tristangriffin.projectx.Models.Album;
 import com.example.tristangriffin.projectx.R;
@@ -96,7 +95,7 @@ public class FavoritesFragment extends Fragment {
         return view;
     }
 
-    private void getFavoriteAlbums() {
+    public void getFavoriteAlbums() {
         progressBar.setVisibility(View.VISIBLE);
         favoritedAlbums = new ArrayList<>();
         firebaseCommands.getFavoritedPhotoCollection(new OnGetFavoritedAlbumListener() {
@@ -115,7 +114,7 @@ public class FavoritesFragment extends Fragment {
     }
 
     private void getThumbnail(final int position) {
-        firebaseCommands.getThumbnail(favoritedAlbums.get(position).getName(), new OnGetThumbnailListener() {
+        firebaseCommands.getThumbnail(favoritedAlbums.get(position), new OnGetThumbnailListener() {
             @Override
             public void onGetThumbnailSuccess(String string) {
                 favoritedAlbums.get(position).setThumbnail(string);
@@ -123,18 +122,6 @@ public class FavoritesFragment extends Fragment {
             }
         });
     }
-
-    /*
-    private void getIsFavorite(final int position) {
-        firebaseCommands.getIfFavoritedPhotoCollection(favoritedAlbums.get(position).getName(), new OnGetIfFavoritedAlbumListener() {
-            @Override
-            public void getIfFavoritedAlbumListener(boolean isFavorite) {
-                favoritedAlbums.get(position).setFavorite(isFavorite);
-                updateUI();
-            }
-        });
-    }
-    */
 
     private void updateUI() {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

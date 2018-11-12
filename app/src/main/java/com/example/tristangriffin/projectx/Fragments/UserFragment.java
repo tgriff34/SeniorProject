@@ -32,7 +32,6 @@ import android.widget.TextView;
 
 import com.example.tristangriffin.projectx.Activities.MainActivity;
 import com.example.tristangriffin.projectx.Adapters.RecyclerViewCompactListAdapter;
-import com.example.tristangriffin.projectx.Listeners.OnGetIfFavoritedAlbumListener;
 import com.example.tristangriffin.projectx.Models.Album;
 import com.example.tristangriffin.projectx.Resources.FirebaseCommands;
 import com.example.tristangriffin.projectx.Listeners.OnGetAlbumListener;
@@ -147,7 +146,7 @@ public class UserFragment extends Fragment {
 
     //Private Functions
     private void getThumbnail(final int position) {
-        firebaseCommands.getThumbnail(albums.get(position).getName(), new OnGetThumbnailListener() {
+        firebaseCommands.getThumbnail(albums.get(position), new OnGetThumbnailListener() {
             @Override
             public void onGetThumbnailSuccess(String string) {
                 if (string != null) {

@@ -3,6 +3,7 @@ package com.example.tristangriffin.projectx.Adapters;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -76,8 +77,10 @@ public class NavigationListAdapter extends RecyclerView.Adapter<NavigationListAd
         if (album.getName().equals(selectedAlbum)) {
             album.setSelected(true);
             lastCheckPos = myViewHolder.getAdapterPosition();
-            NavigationFragment navigationFragment = (NavigationFragment) ((FragmentActivity) context).getSupportFragmentManager().findFragmentByTag(NAVIGATION_FRAGMENT);
-            navigationFragment.getAlbumLocations(albumName);
+            Fragment navigationFragment = ((FragmentActivity) context).getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+            if (navigationFragment instanceof NavigationFragment) {
+                ((NavigationFragment) navigationFragment).getAlbumLocations(album);
+            }
             selectedAlbum = null;
         }
 
@@ -97,8 +100,11 @@ public class NavigationListAdapter extends RecyclerView.Adapter<NavigationListAd
 
                 lastCheckPos = myViewHolder.getAdapterPosition();
 
-                NavigationFragment navigationFragment = (NavigationFragment) ((FragmentActivity) context).getSupportFragmentManager().findFragmentByTag(NAVIGATION_FRAGMENT);
-                navigationFragment.getAlbumLocations(albumName);
+                Fragment navigationFragment = ((FragmentActivity) context).getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                if (navigationFragment instanceof NavigationFragment) {
+                    ((NavigationFragment) navigationFragment).getAlbumLocations(album);
+                }
+
                 Toast.makeText(context, albumName, Toast.LENGTH_SHORT).show();
 
                 notifyDataSetChanged();

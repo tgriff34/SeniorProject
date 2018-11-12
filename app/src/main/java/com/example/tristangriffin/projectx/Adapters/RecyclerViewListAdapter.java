@@ -2,10 +2,12 @@ package com.example.tristangriffin.projectx.Adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.SurfaceTexture;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.BottomSheetDialog;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -20,6 +22,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.tristangriffin.projectx.Activities.MainActivity;
+import com.example.tristangriffin.projectx.Fragments.FavoritesFragment;
 import com.example.tristangriffin.projectx.Fragments.NavigationFragment;
 import com.example.tristangriffin.projectx.Fragments.UserFragment;
 import com.example.tristangriffin.projectx.Fragments.UserImageFragment;
@@ -269,9 +272,13 @@ public class RecyclerViewListAdapter extends RecyclerView.Adapter<RecyclerViewLi
                             @Override
                             public void onDeleteAlbum(boolean isDeleted) {
                                 if (isDeleted) {
-                                    UserFragment userFragment = (UserFragment) ((FragmentActivity) activity).getSupportFragmentManager().findFragmentByTag(USER_FRAGMENT);
-                                    userFragment.getAlbums();
                                     Toast.makeText(activity, "Album deleted", Toast.LENGTH_SHORT).show();
+                                    Fragment currentFragment = ((FragmentActivity) activity).getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                                    if (currentFragment instanceof UserFragment) {
+                                        ((UserFragment) currentFragment).getAlbums();
+                                    } else if (currentFragment instanceof FavoritesFragment) {
+                                        ((FavoritesFragment) currentFragment).getFavoriteAlbums();
+                                    }
                                 } else {
                                     Toast.makeText(activity, "Error deleting album", Toast.LENGTH_SHORT).show();
                                 }

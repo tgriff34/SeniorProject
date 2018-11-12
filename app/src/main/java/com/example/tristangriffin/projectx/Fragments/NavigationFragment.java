@@ -54,11 +54,10 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
 
     private static GoogleMap map;
 
-    private String albumName;
-    private Album albumFromSelect;
+    private Album albumFromSelect = null;
     private ArrayList<Album> albums;
     private RecyclerView recyclerView;
-    private String selectedAlbum = null;
+    private Album selectedAlbum;
 
     private LatLngBounds.Builder builder;
 
@@ -73,7 +72,6 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-
         this.activity = getActivity();
     }
 
@@ -94,10 +92,10 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
 
         Bundle arguments = getArguments();
         if (arguments != null) {
-            selectedAlbum = getArguments().getString("selectedAlbum");
+            String selectedAlbum = getArguments().getString("selectedAlbum");
+            albumFromSelect = new Gson().fromJson(selectedAlbum, Album.class);
         }
 
-        albumFromSelect = new Gson().fromJson(selectedAlbum, Album.class);
 
         //Album List
         recyclerView = view.findViewById(R.id.navigation_list);
@@ -131,7 +129,7 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
 
                 Bundle bundle = new Bundle();
                 bundle.putString(PICTURE_SELECT_NAME, value);
-                bundle.putString(ALBUM_SELECT_NAME, albumName);
+                bundle.putString(ALBUM_SELECT_NAME, new Gson().toJson(selectedAlbum, Album.class));
 
                 Intent intent = new Intent(getActivity(), ImageViewerActivity.class);
                 intent.putExtras(bundle);
@@ -140,10 +138,9 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
-    //Private Funcs
-    public void getAlbumLocations(String album) {
-        albumName = album;
-        firebaseCommands.getPhotos(albumFromSelect, new OnGetPhotosListener() {
+    public void getAlbumLocations(Album album) {
+        selectedAlbum = album;
+        firebaseCommands.getPhotos(album, new OnGetPhotosListener() {
             @Override
             public void onGetPhotosSuccess(ArrayList<Image> images) {
                 setUpMap(images);
@@ -151,6 +148,7 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
         });
     }
 
+    //Private Funcs
     private void getAlbums() {
         //progressBar.setVisibility(View.VISIBLE);
         albums = new ArrayList<>();
@@ -170,7 +168,7 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void getThumbnail(final int position) {
-        firebaseCommands.getThumbnail(albums.get(position).getName(), new OnGetThumbnailListener() {
+        firebaseCommands.getThumbnail(albums.get(position), new OnGetThumbnailListener() {
             @Override
             public void onGetThumbnailSuccess(String string) {
                 albums.get(position).setThumbnail(string);
@@ -182,7 +180,11 @@ public class NavigationFragment extends Fragment implements OnMapReadyCallback {
     private void updateUI() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        recyclerView.setAdapter(new NavigationListAdapter(getContext(), albums, selectedAlbum));
+        if (albumFromSelect == null) {
+            recyclerView.setAdapter(new NavigationListAdapter(getContext(), albums, albums.get(0).getName()));
+        } else {
+            recyclerView.setAdapter(new NavigationListAdapter(getContext(), albums, albumFromSelect.getName()));
+        }
         recyclerView.setLayoutManager(linearLayoutManager);
     }
 

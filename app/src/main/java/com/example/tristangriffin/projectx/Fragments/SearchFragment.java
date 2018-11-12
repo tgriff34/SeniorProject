@@ -152,7 +152,7 @@ public class SearchFragment extends Fragment {
     }
 
     private void getThumbnail(final Album album, final int position) {
-        firebaseCommands.getThumbnail(album.getName(), new OnGetThumbnailListener() {
+        firebaseCommands.getThumbnail(album, new OnGetThumbnailListener() {
             @Override
             public void onGetThumbnailSuccess(String string) {
                 searchedAlbums.get(position).setThumbnail(string);

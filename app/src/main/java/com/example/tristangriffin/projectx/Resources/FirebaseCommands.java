@@ -403,7 +403,6 @@ public class FirebaseCommands {
     // *******************************************//
     public void getPhotos(Album album, final OnGetPhotosListener listener) {
         allImages = new ArrayList<>();
-        //TODO: Get images from album
         db.collection(USER_TAG)
                 .document(album.getId())
                 .collection(ALBUM_TAG)
@@ -432,11 +431,11 @@ public class FirebaseCommands {
                 });
     }
 
-    public void getThumbnail(final String albumName, final OnGetThumbnailListener listener) {
+    public void getThumbnail(Album album, final OnGetThumbnailListener listener) {
         db.collection(USER_TAG)
-                .document(user.getUid())
+                .document(album.getId())
                 .collection(ALBUM_TAG)
-                .document(albumName)
+                .document(album.getName())
                 .collection(IMAGES_TAG)
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -445,7 +444,6 @@ public class FirebaseCommands {
                         if (task.isSuccessful()) {
                             String thumbnailRef = null;
                             for (QueryDocumentSnapshot documentSnapshot : task.getResult()) {
-
                                 thumbnailRef = documentSnapshot.getString("ref");
                             }
                             listener.onGetThumbnailSuccess(thumbnailRef);

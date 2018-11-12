@@ -27,6 +27,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.tristangriffin.projectx.Activities.MainActivity;
+import com.example.tristangriffin.projectx.Fragments.FavoritesFragment;
 import com.example.tristangriffin.projectx.Fragments.NavigationFragment;
 import com.example.tristangriffin.projectx.Fragments.UserFragment;
 import com.example.tristangriffin.projectx.Fragments.UserImageFragment;
@@ -216,8 +217,12 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
                             @Override
                             public void onDeleteAlbum(boolean isDeleted) {
                                 if (isDeleted) {
-                                    UserFragment userFragment = (UserFragment) ((FragmentActivity) activity).getSupportFragmentManager().findFragmentByTag(USER_FRAGMENT);
-                                    userFragment.getAlbums();
+                                    Fragment currentFragment = ((FragmentActivity) activity).getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+                                    if (currentFragment instanceof UserFragment) {
+                                        ((UserFragment) currentFragment).getAlbums();
+                                    } else if (currentFragment instanceof FavoritesFragment) {
+                                        ((FavoritesFragment) currentFragment).getFavoriteAlbums();
+                                    }
                                     Toast.makeText(activity, "Album deleted", Toast.LENGTH_SHORT).show();
                                 } else {
                                     Toast.makeText(activity, "Error deleting album", Toast.LENGTH_SHORT).show();
