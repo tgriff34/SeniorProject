@@ -144,8 +144,8 @@ public class FirebaseCommands {
                             for (DocumentSnapshot documentSnapshot : task.getResult()) {
                                 Album getAlbum = new Album();
                                 getAlbum.setName(documentSnapshot.getString("name"));
-                                getAlbum.setFavorite(documentSnapshot.getBoolean("isFavorite"));
-                                getAlbum.setPublic(documentSnapshot.getBoolean("isPublic"));
+                                getAlbum.setFavorite(false);
+                                getAlbum.setPublic(true);
                                 getAlbum.setId(documentSnapshot.getString("id"));
                                 getAlbum.setDate(documentSnapshot.getDate("date"));
 
@@ -287,7 +287,6 @@ public class FirebaseCommands {
     //               Favorite Album               //
     // *******************************************//
     public void favoritePhotoCollection(Album album) {
-        Log.d("demo", "Favoriting");
         Map<String, Object> favorite = new HashMap<>();
         favorite.put("name", album.getName());
         if (album.isFavorite()) {
@@ -303,6 +302,18 @@ public class FirebaseCommands {
                 .collection(ALBUM_TAG)
                 .document(album.getName())
                 .set(favorite);
+
+        //If it's not your album and you unfavorite it
+        if (!album.getId().equals(user.getUid())) {
+            if (album.isFavorite()) {
+                deletePhotoCollection(album, new OnDeleteAlbumListener() {
+                    @Override
+                    public void onDeleteAlbum(boolean isDeleted) {
+                        Log.d("demo", "Reference Destroyed");
+                    }
+                });
+            }
+        }
     }
 
     public void getIfFavoritedPhotoCollection(String albumName, final OnGetIfFavoritedAlbumListener listener) {
@@ -388,7 +399,9 @@ public class FirebaseCommands {
                                 getAlbum.setId(documentSnapshot.getString("id"));
                                 getAlbum.setDate(documentSnapshot.getDate("date"));
 
-                                allAlbums.add(getAlbum);
+                                if (getAlbum.getId().equals(user.getUid())) {
+                                    allAlbums.add(getAlbum);
+                                }
                             }
                             listener.onGetAlbumSuccess(allAlbums);
                         } else {

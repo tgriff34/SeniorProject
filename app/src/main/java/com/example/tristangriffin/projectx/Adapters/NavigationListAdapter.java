@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,9 +20,6 @@ import com.example.tristangriffin.projectx.Models.Album;
 import com.example.tristangriffin.projectx.R;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-
-import static com.example.tristangriffin.projectx.Activities.MainActivity.NAVIGATION_FRAGMENT;
 
 public class NavigationListAdapter extends RecyclerView.Adapter<NavigationListAdapter.MyViewHolder> {
 
