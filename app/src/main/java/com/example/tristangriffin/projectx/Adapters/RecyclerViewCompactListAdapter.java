@@ -193,6 +193,7 @@ public class RecyclerViewCompactListAdapter extends RecyclerView.Adapter<Recycle
                     @Override
                     public void onClick(View v) {
                         setFavorite(position);
+                        getFavoriteResourcesForRecyclerView(favoriteButton, position);
                         mBottomSheetDialog.dismiss();
                     }
                 });
