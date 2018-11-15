@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.renderscript.ScriptGroup;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -17,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -84,12 +86,18 @@ public class SearchFragment extends Fragment {
         progressBar.setVisibility(View.GONE);
         progressBar.setIndeterminate(true);
 
-
-        searchText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+        searchText.setOnKeyListener(new View.OnKeyListener() {
             @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if ((!searchText.getText().toString().equals("") && event != null && (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) || (actionId == EditorInfo.IME_ACTION_DONE))) {
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)) {
                     searchAlbums(searchText.getText().toString());
+
+                    //Close keyboard when enter hit
+                    InputMethodManager inputMethodManager  = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    if (inputMethodManager != null && activity.getCurrentFocus() != null) {
+                        inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+                    }
+                    return true;
                 }
                 return false;
             }
