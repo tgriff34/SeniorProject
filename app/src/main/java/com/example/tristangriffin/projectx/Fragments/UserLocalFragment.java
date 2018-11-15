@@ -220,7 +220,7 @@ public class UserLocalFragment extends Fragment {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            firebaseCommands.uploadPhotos(file, albumName, location, longitude, latitude, timeCreated, dateCreated);
+            firebaseCommands.uploadPhotos(file, album.getName(), location, longitude, latitude, timeCreated, dateCreated);
         }
     }
 
@@ -255,7 +255,7 @@ public class UserLocalFragment extends Fragment {
                 latitude = String.valueOf(place.getLatLng().latitude);
                 longitude = String.valueOf(place.getLatLng().longitude);
                 location = String.valueOf(place.getAddress());
-                firebaseCommands.uploadPhotos(file, albumName, location, longitude, latitude, timeCreated, dateCreated);
+                firebaseCommands.uploadPhotos(file, album.getName(), location, longitude, latitude, timeCreated, dateCreated);
                 Log.d("UserLocalFragment", place.getLatLng().toString());
             } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                 Toast.makeText(getContext(), "Request Failed", Toast.LENGTH_SHORT).show();
