@@ -53,9 +53,12 @@ Search through your own or public albums.  Favorite public albums if you wish to
 </p>
 
 **Changing Themes**
+
 The ability to change themes as I know people would have different preferences on what they like and don't like.
 
 <img src="https://github.com/tgriff34/SeniorProject/blob/master/README_Photos/Favorite_Albums.png" width="430px"> <img src="https://github.com/tgriff34/SeniorProject/blob/master/README_Photos/White_Theme.png" width="430px">
 
 ## Thanks
-Thanks go here.
+Thanks to github for hosting my project.
+Thanks to Firebase for backend needs.
+Thanks to Professor Mohamed Shehab for his guidance and design critiques.  Without him it would not have turned out as well as it did.
